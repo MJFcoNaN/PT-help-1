@@ -111,9 +111,17 @@
             <div id="hide-without-tampermonkey" style="display: none">
                 <div id="toolbar" class="form-inline">
                     <div class="input-group">
-                        <div class="input-group-addon"><span class="glyphicon glyphicon-cloud"></span></div>
-                        <input id="keyword" type="text" class="form-control" placeholder="Search Text">
-                    </div>
+                            <div class="input-group-addon"><span class="glyphicon glyphicon-cloud"></span></div>
+                            <select id="searchcat" class="form-control">
+                                <option value="0">全部</option>
+                                <option value="1">电影</option>
+                                <option value="2">剧集</option>
+                                <option value="3">动漫</option>
+                            </select>
+                        </div>
+                        <div class="input-group">
+                            <input id="keyword" type="text" class="form-control" placeholder="Search Text">
+                        </div>
                     <button type="button" id="advsearch" class="btn btn-primary">
                         <span class="glyphicon glyphicon-search"></span>Search
                     </button>
