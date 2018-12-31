@@ -406,7 +406,7 @@
             for (var j = 0; j < type_data.length; j++) {
                 var site = type_data[j];
                 var _disable = data.disable.indexOf(site) > -1 ? "disabled" : "";
-                type_select += "<td><label class='checkbox-inline'><input type='checkbox' id='site-check' name='" + site + "'" + _disable + ">" + site + "</label></td>";
+                type_select += "<td><label class='checkbox-inline'><input type='checkbox' id='site-check' name='" + site + "'" + _disable + ">" + site + "&nbsp;&nbsp;</label></td>";
                 type_select += ((j + 1) % 5 == 0) ? '</tr><tr>' : '';
             }
             $("div#site-" + type_name).html('<table class="table table-condensed"><tr>' + type_select + '</tr></table>');
@@ -414,9 +414,9 @@
 
         $("div#check-site input#site-check").click(function() {
             if ($(this).prop('checked')) {
-                $(this).parents('label').addClass('btn-success');
+                $(this).parents('label').addClass('label-success');
             } else {
-                $(this).parents('label').removeClass('btn-success');
+                $(this).parents('label').removeClass('label-success');
             }
         });
 
@@ -425,7 +425,7 @@
         var last_selected_name = last_selected_name_raw.split(',');
         for (var last_selected_var_i = 0; last_selected_var_i < last_selected_name.length; last_selected_var_i++) {
             $('div#check-site input[name="' + last_selected_name[last_selected_var_i] + '"]').prop('checked', true);
-            $('div#check-site input[name="' + last_selected_name[last_selected_var_i] + '"]').parents('label').addClass('btn-success');
+            $('div#check-site input[name="' + last_selected_name[last_selected_var_i] + '"]').parents('label').addClass('label-success');
         }
         // 从localStorage中获取存储的设置
         var config = JSON.parse(localStorage.getItem("config"));
