@@ -312,6 +312,9 @@
                 if (row.free) {
                     ret += '<button type="button" class="btn btn-success btn-xs pull-right">' + row.free + '</button>';
                 }
+                if (row.subname) {
+                    ret += '<br><small>' + row.subname + '</small>';
+                }
                 return ret;
             }
         }, {
