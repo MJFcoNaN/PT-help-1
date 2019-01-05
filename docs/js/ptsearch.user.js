@@ -1,12 +1,13 @@
 // ==UserScript==
 // @name         Pt-search
 // @namespace    http://blog.rhilip.info
-// @version      20180505
+// @version      20181205
 // @description  Pt-search 配套脚本
 // @author       Rhilip
 // @run-at       document-end
 // @include      http://localhost*
 // @include      http*://*/ptsearch*
+// @require      https://raw.githubusercontent.com/cnwhy/GBK.js/master/dist/gbk.js
 // @updateURL    https://github.com/Rhilip/PT-help/raw/master/docs/js/ptsearch.user.js
 // @supportURL   https://github.com/Rhilip/PT-help/issues/2
 // @connect      *
@@ -656,6 +657,99 @@ $(document).ready(function() {
 
 		}
 
+		function NEU6(site, search_prefix) {
+			if (search_site.indexOf(site) < 0) {
+				return;
+			}
+			GM_xmlhttpRequest({
+				method: 'GET',
+				url: "http://bt.neu6.edu.cn/search.php",
+				onload: function(res) {
+					if (/action=login/.test(res.finalUrl)) {
+						writelog("May Not Login in Site " + site + ". With finalUrl: " + res.finalUrl);
+					} else {
+						var doc = (new DOMParser()).parseFromString(res.responseText, 'text/html');
+						var body = doc.querySelector("body");
+						var page = $(body); // 构造 jQuery 对象
+						//parser_func(res, doc, body, page);
+						let form_hash = page.find('input[name="formhash"]').val();
+						let source_form = [401, 45, 161, 48, 77, 49, 50, 91, 13, 81, 14, 73, 16, 72, 17, 292, 96, 15, 126, 144, 127, 44, 293, 52, 21, 329, 78, 171, 124, 18, 138, 54, 19, 160, 159, 84, 74, 20, 368];
+						let source_str = 'srchfid[]=' + source_form.join('&srchfid[]=');
+						GM_xmlhttpRequest({
+							method: "POST",
+							url: "http://bt.neu6.edu.cn/search.php?mod=forum",
+							data: "formhash=" + form_hash + "&srchtxt=" + GBK.URI.encodeURI(search_text) + "&searchenhance=on&srchfilter=all&orderby=lastpost&ascdesc=desc&searchsubmit=yes&" + source_str,
+							headers: {
+								"Content-Type": "application/x-www-form-urlencoded"
+							},
+							onload: function(response) {
+								var res_url = response.finalUrl;
+								if (!(/searchid=\d+/.test(res_url))) {
+									writelog(site + " search only once in 30 seconds.");
+									writelog("End of Search in Site " + site + ".");
+									return;
+								}
+								GM_xmlhttpRequest({
+									method: "GET",
+									url: res_url,
+									onload: function(response) {
+										writelog("Get Search Pages Success in Site " + site + ".");
+										var doc = (new DOMParser()).parseFromString(response.responseText, 'text/html');
+										var body = doc.querySelector("body");
+										var page = $(body); // 构造 jQuery 对象
+										if (page.find('table.dt').length) {
+											var tr_list = page.find("table.dt tr:gt(0)");
+											writelog("Get " + tr_list.length + " records in Site 6V.");
+											for (var i = 0; i < tr_list.length; i++) {
+												var torrent_data_raw = tr_list.eq(i);
+												if (/signal_0\.png/.test(torrent_data_raw.find("img:first").attr("src"))) {
+													continue;
+												}
+
+												var _tag_name = torrent_data_raw.find("a:first");
+												var free = '';
+												if (torrent_data_raw.find("td:eq(2) img").length) {
+													let img_link = torrent_data_raw.find("td:eq(2) img").attr("src");
+													free = img_link.match(/(\d+|free)\.gif/)[1];
+													free = /\d+$/.test(free) ? (free + '%') : free;
+												}
+												var _date = torrent_data_raw.find("em>span").text() + ":00";
+												var _tag_size = torrent_data_raw.find("td:eq(1)");
+
+												table_append({
+													"site": site,
+													"name": _tag_name.text(),
+													"link": "http://bt.neu6.edu.cn/" + _tag_name.attr("href"),
+													"free": free.toUpperCase(),
+													"pubdate": dateFormat("yyyy-MM-dd hh:mm:ss", new Date(_date)),
+													"size": FileSizetoLength(_tag_size.text()),
+													"seeders": '-',
+													"leechers": '-',
+													"completed": '-'
+												});
+											}
+										}
+										writelog("End of Search in Site " + site + ".");
+									},
+									onerror: function(res) {
+										writelog("An error occurred when searching in Site " + site + " .With finalUrl: " + res.finalUrl + ". Your computer may not be able to access this site.");
+									}
+								});
+
+								writelog("End of Search in Site " + site + ".");
+							},
+							onerror: function(res) {
+								writelog("An error occurred when searching in Site " + site + " .With finalUrl: " + res.finalUrl + ". Your computer may not be able to access this site.");
+							}
+						});
+					}
+				},
+				onerror: function(res) {
+					writelog("An error occurred when searching in Site " + site + " .With finalUrl: " + res.finalUrl + ". Your computer may not be able to access this site.");
+				}
+			});
+		}
+
 		// 开始各站点遍历
 		writelog("Script Version: " + script_version + ", Choose Site List: " + search_site.toString() + ", With Search Keywords: " + search_text);
 		// 教育网通用模板解析
@@ -671,6 +765,7 @@ $(document).ready(function() {
 		// 教育网不能使用通用NexusPHP解析的站点
 		NPU("NPU", "https://npupt.com/torrents.php?$cat$&search=$key$");
 		ZX("ZX", "http://pt.zhixing.bjtu.edu.cn/search/$cat$&x$key$");
+		NEU6("6V", "http://bt.neu6.edu.cn/search.php");
 		// NexusPHP("CUGB", "http://pt.cugb.edu.cn/torrents.php?search=");
 
 		// 公网通用模板解析
