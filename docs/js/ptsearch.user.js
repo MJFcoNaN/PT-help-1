@@ -660,12 +660,24 @@ $(document).ready(function() {
 		function NEU6(site, search_prefix) {
 			Get_Search_Page(site, search_prefix, function(res, doc, body, page) {
 				let form_hash = page.find('input[name="formhash"]').val();
-				let source_form = [401, 45, 161, 48, 77, 49, 50, 91, 13, 81, 14, 73, 16, 72, 17, 292, 96, 15, 126, 144, 127, 44, 293, 52, 21, 329, 78, 171, 124, 18, 138, 54, 19, 160, 159, 84, 74, 20, 368];
-				let source_str = 'srchfid[]=' + source_form.join('&srchfid[]=');
+				let source_form = [
+					[401, 45, 161, 48, 77, 49, 50, 91, 13, 81, 14, 73, 16, 72, 17, 292, 15, 126, 144, 127, 44, 293, 52, 21, 329, 78, 171, 124, 18, 138, 54, 19, 160, 159, 84, 74, 20, 368],
+					[45, 161, 13, 81],
+					[48, 77, 14, 73, ],
+					[44, 293, 52],
+					[50, 91, 15, 144, 126],
+					[16, 72],
+					[21, 329, 78, 171, 124],
+					[19, 160, 159, 84, 74],
+					[18, 138, 54],
+					[17, 292],
+					[49, 127],
+				];
+				let source_str = '&srchfid[]=' + source_form[cat_value].join('&srchfid[]=');
 				GM_xmlhttpRequest({
 					method: "POST",
 					url: "http://bt.neu6.edu.cn/search.php?mod=forum",
-					data: "formhash=" + form_hash + "&srchtxt=" + GBK.URI.encodeURI(search_text) + "&searchenhance=on&srchfilter=all&orderby=lastpost&ascdesc=desc&searchsubmit=yes&" + source_str,
+					data: "formhash=" + form_hash + "&srchtxt=" + GBK.URI.encodeURI(search_text) + "&searchenhance=on&srchfilter=all&orderby=lastpost&ascdesc=desc&searchsubmit=yes" + source_str,
 					headers: {
 						"Content-Type": "application/x-www-form-urlencoded"
 					},
