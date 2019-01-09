@@ -1,6 +1,6 @@
 // ==UserScript==
-// @name        6V剧版评分强化器
-// @namespace   xingxing_neu6rateenhancer
+// @name        NEU6 TV Rate Helper
+// @namespace   neu6tvratehelper
 // @description 6V剧版评分强化器
 // @author      xingxing
 // @grant       unsafeWindow
@@ -16,7 +16,7 @@
 // @require     http://bt.neu6.edu.cn/static/js/mobile/jquery-1.8.3.min.js
 // @updateURL   https://github.com/harleybai/PT-help/raw/master/docs/js/NEU6%20-%20TV%20Rate%20Helper.user.js
 // @icon        http://bt.neu6.edu.cn/favicon.ico
-// @version     20190102
+// @version     20190104
 // ==/UserScript==
 
 const jq = jQuery.noConflict();
