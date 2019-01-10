@@ -16,7 +16,7 @@
 // @require     http://bt.neu6.edu.cn/static/js/mobile/jquery-1.8.3.min.js
 // @updateURL   https://github.com/harleybai/PT-help/raw/master/docs/js/NEU6%20-%20TV%20Rate%20Helper.user.js
 // @icon        http://bt.neu6.edu.cn/favicon.ico
-// @version     20190104
+// @version     20190105
 // ==/UserScript==
 
 const jq = jQuery.noConflict();
@@ -41,9 +41,15 @@ const jq = jQuery.noConflict();
 		search_enhance = (GM_getValue('search_enhance')) ? GM_getValue('search_enhance') : false;
 		seedsize_human = (GM_getValue('seedsize_human')) ? GM_getValue('seedsize_human') : false;
 		title_zoom = (typeof(GM_getValue('title_zoom')) == "undefined") ? 1.2 : parseFloat(GM_getValue('title_zoom'));
-		title_zoom = (title_zoom < 1 || title_zoom > 2) ? 1.2 : title_zoom;
+		if (title_zoom < 1 || title_zoom > 2) {
+			title_zoom = 1.2;
+			GM_setValue('title_zoom', 1.2);
+		}
 		second_timeout = (typeof(GM_getValue('second_timeout')) == "undefined") ? 400 : parseInt(GM_getValue('second_timeout'));
-		second_timeout = (second_timeout < 300 || second_timeout > 1000) ? 400 : second_timeout;
+		if (second_timeout < 300 || second_timeout > 1000) {
+			second_timeout = 400;
+			GM_setValue('second_timeout', 400);
+		}
 		add_rate_user = GM_getValue('add_rate_user') ? GM_getValue('add_rate_user').split(',') : ["j552k", "baishuangxing", "kun2phg"];
 		common_links = GM_getValue('common_links') ? JSON.parse(GM_getValue('common_links')) : {};
 	}
@@ -132,7 +138,7 @@ const jq = jQuery.noConflict();
 		jq('#mn_N04e2_menu').append('<li><a id="pfsettings" hidefocus="true" style="color: purple;cursor:pointer">脚本设置</a></li>');
 		jq('#pfsettings').click(function() {
 			var pfhtml = '<h3 class="flb"><em id="return_reply">脚本设置</em><span><a target="_blank" href="http://bt.neu6.edu.cn/thread-1612462-1-1.html">帮助</a><a href="javascript:;" class="flbc" onclick="hideWindow(\'pfst\')" title="关闭">关闭</a></span></h3><div style="width:580px;height:310px;"><div class="c" style="height:257px;">' +
-				'<hr><table><caption>评分设置</caption><tr><td colspan="3"><label><input type="checkbox" id="setnewstyle">使用新样式</label>&nbsp;&nbsp;&nbsp;&nbsp;<label><input type="checkbox" id="setnotify">通知作者(超版以上可用)</label></td></tr><tr><td><p><b>设置理由</b></p><textarea id="setreason"></textarea></td><td><p><b>设置浮云评分</b></p><textarea id="setoption2"></textarea></td><td><p><b>设置贡献评分</b></p><textarea id="setoption5"></textarea></td></tr>' +
+				'<hr><table><caption>评分设置</caption><tr><td colspan="3"><label><input type="checkbox" id="setnewstyle" checked>使用新样式</label>&nbsp;&nbsp;&nbsp;&nbsp;<label><input type="checkbox" id="setnotify">通知作者(超版以上可用)</label></td></tr><tr><td><p><b>设置理由</b></p><textarea id="setreason"></textarea></td><td><p><b>设置浮云评分</b></p><textarea id="setoption2"></textarea></td><td><p><b>设置贡献评分</b></p><textarea id="setoption5"></textarea></td></tr>' +
 				'</table><hr><table><caption>脚本设置</caption><tr><td colspan="4"><label><input type="checkbox" id="auto_add" checked>自动增加集数</label>&nbsp;&nbsp;&nbsp;&nbsp;<label><input type="checkbox" id="title_check">标题快捷检查</label>&nbsp;&nbsp;&nbsp;&nbsp;<label><input type="checkbox" id="search_enhance" checked>开启搜索加强</label>&nbsp;&nbsp;&nbsp;&nbsp;<label><input type="checkbox" id="seedsize_human" checked>种子信息加强</label></tr><tr><td><p><b>标题框缩放</b></p><input type="number" id="title_zoom" min="1" max="2" value="1.2" step="0.05"></td><td><p><b>处理延时(秒)</b></p><input type="number" id="second_timeout" min="300" max="1000" value="400" step="10"></td><td><p><b>剧版版主(活跃)</b></p><textarea id="add_rate_user">j552k,baishuangxing,kun2phg</textarea></td><td><p><b>常用链接</b></p><textarea id="common_links"></textarea></td></tr></table><hr>' +
 				'</div><div class="o"><button id="submitset">保存设置</button>&nbsp;<button id="submitdelete">清空设置</button></div></div><style>.c textarea{resize:both} .c table td{width:100px}</style>';
 			showWindow('pfst', pfhtml, 'html');
@@ -369,12 +375,12 @@ const jq = jQuery.noConflict();
 		if (jq('pre').length) {
 			let file_info = jq('pre').text().match(/file.*:([\s\S]+)archive/);
 			if (title_check && file_info) {
-				file_info = file_info[1].split(/\(\d+\)/)[0].trim();
+				file_info = file_info[1].split(/\(\d+\)/)[0].trim().replace(/^.*\//, '');
 				let seed_info = jq('p.attnm>a').text().replace(".torrent", "");
 				if (file_info.indexOf(seed_info) == -1) {
 					file_info += ' | ' + seed_info;
 				}
-				jq('div.pct>div>div.mtw.mbw').append(' | <b>' + file_info + '</b>');
+				jq('div.pct>div>div.mtw.mbw').append('<b> | ' + file_info + '</b>');
 			}
 			//文件大小人性化显示
 			if (seedsize_human) {
