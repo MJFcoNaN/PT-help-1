@@ -70,7 +70,8 @@ const jq = jQuery.noConflict();
 		var forum_match = location.href.match(/(forum-|fid=)(\d+)/);
 		if (forum_match) {
 			return forum_match[2];
-		} else if (atDetailPage()) {
+		}
+		if (atDetailPage()) {
 			var type_m = jq('#visitedforums>a').attr('href').match(/(forum-|fid=)(\d+)/);
 			return type_m ? type_m[2] : 0;
 		}
@@ -301,7 +302,7 @@ const jq = jQuery.noConflict();
 		} else if (forum_id == 155) {
 			move_to = 14;
 		}
-		if (tv_forum.indexOf(forum_id)) {
+		if (tv_forum.indexOf(forum_id) >= 0) {
 			if (forum_id != 155) {
 				jq("ul#thread_types>li:last").after('<li><a id="my_select" href="javascript:void(0)">选择<span class="xg1 num">0</span></a></li><li><a id="my_move" href="javascript:void(0)">移动<span class="xg1 num">0</span></a></li>');
 			}
@@ -411,7 +412,7 @@ const jq = jQuery.noConflict();
 				jq('ignore_js_op>dl.tattl>dd>pre').text(utorrentinfo);
 			}
 		}
-		if (tv_forum.indexOf(forum_id)) {
+		if (tv_forum.indexOf(forum_id) >= 0) {
 			jq('div#modmenu span:last').before('<span class="pipe">|</span><a id="isrepeat" href="javascript:;">重复</a><span class="pipe">|</span><a id="commonquestions" href="javascript:;">常见问题</a>');
 		}
 
@@ -448,7 +449,7 @@ const jq = jQuery.noConflict();
 	}
 	if (location.href.match(/action=reply&fid=/)) {
 		var seed_forum = location.href.match(/action=reply&fid=(\d+)/)[1];
-		if (tv_forum.indexOf(seed_forum)) {
+		if (tv_forum.indexOf(seed_forum) >= 0) {
 			jq('span#subjecthide').after('<span class="pipe">|</span><a id="commonquestions" href="javascript:;">常见问题</a>');
 		}
 	}
@@ -1128,7 +1129,7 @@ const jq = jQuery.noConflict();
 			let t_str = jq('input[name=subject]').val();
 			t_str = t_str.replace(/[\.\s]*([\[\]\/])[\.\s]*/ig, "$1");
 			t_str = t_str.replace(/\s/g, ".");
-			if (tv_forum.indexOf(forum_id)) {
+			if (tv_forum.indexOf(forum_id) >= 0) {
 				t_str = t_str.replace(/(\[\d+)P\//, "$1p/");
 				t_str = t_str.replace(/\/(MP4|MKV|TS|ISO|RMVB|FLV|AVI|VOB|MPEG|WEB-DL|WEB|HDTV)/ig, function($1) {
 					return $1.toUpperCase();
