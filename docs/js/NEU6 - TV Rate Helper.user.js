@@ -33,10 +33,13 @@ const jq = jQuery.noConflict();
 	const current_url = getCurrentUrl();
 
 	function getConfig() {
-		auto_add = (typeof(GM_getValue('auto_add')) == "undefined") ? true : GM_getValue('auto_add');
-		title_check = (typeof(GM_getValue('title_check')) == "undefined") ? false : GM_getValue('title_check');
-		search_enhance = (typeof(GM_getValue('search_enhance')) == "undefined") ? true : GM_getValue('search_enhance');
-		seedsize_human = (typeof(GM_getValue('seedsize_human')) == "undefined") ? true : GM_getValue('seedsize_human');
+		if (!GM_getValue('already_setted')) {
+			alert('第一次使用请前往设置页设置>\n\n论坛首页>功能>脚本设置>保存设置');
+		}
+		auto_add = (GM_getValue('auto_add')) ? GM_getValue('auto_add') : false;
+		title_check = (GM_getValue('title_check')) ? GM_getValue('title_check') : false;
+		search_enhance = (GM_getValue('search_enhance')) ? GM_getValue('search_enhance') : false;
+		seedsize_human = (GM_getValue('seedsize_human')) ? GM_getValue('seedsize_human') : false;
 		title_zoom = (typeof(GM_getValue('title_zoom')) == "undefined") ? 1.2 : parseFloat(GM_getValue('title_zoom'));
 		title_zoom = (title_zoom < 1 || title_zoom > 2) ? 1.2 : title_zoom;
 		second_timeout = (typeof(GM_getValue('second_timeout')) == "undefined") ? 400 : parseInt(GM_getValue('second_timeout'));
@@ -166,6 +169,7 @@ const jq = jQuery.noConflict();
 				GM_setValue('second_timeout', jq('#second_timeout').val().trim());
 				GM_setValue('add_rate_user', jq('#add_rate_user').val().trim().replace(/\r|\n/g, ',').replace(/\s*,+\s*/g, ','));
 				GM_setValue('common_links', tparse(jq('#common_links').val()));
+				GM_setValue('already_setted', true);
 				hideWindow('pfst');
 			});
 			jq('#submitdelete').click(function() {
@@ -182,6 +186,7 @@ const jq = jQuery.noConflict();
 				GM_deleteValue('second_timeout');
 				GM_deleteValue('add_rate_user');
 				GM_deleteValue('common_links');
+				GM_deleteValue('already_setted');
 				hideWindow('pfst');
 			});
 		});
@@ -415,7 +420,7 @@ const jq = jQuery.noConflict();
 		let index = 0;
 		jq('div.pob.cl').each(function() {
 			let seed_p = jq(this).find('p');
-			let quote_id = jq('div.pcbs:eq(' + index + ') table:first td:first').attr("id").match(/postmessage_(\d+)/)[1];
+			let quote_id = jq('td.t_f:eq(' + index + ')').attr("id").match(/postmessage_(\d+)/)[1];
 			let link_reply = "http://bt.neu6.edu.cn/forum.php?mod=post&action=reply&fid=" + forum_id + "&extra=page%3D1&tid=" + seedid + "&reppost=" + quote_id;
 			if (index > 0) {
 				link_reply = "http://bt.neu6.edu.cn/forum.php?mod=post&action=reply&fid=" + forum_id + "&extra=page%3D1&tid=" + seedid + "&repquote=" + quote_id;
