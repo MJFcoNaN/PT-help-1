@@ -32,17 +32,22 @@ const jq = jQuery.noConflict();
 		});
 	}
 	if (location.href.match(/thread-|tid=/) && jq('p.cp_pls.cl').length) {
-		let req_href = jq('p.cp_pls.cl>a:first').attr('href');
-		jq.get(req_href, function(data) {
-			try {
-				let ip_match = data.getElementsByTagName('root')[0].innerHTML.match(/ip=(.*?)&amp/);
-				if (ip_match) {
-					jq.getJSON('http://pytool.sinaapp.com/geo?type=json&encoding=utf-8&ip=' + ip_match[1], function(data) {
-						jq('p.cp_pls.cl').append('<br>' + data.geo.loc.replace(/\s+/, '<br>'));
-					});
-				}
-			} catch (error) {
-				console.log(error);
+		jq('p.cp_pls.cl').each(function() {
+			let c1 = jq(this);
+			if (c1.find("a:contains('IP')").length) {
+				let req_href = c1.find("a:contains('IP')").attr('href');
+				jq.get(req_href, function(data) {
+					try {
+						let ip_match = data.getElementsByTagName('root')[0].innerHTML.match(/ip=(.*?)&amp/);
+						if (ip_match) {
+							jq.getJSON('http://pytool.sinaapp.com/geo?type=json&encoding=utf-8&ip=' + ip_match[1], function(data) {
+								c1.append('<br>' + data.geo.loc.replace(/\s+/, ' - '));
+							});
+						}
+					} catch (error) {
+						console.log(error);
+					}
+				});
 			}
 		});
 	}

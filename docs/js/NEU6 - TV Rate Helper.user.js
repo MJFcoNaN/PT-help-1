@@ -69,11 +69,11 @@ const jq = jQuery.noConflict();
 	function getForumId() {
 		var forum_match = location.href.match(/(forum-|fid=)(\d+)/);
 		if (forum_match) {
-			return forum_match[2];
+			return parseInt(forum_match[2]);
 		}
 		if (atDetailPage()) {
 			var type_m = jq('#visitedforums>a').attr('href').match(/(forum-|fid=)(\d+)/);
-			return type_m ? type_m[2] : 0;
+			return parseInt(type_m ? type_m[2] : 0);
 		}
 		return 0;
 	}
@@ -449,7 +449,7 @@ const jq = jQuery.noConflict();
 	}
 	if (location.href.match(/action=reply&fid=/)) {
 		var seed_forum = location.href.match(/action=reply&fid=(\d+)/)[1];
-		if (tv_forum.indexOf(seed_forum) >= 0) {
+		if (tv_forum.indexOf(parseInt(seed_forum)) >= 0) {
 			jq('span#subjecthide').after('<span class="pipe">|</span><a id="commonquestions" href="javascript:;">常见问题</a>');
 		}
 	}
