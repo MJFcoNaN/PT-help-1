@@ -21,8 +21,7 @@
             "None"
         ]
     },
-    "site": [
-        {
+    "site": [{
             "name": "BYR",
             "type": "jyw",
             "temple": "NexusPHP",
