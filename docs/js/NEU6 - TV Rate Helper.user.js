@@ -137,7 +137,7 @@ const jq = jQuery.noConflict();
             }
         });
     }
-    // 计算置顶剩余时间
+
     function calculateStickLeftTime(str) {
         let m = parseInt((new Date(str) - new Date()) / 60000);
         let ret = [];
