@@ -113,7 +113,7 @@ const jq = jQuery.noConflict();
                     window.open("http://bt.neu6.edu.cn/forum.php?mod=post&action=newthread&fid=" + forum_id + "#clone_" + id);
                 });
                 //
-                if (/stickthread_/.test(tbody.attr('id'))) {
+                if (size_index == 3 && /stickthread_/.test(tbody.attr('id'))) {
                     GM_xmlhttpRequest({
                         method: "POST",
                         url: "http://bt.neu6.edu.cn/forum.php?mod=topicadmin&action=moderate&infloat=yes&nopost=yes&inajax=1&fid=" + forum_id,
