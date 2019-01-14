@@ -10,6 +10,7 @@
 // @include      http://bt.neu6.edu.cn/forum*
 // @include      http://bt.neu6.edu.cn/thread*
 // @require      http://bt.neu6.edu.cn/static/js/mobile/jquery-1.8.3.min.js
+// @updateURL    https://github.com/harleybai/PT-help/raw/master/docs/js/NEU6%20-%20Info%20Clone.user.js
 // @icon         http://bt.neu6.edu.cn/favicon.ico
 // @supportURL   http://bt.neu6.edu.cn/thread-1555682-1-1.html
 // @version      20190107
