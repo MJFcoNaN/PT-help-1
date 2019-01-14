@@ -16,7 +16,7 @@
 // @require     http://bt.neu6.edu.cn/static/js/mobile/jquery-1.8.3.min.js
 // @updateURL   https://github.com/harleybai/PT-help/raw/master/docs/js/NEU6%20-%20TV%20Rate%20Helper.user.js
 // @icon        http://bt.neu6.edu.cn/favicon.ico
-// @version     20190107
+// @version     20190108
 // ==/UserScript==
 
 const jq = jQuery.noConflict();
@@ -341,7 +341,7 @@ const jq = jQuery.noConflict();
                 });
             loadingst = setTimeout(function () {
                 showDialog('', 'info', '<img src="' + IMGDIR + '/loading.gif"> \u8bf7\u7a0d\u5019...');
-            }, 500);
+            }, second_timeout);
         }
     }
     // 版块
@@ -354,10 +354,10 @@ const jq = jQuery.noConflict();
         } else if (forum_id == 155) {
             move_to = 14;
         }
-        if (tv_forum.indexOf(forum_id) >= 0) {
-            if (forum_id != 155) {
-                jq("ul#thread_types>li:last").after('<li><a id="my_select" href="javascript:void(0)">选择<span class="xg1 num">0</span></a></li><li><a id="my_move" href="javascript:void(0)">移动<span class="xg1 num">0</span></a></li>');
-            }
+        if ([48, 14].indexOf(forum_id) >= 0) {
+            jq("ul#thread_types>li:last").after('<li><a id="my_select" href="javascript:void(0)">选择<span class="xg1 num">0</span></a></li><li><a id="my_move" href="javascript:void(0)">移动<span class="xg1 num">0</span></a></li>');
+        }
+        if ([155, 48, 77, 14, 73, 45, 13].indexOf(forum_id) >= 0 && jq('table#threadlisttableid tr:first input').length) {
             jq("tbody#separatorline:not(.emptb) th").html('<a id="forum_highlight" href="javascript:void(0)">高亮</a>&nbsp;&nbsp;&nbsp;<a id="forum_stick" href="javascript:void(0)">置顶</a>&nbsp;&nbsp;&nbsp;<a id="forum_move" href="javascript:void(0)">移动</a>');
         }
         jq("#my_select").click(function () {
@@ -639,7 +639,8 @@ const jq = jQuery.noConflict();
     //获取高亮信息
     function getHighlightInfo(seed_type, type_id, gb_size, title_info) {
         title_info = (title_info) ? title_info : getInfoFromTitle(seed_type, gb_size, "");
-        var res = [title_info[0], -1, 0, 0]; //[置顶天数, 颜色, 加粗, 高亮时间(-1:永久)]
+        let res = [title_info[0], -1, 0, 0]; //[置顶天数, 颜色, 加粗, 高亮时间(-1:永久)]
+        let title = jq("span#thread_subject").text();
         if (seed_type == 14 || seed_type == 73) {
             if (seed_type == 14) {
                 res[3] = 1; //电视剧集高亮一天
@@ -671,7 +672,7 @@ const jq = jQuery.noConflict();
             } else if (type_id == 105 || type_id == 302) {
                 res[1] = 6;
             }
-        } else if (seed_type == 48 || seed_type == 77) { //高清
+        } else if (seed_type == 48 || seed_type == 77) { //高清剧集
             if (seed_type == 48) {
                 res[3] = 3;
             } else {
@@ -696,6 +697,44 @@ const jq = jQuery.noConflict();
                 }
             } else if (type_id == 250 || type_id == 181) {
                 res[1] = 4;
+            }
+        } else if (seed_type == 45) { //高清电影
+            let topGroup = ["CtrlHD", "CRiSC", "DON", "EbP", "SbR", "VietHD", "RightSiZE", "NTb", "BMF", "D-Z0N3", "decibeL", "HiFi", "NCmt", "ZQ", "de[42]", "FoRM", "HiDt", "HDMaNiAcS"];
+            let popGroup = ["ATHD", " FraMeSToR", "HDAccess", "HDxT", "TayTO", "ESiR", "THORA", "HDClassic", "iLL", "PerfectionHD", "HDWinG", "WiKi", "CHD", "beAst", "R2HD", "HDS", "MTeam", "CMCT", "EPiC", "HDTime", "HDChina", "Tron"];
+            let zeroGroup = ["2HD", "aAf", "aBD", "ALLiANCE", "AMIABLE", "AVCHD", "AVS720", "BAJSKORV", "BestHD", "BiA", "CBGB", "Chakra", "CiNEFiLE", "CROSSBOW", "CTU", "CYBERMEN", "DiCH", "DIMENSION", "FSiHD", "HAiDEAF", "HALCYON", "HANGOVER", "hV", "IMMERSE", "iNFAMOUS", "Japhson", "LCHD", "MELiTE", "METiS", "NGR", "NODLABS", "ORENJi", "OUTDATED", "publicHD", "REFiNED", "REVEiLL", "SiNNERS", "SPARKS", "THUGLiNE", "XPRESS"];
+            if (title.match(/4K/i) && title.match(/Remux/i)) {
+                res = [0, 2, 1, -1];
+            } else if (title.match(/Remux/i)) {
+                res = [0, 5, 0, -1];
+            } else if (title.match(/2160p/i)) {
+                res = [0, 2, 0, -1];
+            } else if (title.match(new RegExp(topGroup.join('|'), "i"))) {
+                res = [0, 7, 0, -1];
+                res[2] = title.match(/1080p/i) ? 1 : 0;
+            } else if (title.match(new RegExp(popGroup.join('|'), "i"))) {
+                res = [0, 8, 0, 7];
+            } else if (title.match(new RegExp(zeroGroup.join('|'), "i"))) {
+                res = [0, 3, 0, 3];
+            } else if (title.match(/原创/)) {
+                res = [0, 3, 0, -1];
+            } else if (title.match(/合集/)) {
+                res = [0, 8, 1, -1];
+            }
+        } else if (seed_type == 13) {
+            if (title.match(/BluRay.*(CMCT|CnSCG)/i) && title.match(/720p/i)) {
+                res = [0, 5, 0, -1];
+            } else if (title.match(/(BluRay|HDTV).*WOFEI/i) || title.match(/HDTV(CMCT|CMCTV|CnSCG)/i)) {
+                res = [0, 5, 0, 15];
+            } else if (title.match(/BDRip.*(iNT-TLF|BDRip-BMDruCHinYaN|MicroHD-mFANs|MNHD-FRDS)/i)) {
+                res = [0, 7, 0, -1];
+            } else if (title.match(/HR-HDTV.*-YYeTs/i)) {
+                res = [0, 4, 0, 15];
+            } else if (title.match(/DVDISO/i)) {
+                res = [0, 3, 1, -1];
+            } else if (title.match(/DVDRip/i)) {
+                res = [0, 8, 0, 7];
+            } else if (title.match(/BluRay.*(beAst|HDS|Mteam)/i) && title.match(/720p/i)) {
+                res = [0, 8, 0, -1];
             }
         }
         //alert("(置顶天数 " + res[0] + ", 颜色 " + res[1] + ", 加粗 " + res[2] + ", 高亮时间 " + res[3] + ")");
@@ -772,11 +811,11 @@ const jq = jQuery.noConflict();
     }
     //计算帖子奖励
     function getSeedRewards() {
-        var clouds = 0;
-        var contribution = 0;
-        var ratereason = "";
+        let clouds = 0;
+        let contribution = 0;
+        let ratereason = "";
 
-        var rate_already = false;
+        let rate_already = false;
         jq("div.pct:first table.ratl tbody.ratl_l tr").each(function () {
             var tr = jq(this);
             var user = tr.find('a:eq(1)').text().trim();
@@ -785,18 +824,18 @@ const jq = jQuery.noConflict();
                 return false;
             }
         });
-        var reasons = ["帖子规范，资源优秀，谢谢您的分享", "更新辛苦，图文并茂，格式规范，奖励"];
-        var seedsize = getSeedSize(false, "");
+        let reasons = ["帖子规范，资源优秀，谢谢您的分享", "更新辛苦，图文并茂，格式规范，奖励"];
+        let seedsize = getSeedSize(false, "");
 
         if ((!rate_already) && (forum_id > 0) && (seedsize > 0)) {
-            seedsize = parseInt(seedsize / 1024); //GB
+            seedsize = parseFloat(seedsize / 1024).toFixed(2); //GB
             clouds = 0;
             contribution = 0;
-            var d = new Date();
-            var index = d.getSeconds() % 2;
+            let d = new Date();
+            let index = d.getSeconds() % 2;
             ratereason = reasons[index];
-            var nummatch;
-            var num;
+            let nummatch, num;
+            let title = jq("span#thread_subject").text();
             if (forum_id == 77) { //高清剧合集
                 if (seedsize >= 400) {
                     clouds = 200;
@@ -819,7 +858,7 @@ const jq = jQuery.noConflict();
                 }
             } else if (forum_id == 48) { //高清剧集
                 contribution = 0;
-                nummatch = jq("span#thread_subject").text().match(/EP?(\d+)(-E?P?(\d+))?/i);
+                nummatch = title.match(/EP?(\d+)(-E?P?(\d+))?/i);
                 if (nummatch) {
                     if (nummatch[3]) {
                         num = nummatch[3] - nummatch[1] + 1;
@@ -861,8 +900,8 @@ const jq = jQuery.noConflict();
                 }
             } else if (forum_id == 14) { //电视剧集
                 contribution = 0;
-                nummatch = jq("span#thread_subject").text().match(/EP?(\d+)(-E?P?(\d+))?\]/i);
-                nummatch = nummatch ? nummatch : (jq("span#thread_subject").text().match(/(\d+)(-(\d+))?\]/i));
+                nummatch = title.match(/EP?(\d+)(-E?P?(\d+))?\]/i);
+                nummatch = nummatch ? nummatch : (title.match(/(\d+)(-(\d+))?\]/i));
                 if (nummatch) {
                     if (nummatch[3]) {
                         num = nummatch[3] - nummatch[1] + 1;
@@ -896,12 +935,72 @@ const jq = jQuery.noConflict();
                 clouds = 10;
                 contribution = 2;
                 ratereason = "补加浮云和贡献奖励，感谢分享";
+            } else if (forum_id == 45) { //高清电影
+                ratereason = "补加浮云和贡献奖励，感谢分享";
+                let topGroup = ["CtrlHD", "CRiSC", "DON", "EbP", "SbR", "VietHD", "RightSiZE", "NTb", "BMF", "D-Z0N3", "decibeL", "HiFi", "NCmt", "ZQ", "de[42]", "FoRM", "HiDt", "HDMaNiAcS"];
+                let popGroup = ["ATHD", " FraMeSToR", "HDAccess", "HDxT", "TayTO", "ESiR", "THORA", "HDClassic", "iLL", "PerfectionHD", "HDWinG", "WiKi", "CHD", "beAst", "R2HD", "HDS", "MTeam", "CMCT", "EPiC", "HDTime", "HDChina", "Tron"];
+                if (title.match(/Remux/i)) { //无损资源
+                    contribution = 2;
+                    clouds = (seedsize >= 40) ? 60 : 40;
+                    clouds = (seedsize >= 30) ? 50 : 40;
+                } else if (title.match(new RegExp(topGroup.join('|'), "i"))) { //TOP组
+                    contribution = (seedsize >= 9.5 || title.match(/1080p|合集/i)) ? 2 : 1;
+                    clouds = 40;
+                } else if (title.match(new RegExp(popGroup.join('|'), "i"))) { //主流组
+                    if (seedsize >= 20) {
+                        contribution = 2;
+                        clouds = 40;
+                    } else if (seedsize >= 9.5) {
+                        contribution = 1;
+                        clouds = 40;
+                    }
+                } else if (title.match(/合集|全集/)) {
+                    if (seedsize >= 100) {
+                        contribution = 5;
+                        clouds = 100;
+                    } else if (seedsize >= 60) {
+                        contribution = 4;
+                        clouds = 80;
+                    } else if (seedsize >= 40) {
+                        contribution = 3;
+                        clouds = 60;
+                    } else if (seedsize >= 20) {
+                        contribution = 2;
+                        clouds = 40;
+                    } else if (seedsize >= 9.5) {
+                        contribution = 1;
+                        clouds = 40;
+                    }
+                } else if (seedsize >= 9.5) {
+                    contribution = 1;
+                    clouds = 40;
+                }
+                contribution = (contribution > 5) ? 5 : contribution;
+                clouds = (clouds > 100) ? 100 : clouds;
+            } else if (forum_id == 13 && title.match(/\d{4}-\d{4}/)) { //电影
+                ratereason = "补加浮云和贡献奖励，感谢分享";
+                if (seedsize >= 30) {
+                    contribution = 5;
+                    clouds = 100;
+                } else if (seedsize >= 20) {
+                    contribution = 4;
+                    clouds = 80;
+                } else if (seedsize >= 15) {
+                    contribution = 3;
+                    clouds = 60;
+                } else if (seedsize >= 5) {
+                    contribution = 2;
+                    clouds = 40;
+                } else {
+                    contribution = 1;
+                    clouds = 20;
+                }
             } else {
                 clouds = 0;
                 contribution = 0;
             }
         } else {
-            var setrateinfo = {
+            let setrateinfo = {
                 "38": [10, 0, "送上鲜花"],
                 "87": [10, 0, "送鲜花"],
                 "32": [10, 0, "送鲜花"],
@@ -914,7 +1013,7 @@ const jq = jQuery.noConflict();
                 ratereason = setrateinfo[forum_id][2];
             }
         }
-        var fill_in = ((clouds > 0) || (contribution > 0)) ? true : false;
+        let fill_in = ((clouds > 0) || (contribution > 0)) ? true : false;
         return [fill_in, clouds, contribution, ratereason];
     }
 
