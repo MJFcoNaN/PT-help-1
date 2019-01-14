@@ -16,7 +16,7 @@
 // @require     http://bt.neu6.edu.cn/static/js/mobile/jquery-1.8.3.min.js
 // @updateURL   https://github.com/harleybai/PT-help/raw/master/docs/js/NEU6%20-%20TV%20Rate%20Helper.user.js
 // @icon        http://bt.neu6.edu.cn/favicon.ico
-// @version     20190106
+// @version     20190107
 // ==/UserScript==
 
 const jq = jQuery.noConflict();
@@ -71,7 +71,7 @@ const jq = jQuery.noConflict();
         if (forum_match) {
             return parseInt(forum_match[2]);
         }
-        if (atDetailPage()) {
+        if (atDetailPage() && jq('#visitedforums>a').length) {
             var type_m = jq('#visitedforums>a').attr('href').match(/(forum-|fid=)(\d+)/);
             return parseInt(type_m ? type_m[2] : 0);
         }
