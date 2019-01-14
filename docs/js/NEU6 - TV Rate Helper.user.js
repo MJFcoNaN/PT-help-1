@@ -167,11 +167,20 @@ const jq = jQuery.noConflict();
     if (jq('table.dt').length) {
         jq('table.dt tr:gt(0)').each(function () {
             let tr = jq(this);
+            tr.find('td:lt(2)').css("text-align", "center");
             let cat = tr.find('td:eq(4) a').attr('href').match(/forum-(\d+)-1/)[1];
             let id = tr.find('td:eq(2) a').attr('href').match(/thread-(\d+)-1/)[1];
             if (tr.find('td:eq(0) img').length) {
                 tr.find('td:eq(0) img').click(function () {
                     window.open("http://bt.neu6.edu.cn/forum.php?mod=post&action=newthread&fid=" + cat + "#clone_" + id);
+                });
+                tr.find('td:eq(1)').click(function () {
+                    jq.get("http://bt.neu6.edu.cn/thread-" + id + "-1-1.html", function (resp) {
+                        let str_link = resp.match(/<p class="attnm">[\s\S]*torrent<\/a>/gi)[0];
+                        let downlink_temp = str_link.match(/<a href="([\s\S]*)" onmouseover/)[1];
+                        let downlink = "http://bt.neu6.edu.cn/" + downlink_temp.replace(/amp[\S]/, "");
+                        window.open(downlink);
+                    });
                 });
             }
         });
