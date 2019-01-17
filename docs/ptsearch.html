@@ -14,56 +14,56 @@
     <link href="https://cdn.bootcss.com/bootstrap-table/1.11.1/bootstrap-table.min.css" rel="stylesheet">
     <!-- Custom styles for this template -->
     <style type="text/css">
-    html {
-        position: relative;
-        min-height: 100%;
-    }
+        html {
+            position: relative;
+            min-height: 100%;
+        }
 
-    /* Move down content because we have a fixed navbar that is 50px tall */
-    body {
-        padding-top: 50px;
-        margin-bottom: 40px;
-    }
+        /* Move down content because we have a fixed navbar that is 50px tall */
+        body {
+            padding-top: 50px;
+            margin-bottom: 40px;
+        }
 
-    /*
+        /*
          * Top navigation
          * Hide default border to remove 1px line.
          */
-    .navbar-fixed-top {
-        border: 0;
-    }
-
-    /* Main content */
-    .main {
-        padding: 20px;
-        margin-top: 0;
-    }
-
-    @media (min-width: 768px) {
-        .main {
-            padding-right: 40px;
-            padding-left: 40px;
+        .navbar-fixed-top {
+            border: 0;
         }
-    }
 
-    .footer {
-        position: absolute;
-        bottom: 0;
-        width: 100%;
-        /* Set the fixed height of the footer here */
-        background-color: #f5f5f5;
-    }
+        /* Main content */
+        .main {
+            padding: 20px;
+            margin-top: 0;
+        }
 
-    .container {
-        width: auto;
-        padding: 0 15px;
-    }
+        @media (min-width: 768px) {
+            .main {
+                padding-right: 40px;
+                padding-left: 40px;
+            }
+        }
 
-    /* To keep data show in one line */
-    td.data-inline {
-        word-break: keep-all;
-        white-space: nowrap;
-    }
+        .footer {
+            position: absolute;
+            bottom: 0;
+            width: 100%;
+            /* Set the fixed height of the footer here */
+            background-color: #f5f5f5;
+        }
+
+        .container {
+            width: auto;
+            padding: 0 15px;
+        }
+
+        /* To keep data show in one line */
+        td.data-inline {
+            word-break: keep-all;
+            white-space: nowrap;
+        }
     </style>
     <!-- HTML5 shim and Respond.js for IE8 support of HTML5 elements and media queries -->
     <!--[if lt IE 9]>
@@ -97,11 +97,7 @@
         <div class="row">
             <div class="col-sm-8 col-sm-offset-2 col-md-10 col-md-offset-1 main">
                 <div id="use-tampermonkey" class="alert alert-danger">
-                    Please Install <a href="https://tampermonkey.net/" target="_blank">Tampermonkey</a>, And the correspond
-                    userscript - <a href="https://github.com/harleybai/PT-help/raw/master/docs/js/ptsearch.user.js"
-                                target="_blank">Pt-search</a> to <strong>USE</strong> this pages.<br>
-                    If you make sure that the Tampermonkey and userscript install correctly, Please refresh the page by
-                    press `F5`.
+                    Please Install <a href="https://tampermonkey.net/" target="_blank">Tampermonkey</a>, And the correspond userscript - <a href="https://github.com/harleybai/PT-help/raw/master/docs/js/ptsearch.user.js" target="_blank">Pt-search</a> to <strong>USE</strong> this pages.<br> If you make sure that the Tampermonkey and userscript install correctly, Please refresh the page by press `F5`.
                 </div>
                 <div id="hide-without-tampermonkey" style="display: none">
                     <div id="toolbar" class="form-inline">
@@ -135,11 +131,9 @@
                     <div>
                         <h2>Notices: </h2>
                         <ol>
-                            <li>You must have account when searching in A Private Tracker, and logged in (Check the login
-                                status in the new tab).
+                            <li>You must have account when searching in A Private Tracker, and logged in (Check the login status in the new tab).
                             </li>
-                            <li>For more help, Please visit <a href="https://github.com/Rhilip/PT-help/issues/2"
-                                                           target="_blank">[Rhilip/PT-help/issue #2]</a>.
+                            <li>For more help, Please visit <a href="https://github.com/Rhilip/PT-help/issues/2" target="_blank">Rhilip/PT-help/issue#2]</a>.
                             </li>
                         </ol>
                     </div>
@@ -161,8 +155,7 @@
                 <div class="modal-dialog" role="document">
                     <div class="modal-content">
                         <div class="modal-header">
-                            <button type="button" class="close" data-dismiss="modal" aria-label="Close"><span
-                                aria-hidden="true">&times;</span></button>
+                            <button type="button" class="close" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">&times;</span></button>
                             <h4 class="modal-title" id="myModalLabel">Search Setting</h4>
                         </div>
                         <div class="modal-body">
@@ -170,23 +163,18 @@
                                 <div class="panel panel-default">
                                     <div class="panel-heading" role="tab" id="headingOne">
                                         <h4 class="panel-title">
-                                        <a role="button" data-toggle="collapse" data-parent="#accordion"
-                                           href="#collapseOne" aria-expanded="true" aria-controls="collapseOne">
-                                            Choose The Search Site
-                                        </a>
-                                    </h4>
+                                            <a role="button" data-toggle="collapse" data-parent="#accordion" href="#collapseOne" aria-expanded="true" aria-controls="collapseOne">
+                                                Choose The Search Site
+                                            </a>
+                                        </h4>
                                     </div>
                                     <div id="collapseOne" class="panel-collapse collapse in" role="tabpanel" aria-labelledby="headingOne">
                                         <div class="panel-body">
                                             <div id="check-site">
-                                                Chinese CERNET Private Tracker：
-                                                <div id="site-jyw"></div>
-                                                Other Chinese Private Tracker：
-                                                <div id="site-gw"></div>
-                                                Foreign Private Tracker：
-                                                <div id="site-wz"></div>
-                                                BitTorrent tracker:
-                                                <div id="site-bt"></div>
+                                                <div id="site-jyw" style="display: none">Chinese CERNET Private Tracker：</div>
+                                                <div id="site-gw" style="display: none">Other Chinese Private Tracker：</div>
+                                                <div id="site-wz" style="display: none">Foreign Private Tracker：</div>
+                                                <div id="site-bt" style="display: none">BitTorrent tracker:</div>
                                             </div>
                                         </div>
                                     </div>
@@ -194,25 +182,20 @@
                                 <div class="panel panel-default">
                                     <div class="panel-heading" role="tab" id="headingTwo">
                                         <h4 class="panel-title">
-                                        <a class="collapsed" role="button" data-toggle="collapse"
-                                           data-parent="#accordion" href="#collapseTwo" aria-expanded="false"
-                                           aria-controls="collapseTwo">
-                                            Other Settings
-                                        </a>
-                                    </h4>
+                                            <a class="collapsed" role="button" data-toggle="collapse" data-parent="#accordion" href="#collapseTwo" aria-expanded="false" aria-controls="collapseTwo">Other Settings
+                                            </a>
+                                        </h4>
                                     </div>
                                     <div id="collapseTwo" class="panel-collapse collapse" role="tabpanel" aria-labelledby="headingTwo">
                                         <div class="panel-body">
                                             <div class="checkbox">
                                                 <label>
-                                                    <input type="checkbox" class="config" id="config-log">
-                                                    Full Searching Log.
+                                                    <input type="checkbox" class="config" id="config-log">Full Searching Log.
                                                 </label>
                                             </div>
                                             <div class="checkbox">
                                                 <label>
-                                                    <input type="checkbox" class="config" id="config-keep-old">
-                                                    Keep Old Search Data (both table and log), when searching twice.
+                                                    <input type="checkbox" class="config" id="config-keep-old">Keep Old Search Data (both table and log), when searching twice.
                                                 </label>
                                             </div>
                                         </div>
@@ -221,28 +204,21 @@
                                 <div class="panel panel-default">
                                     <div class="panel-heading" role="tab" id="headingThree">
                                         <h4 class="panel-title">
-                                        <a class="collapsed" role="button" data-toggle="collapse"
-                                           data-parent="#accordion" href="#collapseThree" aria-expanded="false"
-                                           aria-controls="collapseThree">
-                                            Donation
-                                        </a>
-                                    </h4>
+                                            <a class="collapsed" role="button" data-toggle="collapse" data-parent="#accordion" href="#collapseThree" aria-expanded="false" aria-controls="collapseThree">
+                                                Donation
+                                            </a>
+                                        </h4>
                                     </div>
                                     <div id="collapseThree" class="panel-collapse collapse" role="tabpanel" aria-labelledby="headingThree">
                                         <div class="panel-body">
-                                            <p class="text-info">This project is costing my FREE time to maintain. If the
-                                                funds allow, welcome to donate by Alipay and Wechat.</p>
+                                            <p class="text-info">This project is costing my FREE time to maintain. If the funds allow, welcome to donate by Alipay and Wechat.</p>
                                             <div id="QR" style="display: block;" class="row">
                                                 <div id="wechat" style="display: inline-block;    padding-right: 7px;" class="col-md-6">
-                                                    <img id="wechat_qr"
-                                                     src="https://blog.rhilip.info/usr/uploads/my/wechat.jpg"
-                                                     alt="WeChat Pay" class="img-responsive">
+                                                    <img id="wechat_qr" src="https://blog.rhilip.info/usr/uploads/my/wechat.jpg" alt="WeChat Pay" class="img-responsive">
                                                     <p class="text-center">By WeChat</p>
                                                 </div>
                                                 <div id="alipay" style="display: inline-block;    padding-left: 7px;" class="col-md-6">
-                                                    <img id="alipay_qr"
-                                                     src="https://blog.rhilip.info/usr/uploads/my/alipay.jpg"
-                                                     alt="Alipay" class="img-responsive">
+                                                    <img id="alipay_qr" src="https://blog.rhilip.info/usr/uploads/my/alipay.jpg" alt="Alipay" class="img-responsive">
                                                     <p class="text-center">By Alipay</p>
                                                 </div>
                                             </div>
@@ -263,8 +239,7 @@
                 <div class="modal-dialog modal-lg" role="document">
                     <div class="modal-content">
                         <div class="modal-header">
-                            <button type="button" class="close" data-dismiss="modal" aria-label="Close"><span
-                                aria-hidden="true">&times;</span></button>
+                            <button type="button" class="close" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">&times;</span></button>
                             <h4 class="modal-title" id="myModalLabel">Search Log</h4>
                         </div>
                         <div class="modal-body">
@@ -287,172 +262,181 @@
     <script src="https://cdn.bootcss.com/bootstrap/3.3.7/js/bootstrap.min.js"></script>
     <script src="https://cdn.bootcss.com/bootstrap-table/1.11.1/bootstrap-table.min.js"></script>
     <script>
-    /** Script for Main Search Result Table */
-    $('#table').bootstrapTable({
-        classes: "table table-hover table-striped",
-        search: true,
-        searchAlign: 'left',
-        striped: true,
-        sortOrder: "desc",
-        sortName: "pubdate",
-        //sortStable: true,
-        toolbar: "#toolbar",
-        toolbarAlign: "right",
-        columns: [{
-            field: 'site',
-            title: 'Site',
-            align: 'center',
-            valign: 'middle'
-        }, {
-            field: 'name',
-            title: 'Name',
-            align: 'left',
-            formatter: function(value, row) {
-                let ret = '<a href="' + row.link + '" target="_blank" rel="noreferer nofollow">' + row.name + '</a>';
-                if (row.free) {
-                    ret += '<button type="button" class="btn btn-success btn-xs pull-right">' + row.free + '</button>';
+        /** Script for Main Search Result Table */
+        $('#table').bootstrapTable({
+            classes: "table table-hover table-striped",
+            search: true,
+            searchAlign: 'left',
+            striped: true,
+            sortOrder: "desc",
+            sortName: "pubdate",
+            //sortStable: true,
+            toolbar: "#toolbar",
+            toolbarAlign: "right",
+            columns: [{
+                field: 'site',
+                title: 'Site',
+                align: 'center',
+                valign: 'middle'
+            }, {
+                field: 'name',
+                title: 'Name',
+                align: 'left',
+                formatter: function (value, row) {
+                    let ret = '<a href="' + row.link + '" target="_blank" rel="noreferer nofollow">' + row.name + '</a>';
+                    if (row.free) {
+                        ret += '<button type="button" class="btn btn-success btn-xs pull-right">' + row.free + '</button>';
+                    }
+                    if (row.subname) {
+                        ret += '<br><small>' + row.subname + '</small>';
+                    }
+                    return ret;
                 }
-                if (row.subname) {
-                    ret += '<br><small>' + row.subname + '</small>';
-                }
-                return ret;
-            }
-        }, {
-            field: 'pubdate',
-            title: 'Publish Date',
-            align: 'center',
-            valign: 'middle',
-            class: 'data-inline',
-            /*formatter: function (data) {
-                var unixTimestamp = new Date(data);
-                return unixTimestamp.toLocaleString();
-            },*/
-            sortable: 'true'
-        }, {
-            field: 'size',
-            title: 'Size',
-            align: 'center',
-            valign: 'middle',
-            class: 'data-inline',
-            formatter: function(bytes) {
-                var ret;
-                var kilobyte = 1024;
-                var megabyte = 1024 * 1024;
-                var gigabyte = 1024 * 1024 * 1024;
-                var terabyte = 1024 * 1024 * 1024 * 1024;
-                if ((bytes >= 0) && (bytes < kilobyte)) {
-                    ret = bytes + ' B';
-                } else if ((bytes >= kilobyte) && (bytes < megabyte)) {
-                    ret = (bytes / kilobyte).toFixed(2) + ' KB';
-                } else if ((bytes >= megabyte) && (bytes < gigabyte)) {
-                    ret = (bytes / megabyte).toFixed(2) + ' MB';
-                } else if ((bytes >= gigabyte) && (bytes < terabyte)) {
-                    ret = (bytes / gigabyte).toFixed(2) + ' GB';
-                } else if (bytes >= terabyte) {
-                    ret = (bytes / terabyte).toFixed(2) + ' TB';
-                }
-                return ret
-            },
-            sortable: 'true'
-        }, {
-            field: 'seeders',
-            title: '<span class="glyphicon glyphicon-arrow-up"></span>',
-            align: 'center',
-            valign: 'middle',
-            sortable: 'true'
-        }, {
-            field: 'leechers',
-            title: '<span class="glyphicon glyphicon-arrow-down"></span>',
-            align: 'center',
-            valign: 'middle',
-            sortable: 'true'
-        }, {
-            field: 'completed',
-            title: '<span class="glyphicon glyphicon-ok"></span>',
-            align: 'center',
-            valign: 'middle',
-            sortable: 'true'
-        }],
-        pagination: true,
-        sidePagination: "client",
-        pageSize: 50,
-        pageList: [10, 25, 50, 100, 200, "ALL"],
-        escape: true
-    });
+            }, {
+                field: 'pubdate',
+                title: 'Publish Date',
+                align: 'center',
+                valign: 'middle',
+                class: 'data-inline',
+                /*formatter: function (data) {
+                    var unixTimestamp = new Date(data);
+                    return unixTimestamp.toLocaleString();
+                },*/
+                sortable: 'true',
+                searchable: false
+            }, {
+                field: 'size',
+                title: 'Size',
+                align: 'center',
+                valign: 'middle',
+                class: 'data-inline',
+                formatter: function (bytes) {
+                    var ret;
+                    var kilobyte = 1024;
+                    var megabyte = 1024 * 1024;
+                    var gigabyte = 1024 * 1024 * 1024;
+                    var terabyte = 1024 * 1024 * 1024 * 1024;
+                    if ((bytes >= 0) && (bytes < kilobyte)) {
+                        ret = bytes + ' B';
+                    } else if ((bytes >= kilobyte) && (bytes < megabyte)) {
+                        ret = (bytes / kilobyte).toFixed(2) + ' KB';
+                    } else if ((bytes >= megabyte) && (bytes < gigabyte)) {
+                        ret = (bytes / megabyte).toFixed(2) + ' MB';
+                    } else if ((bytes >= gigabyte) && (bytes < terabyte)) {
+                        ret = (bytes / gigabyte).toFixed(2) + ' GB';
+                    } else if (bytes >= terabyte) {
+                        ret = (bytes / terabyte).toFixed(2) + ' TB';
+                    }
+                    return ret
+                },
+                sortable: 'true',
+                searchable: false
+            }, {
+                field: 'seeders',
+                title: '<span class="glyphicon glyphicon-arrow-up"></span>',
+                align: 'center',
+                valign: 'middle',
+                sortable: 'true',
+                searchable: false
+            }, {
+                field: 'leechers',
+                title: '<span class="glyphicon glyphicon-arrow-down"></span>',
+                align: 'center',
+                valign: 'middle',
+                sortable: 'true',
+                searchable: false
+            }, {
+                field: 'completed',
+                title: '<span class="glyphicon glyphicon-ok"></span>',
+                align: 'center',
+                valign: 'middle',
+                sortable: 'true',
+                searchable: false
+            }],
+            pagination: true,
+            sidePagination: "client",
+            pageSize: 50,
+            pageList: [10, 25, 50, 100, 200, "ALL"],
+            escape: true
+        });
     </script>
     <script>
-    /** Script for Search Site Setting */
-    var btn_save_site = $("#save-site");
-    btn_save_site.click(function() {
-        // 获取用户选择搜索的网站
-        var selected_site = [];
-        $('div#check-site input:checked').each(function() {
-            selected_site.push($(this).attr('name'));
-        });
-        // 获取用户其他设置
-        var config = {};
-        $("input.config").each(function() {
-            config[$(this).attr("id")] = $(this).prop("checked")
-        });
-        // 在localStorage中存储，以便下次调用
-        localStorage.setItem('selected_name', selected_site);
-        localStorage.setItem('config', JSON.stringify(config));
-    });
-
-    function set_site(data) {
-        var type_list = ["jyw", "gw", "wz", "bt"]; // 与json文件对应的站点类型
-        for (var i = 0; i < type_list.length; i++) {
-            var type_name = type_list[i];
-            var type_data = data[type_name];
-            type_data.sort();
-            var type_select = "";
-            for (var j = 0; j < type_data.length; j++) {
-                var site = type_data[j];
-                var _disable = data.disable.indexOf(site) > -1 ? "disabled" : "";
-                type_select += "<td><label class='checkbox-inline'><input type='checkbox' id='site-check' name='" + site + "'" + _disable + ">" + site + "&nbsp;&nbsp;</label></td>";
-                type_select += ((j + 1) % 5 == 0) ? '</tr><tr>' : '';
-            }
-            $("div#site-" + type_name).html('<table class="table table-condensed"><tr>' + type_select + '</tr></table>');
-        }
-
-        $("div#check-site input#site-check").click(function() {
-            if ($(this).prop('checked')) {
-                $(this).parents('label').addClass('label-success');
-            } else {
-                $(this).parents('label').removeClass('label-success');
-            }
+        /** Script for Search Site Setting */
+        var btn_save_site = $("#save-site");
+        btn_save_site.click(function () {
+            // 获取用户选择搜索的网站
+            var selected_site = [];
+            $('div#check-site input:checked').each(function () {
+                selected_site.push($(this).attr('name'));
+            });
+            // 获取用户其他设置
+            var config = {};
+            $("input.config").each(function () {
+                config[$(this).attr("id")] = $(this).prop("checked")
+            });
+            // 在localStorage中存储，以便下次调用
+            localStorage.setItem('selected_name', selected_site);
+            localStorage.setItem('config', JSON.stringify(config));
         });
 
-        // 从localStorage中获取存储的搜索网站，并勾选
-        var last_selected_name_raw = localStorage.getItem('selected_name') || "BYR";
-        var last_selected_name = last_selected_name_raw.split(',');
-        for (var last_selected_var_i = 0; last_selected_var_i < last_selected_name.length; last_selected_var_i++) {
-            $('div#check-site input[name="' + last_selected_name[last_selected_var_i] + '"]').prop('checked', true);
-            $('div#check-site input[name="' + last_selected_name[last_selected_var_i] + '"]').parents('label').addClass('label-success');
-        }
-        // 从localStorage中获取存储的设置
-        var config = JSON.parse(localStorage.getItem("config"));
-        if (config) {
-            for (var c in config) {
-                $("input#" + c).prop("checked", config[c]);
+        function set_site(data) {
+            var type_list = ["jyw", "gw", "wz", "bt"]; // 与json文件对应的站点类型
+            for (var i = 0; i < type_list.length; i++) {
+                var type_name = type_list[i];
+                var type_data = data[type_name];
+                type_data.sort();
+                var type_select = "";
+                for (var j = 0; j < type_data.length; j++) {
+                    var site = type_data[j];
+                    var _disable = data.disable.indexOf(site) > -1 ? "disabled" : "";
+                    type_select += "<td><label class='checkbox-inline'><input type='checkbox' id='site-check' name='" + site + "'" + _disable + ">" + site + "&nbsp;&nbsp;</label></td>";
+                    type_select += ((j + 1) % 5 == 0) ? '</tr><tr>' : '';
+                }
+                $("div#site-" + type_name).append('<table class="table table-condensed"><tr>' + type_select +
+                    '</tr></table>');
+                if (type_select)
+                    $("div#site-" + type_name).show();
             }
+
+            $("div#check-site input#site-check").click(function () {
+                if ($(this).prop('checked')) {
+                    $(this).parents('label').addClass('label-success');
+                } else {
+                    $(this).parents('label').removeClass('label-success');
+                }
+            });
+
+            // 从localStorage中获取存储的搜索网站，并勾选
+            var last_selected_name_raw = localStorage.getItem('selected_name') || "BYR";
+            var last_selected_name = last_selected_name_raw.split(',');
+            for (var last_selected_var_i = 0; last_selected_var_i < last_selected_name.length; last_selected_var_i++) {
+                $('div#check-site input[name="' + last_selected_name[last_selected_var_i] + '"]').prop('checked', true);
+                $('div#check-site input[name="' + last_selected_name[last_selected_var_i] + '"]').parents('label').addClass(
+                    'label-success');
+            }
+            // 从localStorage中获取存储的设置
+            var config = JSON.parse(localStorage.getItem("config"));
+            if (config) {
+                for (var c in config) {
+                    $("input#" + c).prop("checked", config[c]);
+                }
+            }
+            btn_save_site.click();
         }
-        btn_save_site.click();
-    }
-    $.get("./json/site.json", function(data) {
-        set_site(data);
-    });
-    /*
-    if (!localStorage.getItem("site")) {
         $.get("./json/site.json", function (data) {
             set_site(data);
-            localStorage.setItem("site",JSON.stringify(data));
         });
-    } else {
-        var data = JSON.parse(localStorage.getItem("site"));
-        set_site(data);
-    }
-    */
+        /*
+        if (!localStorage.getItem("site")) {
+            $.get("./json/site.json", function (data) {
+                set_site(data);
+                localStorage.setItem("site",JSON.stringify(data));
+            });
+        } else {
+            var data = JSON.parse(localStorage.getItem("site"));
+            set_site(data);
+        }
+        */
     </script>
 </body>
 
