@@ -105,7 +105,7 @@ function dateFormat(fmt, date) {
 	return fmt;
 }
 
-$(document).ready(function() {
+$(document).ready(function () {
 	var table = $("#table");
 	if (table) { // 存在Bootstrap Table
 		// 移除Tampermonkey提示，显示隐藏表格
@@ -120,7 +120,7 @@ $(document).ready(function() {
 	}
 
 	// Search on enter
-	$('#keyword').on('keyup', function(e) {
+	$('#keyword').on('keyup', function (e) {
 		if (e.keyCode == 13) {
 			$("#advsearch").click();
 			$(this).blur();
@@ -154,7 +154,7 @@ $(document).ready(function() {
 	};
 
 	// Begin after click `search` Button
-	$("#advsearch").click(function() {
+	$("#advsearch").click(function () {
 		// Get Search Info
 		var search_text = $("#keyword").val().trim(); // Search Text
 		var cat_value = $("#searchcat").val();
@@ -188,7 +188,7 @@ $(document).ready(function() {
 				GM_xmlhttpRequest({
 					method: 'GET',
 					url: search_prefix.replace("$cat$&", cat_text).replace("$key$", search_text),
-					onload: function(res) {
+					onload: function (res) {
 						if (/(login|verify|returnto)[.=]/.test(res.finalUrl)) {
 							writelog("May Not Login in Site " + site + ". With finalUrl: " + res.finalUrl);
 						} else {
@@ -204,7 +204,7 @@ $(document).ready(function() {
 							}
 						}
 					},
-					onerror: function(res) {
+					onerror: function (res) {
 						writelog("An error occurred when searching in Site " + site + " .With finalUrl: " + res.finalUrl + ". Your computer may not be able to access this site.");
 					}
 				});
@@ -214,7 +214,7 @@ $(document).ready(function() {
 		// 通用处理模板，如果默认解析模板可以解析该站点则请不要自建解析方法
 		// NexusPHP类站点通用
 		function NexusPHP(site, search_prefix, torrent_table_selector) {
-			Get_Search_Page(site, search_prefix, function(res, doc, body, page) {
+			Get_Search_Page(site, search_prefix, function (res, doc, body, page) {
 				var url_prefix = /pt\.whu\.edu\.cn|whupt\.net|hudbt\.hust\.edu\.cn/.test(res.finalUrl) ? "" : (res.finalUrl.match(/(https?:\/\/[^\/]+?\/).+/) || ['', ''])[1];
 				writelog("Using The normal parser for NexusPHP in Site: " + site);
 				if (/没有种子|No [Tt]orrents?|Your search did not match anything|用准确的关键字重试/.test(res.responseText)) {
@@ -233,7 +233,7 @@ $(document).ready(function() {
 
 					let free = '';
 					let free_time = '';
-					let free_img = torrent_data_raw.find("img[src='pic/trans.gif']:not(.sticky)").filter(function() {
+					let free_img = torrent_data_raw.find("img[src='pic/trans.gif']:not(.sticky)").filter(function () {
 						return /\d+%|2X|free/i.test($(this).attr('alt'));
 					}).last();
 					if (free_img && free_img.attr('alt')) {
@@ -255,7 +255,7 @@ $(document).ready(function() {
 								free_time = '[' + torrent_data_raw.find('.torrentname b>font').text().replace(/限时:|小/g, '') + ']';
 							}
 						} else if (['HDSKY', 'HDHome', 'Ourbits', 'GZTown'].indexOf(site) > -1 && torrent_data_raw.find('.torrentname b>span').length) {
-							let free_span = torrent_data_raw.find('.torrentname b>span').filter(function() {
+							let free_span = torrent_data_raw.find('.torrentname b>span').filter(function () {
 								return /[分时天月年]/.test($(this).text());
 							}).last();
 							if (free_span && free_span.text()) {
@@ -272,7 +272,7 @@ $(document).ready(function() {
 					// 确定日期tag，因用户在站点设置中配置及站点优惠信息的情况的存在，此处dom结构会有不同
 					// 此外多数站点对于 seeders, leechers, completed 没有额外的定位信息，故要依赖于正确的日期tag
 					var _tag_date, _date = "0000-00-00 00:00:00";
-					_tag_date = torrent_data_raw.find("> td").filter(function() {
+					_tag_date = torrent_data_raw.find("> td").filter(function () {
 						return /(\d{4}-\d{2}-\d{2}[^\d]+?\d{2}:\d{2}:\d{2})|\d+[分时天月年]/.test($(this).html());
 					}).last();
 					if (_tag_date && _tag_date.html()) {
@@ -301,7 +301,7 @@ $(document).ready(function() {
 
 		// 特殊站点处理逻辑
 		function TTG(site, search_prefix) { // TTG : https://totheglory.im/
-			Get_Search_Page(site, search_prefix, function(res, doc, body, page) {
+			Get_Search_Page(site, search_prefix, function (res, doc, body, page) {
 				var tr_list = page.find("#torrent_table tr.hover_hr");
 				writelog("Get " + tr_list.length + " records in Site " + site + ".");
 				for (var i = 0; i < tr_list.length; i++) {
@@ -321,12 +321,12 @@ $(document).ready(function() {
 						free += '[' + left_time.replace(/剩余|\s+/g, '') + ']';
 					}
 					var _tag_date, _date;
-					_tag_date = torrent_data_raw.find("td").filter(function() {
+					_tag_date = torrent_data_raw.find("td").filter(function () {
 						return time_regex.test($(this).html());
 					});
 					_date = _tag_date.html().match(time_regex)[1].replace(time_regen_replace, "-$1 $2:");
 
-					var _tag_size = torrent_data_raw.find("td").filter(function() {
+					var _tag_size = torrent_data_raw.find("td").filter(function () {
 						return /[kMGT]B$/.test($(this).text());
 					});
 
@@ -350,7 +350,7 @@ $(document).ready(function() {
 		}
 
 		function NPU(site, search_prefix) { // NPUPT : https://npupt.com/
-			Get_Search_Page(site, search_prefix, function(res, doc, body, page) {
+			Get_Search_Page(site, search_prefix, function (res, doc, body, page) {
 				var tr_list = page.find("#torrents_table tr");
 				for (var i = 1; i < tr_list.length; i += 3) {
 					var torrent_data_raw = tr_list.eq(i);
@@ -364,7 +364,7 @@ $(document).ready(function() {
 					if (free && torrent_data_raw.find('table.torrentname small span').length) {
 						free += '[' + torrent_data_raw.find('table.torrentname small span').text() + ']';
 					}
-					var _tag_date = torrent_data_raw.find("div.small").filter(function() {
+					var _tag_date = torrent_data_raw.find("div.small").filter(function () {
 						return time_regex.test($(this).html());
 					});
 					var _date = (_tag_date.html().match(time_regex) || ["", CalculateDate(_tag_date.html().replace(/<.*?>/g, ''))])[1].replace(time_regen_replace, "-$1 $2:");
@@ -387,7 +387,7 @@ $(document).ready(function() {
 		}
 
 		function ZX(site, search_prefix) {
-			Get_Search_Page(site, search_prefix, function(res, doc, body, page) {
+			Get_Search_Page(site, search_prefix, function (res, doc, body, page) {
 				var torrent_list_table = page.find(".torrenttable tr");
 				writelog("Get " + torrent_list_table.length + " records in Site ZX.");
 				for (var i = 1; i < torrent_list_table.length; i++) {
@@ -435,7 +435,7 @@ $(document).ready(function() {
 		}
 
 		function HDChina(site, search_prefix) {
-			Get_Search_Page(site, search_prefix, function(res, doc, body, page) {
+			Get_Search_Page(site, search_prefix, function (res, doc, body, page) {
 				var tr_list = page.find(".torrent_list tr:odd");
 				writelog("Get " + tr_list.length + " records in Site HDChina.");
 				for (var i = 0; i < tr_list.length; i++) {
@@ -478,7 +478,7 @@ $(document).ready(function() {
 		}
 
 		function HDCity(site, search_prefix) {
-			Get_Search_Page(site, search_prefix, function(res, doc, body, page) {
+			Get_Search_Page(site, search_prefix, function (res, doc, body, page) {
 				var tr_list = page.find("div[class^='text'][style='line-height:1rem;']");
 				writelog("Get " + tr_list.length + " records in Site HDCity.");
 				for (var i = 0; i < tr_list.length; i++) {
@@ -486,7 +486,7 @@ $(document).ready(function() {
 					var _tag_name = torrent_data_raw.find("a[href*='t-']");
 
 					var _date, _tag_date;
-					_tag_date = torrent_data_raw.find("div").filter(function() {
+					_tag_date = torrent_data_raw.find("div").filter(function () {
 						return time_regex.test($(this).text());
 					}).last();
 					_date = _tag_date.text();
@@ -514,7 +514,7 @@ $(document).ready(function() {
 		}
 
 		function HDStreet(site, search_prefix) {
-			Get_Search_Page(site, search_prefix, function(res, doc, body, page) {
+			Get_Search_Page(site, search_prefix, function (res, doc, body, page) {
 				// 继承自蚂蚁的使用大量colspan,rowspan的表格处理
 				var tr_list = page.find(".torrents > tbody > tr:gt(1)"); // 前两行都是表题栏，不要
 				writelog("Get " + tr_list.length / 2 + " records in Site HDStreet.");
@@ -524,7 +524,7 @@ $(document).ready(function() {
 					var _tag_name = torrent_data_raw_1.find("a[href$='hit=1']");
 
 					var free = '';
-					let free_img = torrent_data_raw_1.find("img[src='pic/trans.gif']:not(.sticky)").filter(function() {
+					let free_img = torrent_data_raw_1.find("img[src='pic/trans.gif']:not(.sticky)").filter(function () {
 						return /pro_(\d+p|free)/i.test($(this).attr('class'));
 					}).last();
 					if (free_img && free_img.attr('title')) {
@@ -536,13 +536,13 @@ $(document).ready(function() {
 					// 确定日期tag，因用户在站点设置中配置及站点优惠信息的情况的存在，此处dom结构会有不同
 					// 此外多数站点对于 seeders, leechers, completed 没有额外的定位信息，故要依赖于正确的日期tag
 					var _tag_date, _date;
-					_tag_date = torrent_data_raw_2.find("span").filter(function() {
+					_tag_date = torrent_data_raw_2.find("span").filter(function () {
 						return time_regex.test($(this).attr("title"));
 					}).last().parent("td");
 					if (/[分时天月年]/.test(_tag_date.text())) {
 						_date = _tag_date.children("span").attr("title");
 					} else {
-						_tag_date = torrent_data_raw_2.find("td").filter(function() {
+						_tag_date = torrent_data_raw_2.find("td").filter(function () {
 							return time_regex.test($(this).text());
 						}).last();
 						_date = _tag_date.text().match(time_regex)[1].replace(/-(\d{2}) ?(\d{2}):/, "-$1 $2:");
@@ -570,7 +570,7 @@ $(document).ready(function() {
 
 		function HDRoute(site, search_prefix) {
 			// TODO 注意HDR的未进行测试，不可用
-			Get_Search_Page(site, search_prefix, function(res, doc) {
+			Get_Search_Page(site, search_prefix, function (res, doc) {
 				var tr_list = doc.querySelectorAll("dl[id^='dl_torrent']"); // 所有种子均在id开头为dl_torrent的dl标签下
 				writelog("Get " + tr_list.length + " records in Site HDRoute.");
 				for (var i = 0; i < tr_list.length; i++) { // 遍历记录
@@ -612,7 +612,7 @@ $(document).ready(function() {
 		}
 
 		function CCFBits(site, search_prefix) {
-			Get_Search_Page(site, search_prefix, function(res, doc, body, page) {
+			Get_Search_Page(site, search_prefix, function (res, doc, body, page) {
 				var url_prefix = "http://ccfbits.org/";
 				if (/没有找到匹配种子!/.test(res.responseText)) {
 					writelog("No any torrent find in Site " + site + ".");
@@ -627,7 +627,7 @@ $(document).ready(function() {
 					// 确定日期tag，因用户在站点设置中配置及站点优惠信息的情况的存在，此处dom结构会有不同
 					// 此外多数站点对于 seeders, leechers, completed 没有额外的定位信息，故要依赖于正确的日期tag
 					var _tag_date, _date = "0000-00-00 00:00:00";
-					_tag_date = torrent_data_raw.find("> td").filter(function() {
+					_tag_date = torrent_data_raw.find("> td").filter(function () {
 						return time_regex.test($(this).html());
 					}).last();
 					if (_tag_date && _tag_date.html()) {
@@ -658,7 +658,7 @@ $(document).ready(function() {
 		}
 
 		function NEU6(site, search_prefix) {
-			Get_Search_Page(site, search_prefix, function(res, doc, body, page) {
+			Get_Search_Page(site, search_prefix, function (res, doc, body, page) {
 				let form_hash = page.find('input[name="formhash"]').val();
 				let source_form = [
 					[401, 45, 161, 48, 77, 49, 50, 91, 13, 81, 14, 73, 16, 72, 17, 292, 15, 126, 144, 127, 44, 293, 52, 21, 329, 78, 171, 124, 18, 138, 54, 19, 160, 159, 84, 74, 20, 368],
@@ -681,7 +681,7 @@ $(document).ready(function() {
 					headers: {
 						"Content-Type": "application/x-www-form-urlencoded"
 					},
-					onload: function(response) {
+					onload: function (response) {
 						var res_url = response.finalUrl;
 						if (!(/searchid=\d+/.test(res_url))) {
 							writelog(site + " search only once in 30 seconds.");
@@ -691,7 +691,7 @@ $(document).ready(function() {
 						GM_xmlhttpRequest({
 							method: "GET",
 							url: res_url,
-							onload: function(response) {
+							onload: function (response) {
 								var doc = (new DOMParser()).parseFromString(response.responseText, 'text/html');
 								var body = doc.querySelector("body");
 								var page = $(body); // 构造 jQuery 对象
@@ -721,19 +721,19 @@ $(document).ready(function() {
 											"free": free.toUpperCase(),
 											"pubdate": dateFormat("yyyy-MM-dd hh:mm:ss", new Date(_date)),
 											"size": FileSizetoLength(_tag_size.text()),
-											"seeders": '-',
+											"seeders": torrent_data_raw.find("img:first").attr("src").match(/signal_(.*).png/)[1] + "*",
 											"leechers": '-',
 											"completed": '-'
 										});
 									}
 								}
 							},
-							onerror: function(res) {
+							onerror: function (res) {
 								writelog("An error occurred when searching in Site " + site + " .With finalUrl: " + res.finalUrl + ". Your computer may not be able to access this site.");
 							}
 						});
 					},
-					onerror: function(res) {
+					onerror: function (res) {
 						writelog("An error occurred when searching in Site " + site + " .With finalUrl: " + res.finalUrl + ". Your computer may not be able to access this site.");
 					}
 				});
