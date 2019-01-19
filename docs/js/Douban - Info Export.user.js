@@ -1,7 +1,7 @@
 // ==UserScript==
 // @name        DouBan Info Export
 // @namespace   harleybai.info
-// @version     20190101
+// @version     20190111
 // @description Export Movie Info
 // @author      harleybai
 // @grant       unsafeWindow
@@ -9,12 +9,19 @@
 // @grant       GM_setClipboard
 // @include     https://movie.douban.com/subject*
 // @require     http://cdn.bootcss.com/simplemodal/1.4.4/jquery.simplemodal.min.js
+// @updateURL   https://github.com/harleybai/PT-help/raw/master/docs/js/Douban%20-%20Info%20Export.user.js
 // ==/UserScript==
 
 (function () {
     var imdb_already_show = false;
+    var imdb_info_already_ok = false;
+    var awards_info_already_ok = false;
+    var douban_info_already_ok = false;
+    var foreign_title, trans_title, this_title, year, region, genre, language, playdate, douban_rating, douban_link, episodes, duration, director, writer, cast, tags, awards, introduction = '';
+    var imdb_link, imdb_rating;
+    var descr = '';
 
-    function addIMDBRate(imdb_average_rating, imdb_votes, imdb_link) {
+    function addIMDBRate(imdb_average_rating, imdb_votes) {
         if (imdb_already_show) {
             return;
         }
@@ -35,39 +42,90 @@
         imdb_already_show = true;
     }
 
-    //IMDb链接
-    var imdb_link;
+    function getImdbInfo(isGenInfo) {
+        if (imdb_link && !imdb_info_already_ok) {
+            GM_xmlhttpRequest({
+                method: 'GET',
+                url: imdb_link,
+                timeout: 5000,
+                onreadystatechange: function (res) {
+                    if (res.readyState != 4) {
+                        query_info('查询影片的IMDb信息失败');
+                        return;
+                    }
+                    if (/404 Error - IMDb/.test(res.responseText)) {
+                        return;
+                    }
+                    let page = $(res.responseText
+                        .replace(/<script(\s|>)[\S\s]+?<\/script>/g, '')
+                        .replace(/\s+src=/ig, ' data-src=')
+                    );
+                    let imdb_average_rating = (parseFloat(page.find('span[itemprop="ratingValue"]').text()).toFixed(1) + '').replace('NaN', '');
+                    let imdb_votes = page.find('span[itemprop="ratingCount"]').text().trim();
+                    let story_line = page.find('#titleStoryLine div.inline.canwrap>p>span:first').text().trim();
+
+                    imdb_rating = imdb_votes ? imdb_average_rating + '/10 from ' + imdb_votes + ' users' : '';
+                    introduction = story_line ? (introduction + '\n\n' + story_line) : introduction;
+                    imdb_info_already_ok = true;
+                    if (isGenInfo) {
+                        descriptionGenerator();
+                    } else {
+                        addIMDBRate(imdb_average_rating, imdb_votes);
+                    }
+                },
+                ontimeout: function () {
+                    query_info('查询影片的IMDb信息失败');
+                },
+            });
+        } else {
+            imdb_info_already_ok = true;
+        }
+    }
+
+    function descriptionGenerator() {
+        descr = '';
+        descr += foreign_title ? ("[b]" + foreign_title + "[/b]\n\n") : "";
+        descr += trans_title ? ('◎译　　名　' + trans_title + "\n") : "";
+        descr += this_title ? ('◎片　　名　' + this_title + "\n") : "";
+        descr += year ? ('◎年　　代　' + year + "\n") : "";
+        descr += region ? ('◎产　　地　' + region + "\n") : "";
+        descr += genre ? ('◎类　　别　' + genre + "\n") : "";
+        descr += language ? ('◎语　　言　' + language + "\n") : "";
+        descr += playdate ? ('◎上映日期　' + playdate + "\n") : "";
+        descr += imdb_rating ? ('◎IMDb评分  ' + imdb_rating + "\n") : "";
+        descr += imdb_link ? ('◎IMDb链接  ' + imdb_link + "\n") : "";
+        descr += douban_rating ? ('◎豆瓣评分　' + douban_rating + "\n") : "";
+        descr += douban_link ? ('◎豆瓣链接　' + douban_link + "\n") : "";
+        descr += episodes ? ('◎集　　数　' + episodes + "\n") : "";
+        descr += duration ? ('◎片　　长　' + duration + "\n") : "";
+        descr += director ? ('◎导　　演　' + director + "\n") : "";
+        descr += writer ? ('◎编　　剧　' + writer + "\n") : "";
+        descr += cast ? ('◎主　　演　' + cast.replace(/\n/g, '\n' + '　'.repeat(4) + '  　').trim() + "\n") : "";
+        descr += tags ? ('\n◎标　　签　' + tags + "\n") : "";
+        descr += introduction ? ('\n◎简　　介\n\n　　' + introduction.replace(/\n/g, '\n' + '　'.repeat(2)) + "\n") : "";
+        descr += awards ? ('\n◎获奖情况\n\n　　' + awards.replace(/\n/g, '\n' + '　'.repeat(2)) + "\n") : "";
+        $('textarea#out_text').val(descr);
+        GM_setClipboard(descr);
+        query_info('已复制到剪切板');
+    };
+
+    function query_info(info) {
+        let _info = '[';
+        _info += imdb_info_already_ok ? '<span style="color:green">IMDB</span>' : '<span style="color:red">IMDB</span>';
+        _info += awards_info_already_ok ? ', <span style="color:green">奖项</span>' : ', <span style="color:red">奖项</span>';
+        _info += douban_info_already_ok ? ', <span style="color:green">豆瓣</span>]' : ', <span style="color:red">豆瓣</span>]';
+        $('div#out_info').html(`<span style="color:red">>&nbsp;${info}</span>&nbsp;&nbsp;${_info}`);
+    };
+
+    //获取&显示IMDb评分
     let imdb_link_anchor = $('#info span.pl:contains("IMDb链接")');
     if (imdb_link_anchor[0]) {
         imdb_link = imdb_link_anchor.next().attr('href').replace(/(\/)?$/, '/');
     }
-    GM_xmlhttpRequest({
-        method: 'GET',
-        url: imdb_link,
-        timeout: 5000,
-        onreadystatechange: function (res) {
-            if (res.readyState != 4) {
-                return;
-            }
-            if (/404 Error - IMDb/.test(res.responseText)) {
-                return;
-            }
-            let page = $(res.responseText
-                .replace(/<script(\s|>)[\S\s]+?<\/script>/g, '')
-                .replace(/\s+src=/ig, ' data-src=')
-            );
-            let imdb_average_rating = (parseFloat(page.find('span[itemprop="ratingValue"]').text()).toFixed(1) + '').replace('NaN', '');
-            let imdb_votes = page.find('span[itemprop="ratingCount"]').text().trim();
-            addIMDBRate(imdb_average_rating, imdb_votes, imdb_link);
-        }
-    });
+    getImdbInfo(false);
 
     // 生成信息
     $("div.rating_wrap.clearbox").before('<div><a id="output"><b>Export Info</b></a></div><br>');
-    var imdb_info_already_ok = false;
-    var awards_info_already_ok = false;
-    var douban_info_already_ok = false;
-    var descr = '';
     $("a#output").click(function () {
         $.modal('<div id="out_window"><div id="out_title"><b>DouBan Info Export</b><b style="float:right" class="simplemodal-close">Close</b></div><div id="out_info"></div><div><textarea id="out_text" cols="60" rows="30" class="quick"></textarea></div></div>', {
             autoPosition: true,
@@ -91,13 +149,6 @@
         $("#out_text").click(function () {
             $(this).select();
         });
-        let query_info = function (info) {
-            let _info = '[';
-            _info += imdb_info_already_ok ? '<span style="color:green">IMDB</span>' : '<span style="color:red">IMDB</span>';
-            _info += awards_info_already_ok ? ', <span style="color:green">奖项</span>' : ', <span style="color:red">奖项</span>';
-            _info += douban_info_already_ok ? ', <span style="color:green">豆瓣</span>]' : ', <span style="color:red">豆瓣</span>]';
-            $('div#out_info').html(`<span style="color:red">>&nbsp;${info}</span>&nbsp;&nbsp;${_info}`);
-        };
 
         if (imdb_info_already_ok && douban_info_already_ok && awards_info_already_ok && descr) {
             $('textarea#out_text').val(descr);
@@ -111,9 +162,8 @@
         };
         query_info('> ');
         //获取本页的豆瓣信息
-        let this_title, trans_title;
         let chinese_title = document.title.replace('(豆瓣)', '').trim();
-        let foreign_title = $('#content h1>span[property="v:itemreviewed"]').text().replace(chinese_title, '').trim();
+        foreign_title = $('#content h1>span[property="v:itemreviewed"]').text().replace(chinese_title, '').trim();
         let aka_anchor = $('#info span.pl:contains("又名")');
         let aka;
         if (aka_anchor[0]) {
@@ -129,116 +179,48 @@
             this_title = chinese_title;
         }
         //年代
-        let year = $('#content>h1>span.year').text().slice(1, -1);
+        year = $('#content>h1>span.year').text().slice(1, -1);
         //产地
         let regions_anchor = $('#info span.pl:contains("制片国家/地区")');
-        let region;
         if (regions_anchor[0]) {
             region = fetch(regions_anchor).split(' / ').join('/');
         }
         //类别
-        let genre = $('#info span[property="v:genre"]').map(function () {
+        genre = $('#info span[property="v:genre"]').map(function () {
             return $(this).text().trim();
         }).toArray().join('/');
         //语言
         let language_anchor = $('#info span.pl:contains("语言")');
-        let language;
         if (language_anchor[0]) {
             language = fetch(language_anchor).split(' / ').join('/');
         }
         //上映日期
-        let playdate = $('#info span[property="v:initialReleaseDate"]').map(function () {
+        playdate = $('#info span[property="v:initialReleaseDate"]').map(function () {
             return $(this).text().trim();
         }).toArray().sort(function (a, b) { //按上映日期升序排列
             return new Date(a) - new Date(b);
         }).join('/');
         //IMDB链接
         let imdb_link_anchor = $('#info span.pl:contains("IMDb链接")');
-        let imdb_link;
         if (imdb_link_anchor[0]) {
             imdb_link = imdb_link_anchor.next().attr('href').replace(/(\/)?$/, '/');
         }
         //豆瓣链接
-        let douban_link = `https://${window.location.href.match(/movie.douban.com\/subject\/\d+/)}/`;
+        douban_link = `https://${window.location.href.match(/movie.douban.com\/subject\/\d+/)}/`;
         //集数
         let episodes_anchor = $('#info span.pl:contains("集数")');
-        let episodes;
         if (episodes_anchor[0]) {
             episodes = fetch(episodes_anchor);
         }
         //片长
         let duration_anchor = $('#info span.pl:contains("单集片长")');
-        let duration;
         if (duration_anchor[0]) {
             duration = fetch(duration_anchor);
         } else {
             duration = $('#info span[property="v:runtime"]').text().trim();
         }
-
-        let director, writer, cast;
-        let awards;
-        let douban_average_rating, douban_votes, douban_rating, introduction = '';
-        let imdb_average_rating, imdb_votes, imdb_rating;
-        let tags;
-
-        let descriptionGenerator = function () {
-            descr = '';
-            descr += foreign_title ? ("[b]" + foreign_title + "[/b]\n\n") : "";
-            descr += trans_title ? ('◎译　　名　' + trans_title + "\n") : "";
-            descr += this_title ? ('◎片　　名　' + this_title + "\n") : "";
-            descr += year ? ('◎年　　代　' + year + "\n") : "";
-            descr += region ? ('◎产　　地　' + region + "\n") : "";
-            descr += genre ? ('◎类　　别　' + genre + "\n") : "";
-            descr += language ? ('◎语　　言　' + language + "\n") : "";
-            descr += playdate ? ('◎上映日期　' + playdate + "\n") : "";
-            descr += imdb_rating ? ('◎IMDb评分  ' + imdb_rating + "\n") : "";
-            descr += imdb_link ? ('◎IMDb链接  ' + imdb_link + "\n") : "";
-            descr += douban_rating ? ('◎豆瓣评分　' + douban_rating + "\n") : "";
-            descr += douban_link ? ('◎豆瓣链接　' + douban_link + "\n") : "";
-            descr += episodes ? ('◎集　　数　' + episodes + "\n") : "";
-            descr += duration ? ('◎片　　长　' + duration + "\n") : "";
-            descr += director ? ('◎导　　演　' + director + "\n") : "";
-            descr += writer ? ('◎编　　剧　' + writer + "\n") : "";
-            descr += cast ? ('◎主　　演　' + cast.replace(/\n/g, '\n' + '　'.repeat(4) + '  　').trim() + "\n") : "";
-            descr += tags ? ('\n◎标　　签　' + tags + "\n") : "";
-            descr += introduction ? ('\n◎简　　介\n\n　　' + introduction.replace(/\n/g, '\n' + '　'.repeat(2)) + "\n") : "";
-            descr += awards ? ('\n◎获奖情况\n\n　　' + awards.replace(/\n/g, '\n' + '　'.repeat(2)) + "\n") : "";
-            $('textarea#out_text').val(descr);
-            GM_setClipboard(descr);
-            query_info('已复制到剪切板');
-        };
         // IMDb信息（最慢，最先请求）
-        if (imdb_link && !imdb_info_already_ok) {
-            GM_xmlhttpRequest({
-                method: 'GET',
-                url: imdb_link,
-                timeout: 5000,
-                onreadystatechange: function (res) {
-                    if (res.readyState != 4) {
-                        query_info('查询影片的IMDb信息失败');
-                        return;
-                    }
-                    if (/404 Error - IMDb/.test(res.responseText)) {
-                        return;
-                    }
-                    let page = $(res.responseText
-                        .replace(/<script(\s|>)[\S\s]+?<\/script>/g, '')
-                        .replace(/\s+src=/ig, ' data-src=')
-                    );
-                    imdb_average_rating = (parseFloat(page.find('span[itemprop="ratingValue"]').text()).toFixed(1) + '').replace('NaN', '');
-                    imdb_votes = page.find('span[itemprop="ratingCount"]').text().trim();
-                    imdb_rating = imdb_votes ? imdb_average_rating + '/10 from ' + imdb_votes + ' users' : '';
-                    let story_line = page.find('#titleStoryLine div.inline.canwrap>p>span:first').text().trim();
-                    introduction = story_line ? (introduction + '\n\n' + story_line) : introduction;
-                    imdb_info_already_ok = true;
-                    descriptionGenerator();
-                },
-                ontimeout: function () {
-                    imdb_info_already_ok = false;
-                    query_info('查询影片的IMDb信息失败');
-                },
-            });
-        }
+        getImdbInfo(true);
         // 该影片的评奖信息
         if (!awards_info_already_ok) {
             $.ajax({
@@ -261,7 +243,6 @@
                     descriptionGenerator();
                 },
                 error: function () {
-                    awards_info_already_ok = false;
                     query_info('查询影片的获奖情况失败');
                 }
             });
@@ -273,10 +254,11 @@
                 dataType: 'jsonp',
                 jsonpCallback: 'callback',
                 success: function (json) {
-                    douban_average_rating = json.rating.average;
-                    douban_votes = json.rating.numRaters.toLocaleString();
-                    douban_rating = douban_average_rating + '/10 from ' + douban_votes + ' users';
+                    let douban_average_rating = json.rating.average;
+                    let douban_votes = json.rating.numRaters.toLocaleString();
                     let introduction_t = json.summary.replace(/^None$/g, '暂无相关剧情介绍');
+
+                    douban_rating = douban_average_rating + '/10 from ' + douban_votes + ' users';
                     introduction = introduction ? (introduction_t + introduction) : introduction_t;
                     //poster = json.image.replace(/s(_ratio_poster|pic)/g, 'l$1');
                     director = json.attrs.director ? json.attrs.director.join(' / ') : '';
@@ -289,7 +271,6 @@
                     descriptionGenerator();
                 },
                 error: function () {
-                    douban_info_already_ok = false;
                     query_info('查询影片的豆瓣信息失败');
                 }
             });
