@@ -13,7 +13,7 @@
 // @updateURL    https://github.com/harleybai/PT-help/raw/master/docs/js/NEU6%20-%20Info%20Clone.user.js
 // @icon         http://bt.neu6.edu.cn/favicon.ico
 // @supportURL   http://bt.neu6.edu.cn/thread-1555682-1-1.html
-// @version      20190107
+// @version      20190111
 // ==/UserScript==
 
 // jQuery链接(为避免流量，请将第10行juqery源换为下面2的链接)
@@ -49,12 +49,12 @@ const jq = jQuery.noConflict();
     }
 
     function getForumId() {
-        var forum_match = location.href.match(/(forum-|fid=)(\d+)/);
+        let forum_match = location.href.match(/(forum-|fid=)(\d+)/);
         if (forum_match) {
             return parseInt(forum_match[2]);
         }
         if (atDetailPage() && jq('#visitedforums>a').length) {
-            var type_m = jq('#visitedforums>a').attr('href').match(/(forum-|fid=)(\d+)/);
+            let type_m = jq('#visitedforums>a').attr('href').match(/(forum-|fid=)(\d+)/);
             return parseInt(type_m ? type_m[2] : 0);
         }
         return 0;
@@ -128,13 +128,10 @@ const jq = jQuery.noConflict();
 
         let left_time = "",
             count = 0;
-        for (let i = 2; i >= 0; i--) {
+        for (let i = 2; i >= 0 && count < 2; i--) {
             if (ret[i] > 0) {
                 count++;
                 left_time += ret[i] + ret_u[i];
-            }
-            if (count >= 2) {
-                break;
             }
         }
         return left_time ? left_time : (ret[0] + ret_u[0]);
@@ -162,47 +159,47 @@ const jq = jQuery.noConflict();
             }
         });
     }
-    var value_of_forums = {
-        "forum_big1": [2, 129, 29, 145, 33, 133, 358, 41, 156, 155, 153, 152, 154, 162, 147, 148, 149, 151, 150, 146],
-        "forum_big2": [45, 161, 57, 48, 77, 58, 49, 59, 50, 60, 91, 92],
-        "forum_big3": [13, 81, 79, 61, 14, 73, 62, 16, 72, 112, 17, 292, 96, 65, 15, 126, 144, 63, 127, 128, 44, 293, 165, 52, 125, 69, 21, 329, 78, 171, 124, 163, 56, 18, 138, 54, 66, 19, 160, 159, 84, 74, 169, 67, 20, 368, 70],
-        "forum_big4": [7, 141, 4, 139, 43, 142, 175, 182, 136, 172],
-        "forum_big5": [38, 121, 131, 122, 39, 119, 31, 143],
-        "forum_big6": [32, 87, 123, 137, 93, 113, 114, 135, 36, 116, 115, 187],
-        "forum_resource1": [45, 161, 13, 81, 79],
-        "forum_resource2": [48, 77, 14, 73],
-        "forum_resource3": [16, 72],
-        "forum_resource4": [17, 292, 96],
-        "forum_resource5": [50, 91, 15, 126, 144],
-        "forum_resource6": [49, 127],
-        "forum_resource7": [44, 293, 165, 52, 125],
-        "forum_resource8": [21, 329, 78, 171, 124, 163],
-        "forum_resource9": [18, 138, 54],
-        "forum_resource10": [19, 160, 159, 84, 74, 169],
-        "forum_resource11": [20, 368],
-        "movie1": [45, 161, 13, 81, ],
-        "movie2": [45, 161],
-        "movie3": [13, 81],
-        "movie4": [45, 161, 57, 13, 81, 79, 61],
-        "tvseries1": [48, 77, 14, 73],
-        "tvseries2": [48, 77],
-        "tvseries3": [14, 73],
-        "tvseries4": [77, 73],
-        "tvseries5": [48],
-        "tvseries6": [14],
-        "tvseries7": [48, 77, 58, 14, 73, 62]
-    };
     // 搜索页面
     if (OpenSearchEnhance && location.href.match(/search\.php(\Smod=forum)?$/) && jq('div.sttl.mbn').length) {
         jq("table tr:eq(1)").after('<tr><th>搜索范围</th><td><p id="showsearchenhance"><b>----[显示/隐藏]----</b></p><div id="mysearchbox" hidden="true"><table bgcolor="#F0F0F0" cellspacing="0" cellpadding="0"><tr>----[大版块]----</tr><tr><td><label class="lb"><b>[各版块]</b></label></td><td><label class="my_search lb" id="forum_big1"><input type="radio" class="pr" name="searchenhance"/>六维索引互动区</label></td><td><label class="my_search lb" id="forum_big2"><input type="radio" class="pr" name="searchenhance"/>六维高清资源区</label></td><td><label class="my_search lb" id="forum_big3"><input type="radio" class="pr" name="searchenhance"/>六维普通资源区</label></td><td><label class="my_search lb" id="forum_big4"><input type="radio" class="pr" name="searchenhance"/>六维休闲娱乐区</label></td><td><label class="my_search lb" id="forum_big5"><input type="radio" class="pr" name="searchenhance"/>六维事务处理区</label></td><td><label class="my_search lb" id="forum_big6"><input type="radio" class="pr" name="searchenhance"/>六维内部交流区</label></td></tr><tr><td><label class="lb"><b>[资源区]</b></label></td><td><label class="my_search lb" id="forum_resource1"><input type="radio" class="pr" name="searchenhance"/>电影剧场</label></td><td><label class="my_search lb" id="forum_resource2"><input type="radio" class="pr" name="searchenhance"/>电视剧集</label></td><td><label class="my_search lb" id="forum_resource3"><input type="radio" class="pr" name="searchenhance"/>综艺娱乐</label></td><td><label class="my_search lb" id="forum_resource4"><input type="radio" class="pr" name="searchenhance"/>体育天地</label></td><td><label class="my_search lb" id="forum_resource5"><input type="radio" class="pr" name="searchenhance"/>音乐地带</label></td><td><label class="my_search lb" id="forum_resource6"><input type="radio" class="pr" name="searchenhance"/>纪录写实</label></td></tr><tr><td></td><td><label class="my_search lb" id="forum_resource7"><input type="radio" class="pr" name="searchenhance"/>卡通动漫</label></td><td><label class="my_search lb" id="forum_resource8"><input type="radio" class="pr" name="searchenhance"/>游戏天下</label></td><td><label class="my_search lb" id="forum_resource9"><input type="radio" class="pr" name="searchenhance"/>资料文档</label></td><td><label class="my_search lb" id="forum_resource10"><input type="radio" class="pr" name="searchenhance"/>软件快跑</label></td><td><label class="my_search lb" id="forum_resource11"><input type="radio" class="pr" name="searchenhance"/>其他资源</label></td></tr></table><table bgcolor="#F0F0F0" cellspacing="0" cellpadding="0"><tr>----[小版块]----</tr><tr><td><label class="lb"><b>[电- -影]</b></label></td><td><label class="my_search lb" id="movie1"><input type="radio" class="pr" name="searchenhance"/>电影--资源区</label></td><td><label class="my_search lb" id="movie2"><input type="radio" class="pr" name="searchenhance"/>电影--高清</label></td><td><label class="my_search lb" id="movie3"><input type="radio" class="pr" name="searchenhance"/>电影--普清</label></td><td><label class="my_search lb" id="movie4"><input type="radio" class="pr" name="searchenhance"/>电影--所有</label></td></tr><tr><td><label class="lb"><b>[剧- -集]</b></label></td><td><label class="my_search lb" id="tvseries1"><input type="radio" class="pr" name="searchenhance"/>剧集--资源区</label></td><td><label class="my_search lb" id="tvseries2"><input type="radio" class="pr" name="searchenhance"/>剧集--高清</label></td><td><label class="my_search lb" id="tvseries3"><input type="radio" class="pr" name="searchenhance"/>剧集--普清</label></td><td><label class="my_search lb" id="tvseries4"><input type="radio" class="pr" name="searchenhance"/>剧集--合集</label></td><td><label class="my_search lb" id="tvseries5"><input type="radio" class="pr" name="searchenhance"/>高清剧集</label></td><td><label class="my_search lb" id="tvseries6"><input type="radio" class="pr" name="searchenhance"/>电视剧集</label></td><td><label class="my_search lb" id="tvseries7"><input type="radio" class="pr" name="searchenhance"/>剧集--所有</label></td></tr></table></div></td></tr>');
+        var value_of_forums = {
+            "forum_big1": [2, 129, 29, 145, 33, 133, 358, 41, 156, 155, 153, 152, 154, 162, 147, 148, 149, 151, 150, 146],
+            "forum_big2": [45, 161, 57, 48, 77, 58, 49, 59, 50, 60, 91, 92],
+            "forum_big3": [13, 81, 79, 61, 14, 73, 62, 16, 72, 112, 17, 292, 96, 65, 15, 126, 144, 63, 127, 128, 44, 293, 165, 52, 125, 69, 21, 329, 78, 171, 124, 163, 56, 18, 138, 54, 66, 19, 160, 159, 84, 74, 169, 67, 20, 368, 70],
+            "forum_big4": [7, 141, 4, 139, 43, 142, 175, 182, 136, 172],
+            "forum_big5": [38, 121, 131, 122, 39, 119, 31, 143],
+            "forum_big6": [32, 87, 123, 137, 93, 113, 114, 135, 36, 116, 115, 187],
+            "forum_resource1": [45, 161, 13, 81, 79],
+            "forum_resource2": [48, 77, 14, 73],
+            "forum_resource3": [16, 72],
+            "forum_resource4": [17, 292, 96],
+            "forum_resource5": [50, 91, 15, 126, 144],
+            "forum_resource6": [49, 127],
+            "forum_resource7": [44, 293, 165, 52, 125],
+            "forum_resource8": [21, 329, 78, 171, 124, 163],
+            "forum_resource9": [18, 138, 54],
+            "forum_resource10": [19, 160, 159, 84, 74, 169],
+            "forum_resource11": [20, 368],
+            "movie1": [45, 161, 13, 81, ],
+            "movie2": [45, 161],
+            "movie3": [13, 81],
+            "movie4": [45, 161, 57, 13, 81, 79, 61],
+            "tvseries1": [48, 77, 14, 73],
+            "tvseries2": [48, 77],
+            "tvseries3": [14, 73],
+            "tvseries4": [77, 73],
+            "tvseries5": [48],
+            "tvseries6": [14],
+            "tvseries7": [48, 77, 58, 14, 73, 62]
+        };
+        jq("label.my_search").click(function () {
+            let spanid = jq(this).attr("id");
+            jq("select#srchfid").val(value_of_forums[spanid]);
+        });
+        jq("p#showsearchenhance").click(function () {
+            jq("div#mysearchbox").toggle();
+        });
     }
-    jq("label.my_search").click(function () {
-        let spanid = jq(this).attr("id");
-        jq("select#srchfid").val(value_of_forums[spanid]);
-    });
-    jq("p#showsearchenhance").click(function () {
-        jq("div#mysearchbox").toggle();
-    });
     // 帖子页面
     if (location.href.match(/thread-\d+-\d+-\d/) || location.href.match(/mod=viewthread\Stid=\d+/)) {
         if (jq('div.pob.cl:first em').length && jq('div.pcb div.mtw.mbw').length) {
@@ -462,11 +459,14 @@ const jq = jQuery.noConflict();
                 query_info.text("识别输入为豆瓣链接，查询中......");
                 requestHTML(query_input, function (res) {
                     // 以下豆瓣相关解析修改自 `https://greasyfork.org/zh-CN/scripts/38878-电影信息查询脚本` 对此表示感谢
-                    var title_match = res.responseText.match(/<title>页面不存在<\/title>/)
                     if (/<title>页面不存在<\/title>/.test(res.responseText)) {
                         query_info.html('<b>该链接对应的资源似乎并不存在，你确认没填错</b>');
                     } else {
-                        var page = jq(res.responseText.match(/<body[^>]*?>([\S\s]+)<\/body>/)[1].replace(/<script(\s|>)[\S\s]+?<\/script>/g, ''));
+                        var page = jq(res.responseText
+                            .match(/<body[^>]*?>([\S\s]+)<\/body>/)[1]
+                            .replace(/<script(\s|>)[\S\s]+?<\/script>/g, '')
+                            .replace(/\s+src=/ig, ' data-src=')
+                        );
                         var movie_id = res.finalUrl.match(/\/subject\/(\d+)/)[1];
 
                         var this_title, trans_title;
@@ -568,35 +568,23 @@ const jq = jQuery.noConflict();
                         };
                         // IMDb信息（最慢，最先请求）
                         if (imdb_link) {
-                            requestHTML('https://p.media-imdb.com/static-content/documents/v1/title/' + imdb_link.match(/tt\d+/) + '/ratings%3Fjsonp=imdb.rating.run:imdb.api.title.ratings/data.json', function (res) {
-                                var try_match = res.responseText.match(/imdb.rating.run\((.+)\)/);
-                                var a = JSON.parse(try_match[1]);
-                                imdb_average_rating = (parseFloat(a.resource.rating).toFixed(1) + '').replace('NaN', '');
-                                imdb_votes = a.resource.ratingCount ? a.resource.ratingCount.toLocaleString() : '';
-                                imdb_rating = imdb_votes ? imdb_average_rating + '/10 from ' + imdb_votes + ' users' : '';
-                                descriptionGenerator();
-                            }, function (res) {
-                                query_info.html('<b>查询影片的IMDb信息失败</b>');
-                            });
-                            // IMDb Storyline
-                            const TMDB_api_key = atob('OWNmZmQ5MjY4OTUzZDhhYzA1OTYxMWYwMDg2OGNkNmU=');
-                            requestJson('https://api.themoviedb.org/3/find/' + imdb_link.match(/tt\d+/) + '?api_key=' + TMDB_api_key + '&external_source=imdb_id', function (res) {
-                                let story_line = '';
-                                if (res.movie_results.length) {
-                                    story_line = res.movie_results[0].overview;
-                                } else if (res.tv_episode_results.length) {
-                                    story_line = res.tv_episode_results[0].overview;
-                                } else if (res.person_results.length) {
-                                    story_line = res.person_results[0].overview;
-                                } else if (res.tv_results.length) {
-                                    story_line = res.tv_results[0].overview;
-                                } else if (res.tv_season_results.length) {
-                                    story_line = res.tv_season_results[0].overview;
+                            requestHTML('https://www.imdb.com/title/' + imdb_link.match(/tt\d+/), function (res) {
+                                if (/404 Error - IMDb/.test(res.responseText)) {
+                                    return;
                                 }
+                                let page = jq(res.responseText
+                                    .match(/<body[^>]*?>([\S\s]+)<\/body>/)[1]
+                                    .replace(/<script(\s|>)[\S\s]+?<\/script>/g, '')
+                                    .replace(/\s+src=/ig, ' data-src=')
+                                );
+                                imdb_average_rating = (parseFloat(page.find('span[itemprop="ratingValue"]').text()).toFixed(1) + '').replace('NaN', '');
+                                imdb_votes = page.find('span[itemprop="ratingCount"]').text().trim();
+                                imdb_rating = imdb_votes ? imdb_average_rating + '/10 from ' + imdb_votes + ' users' : '';
+                                story_line = page.find('#titleStoryLine div.inline.canwrap>p>span:first').text().trim();
                                 introduction = story_line ? (introduction + '\n\n' + story_line) : introduction;
                                 descriptionGenerator();
                             }, function () {
-                                query_info.html('<b>查询 IMDb Storyline 失败</b>');
+                                query_info.html('<b>查询影片的IMDb信息失败</b>');
                             });
                         }
                         // 该影片的评奖信息
@@ -612,7 +600,7 @@ const jq = jQuery.noConflict();
                                 .replace(/ +\n/g, '\n')
                                 .trim();
                             descriptionGenerator();
-                        }, function (res) {
+                        }, function () {
                             query_info.html('<b>查询影片的获奖情况失败</b>');
                         });
                         //豆瓣评分，简介，海报，导演，编剧，演员，标签
@@ -631,11 +619,11 @@ const jq = jQuery.noConflict();
                             }).join(' | ');
                             descriptionGenerator();
                             downloadPoster([poster]);
-                        }, function (res) {
+                        }, function () {
                             query_info.html('<b>查询影片的豆瓣信息失败</b>')
                         });
                     }
-                }, function (res) {
+                }, function () {
                     query_info.html('<b>查询影片的豆瓣信息失败</b>');
                 });
             } else if (query_input.match(/(bgm\.tv|bangumi\.tv|chii\.in)\/subject/)) {
@@ -675,7 +663,7 @@ const jq = jQuery.noConflict();
 
                     GM_setClipboard(outtext);
                     query_info.html('<b>已复制到剪切板</b>');
-                }, function (res) {
+                }, function () {
                     query_info.html('<b>查询影片的豆瓣信息失败</b>');
                 });
             } else if (query_input.match(/(store\.steampowered\.com|steamcommunity\.com)/)) {
@@ -695,7 +683,7 @@ const jq = jQuery.noConflict();
                     } else {
                         query_info.html('<b>查询Steam信息失败</b>');
                     }
-                }, function (res) {
+                }, function () {
                     query_info.html('<b>查询Steam信息失败</b>');
                 });
             } else {
@@ -724,7 +712,7 @@ const jq = jQuery.noConflict();
                     } else {
                         query_info.html('<b>无搜索结果</b>');
                     }
-                }, function (res) {
+                }, function () {
                     query_info.html('<b>搜索失败</b>');
                 });
             };

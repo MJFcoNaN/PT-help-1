@@ -67,12 +67,12 @@ const jq = jQuery.noConflict();
     }
 
     function getForumId() {
-        var forum_match = location.href.match(/(forum-|fid=)(\d+)/);
+        let forum_match = location.href.match(/(forum-|fid=)(\d+)/);
         if (forum_match) {
             return parseInt(forum_match[2]);
         }
         if (atDetailPage() && jq('#visitedforums>a').length) {
-            var type_m = jq('#visitedforums>a').attr('href').match(/(forum-|fid=)(\d+)/);
+            let type_m = jq('#visitedforums>a').attr('href').match(/(forum-|fid=)(\d+)/);
             return parseInt(type_m ? type_m[2] : 0);
         }
         return 0;
@@ -150,13 +150,10 @@ const jq = jQuery.noConflict();
 
         let left_time = "",
             count = 0;
-        for (let i = 2; i >= 0; i--) {
+        for (let i = 2; i >= 0 && count < 2; i--) {
             if (ret[i] > 0) {
                 count++;
                 left_time += ret[i] + ret_u[i];
-            }
-            if (count >= 2) {
-                break;
             }
         }
         return left_time ? left_time : (ret[0] + ret_u[0]);
@@ -557,7 +554,7 @@ const jq = jQuery.noConflict();
         setTimeout(function () {
             if (stick_days > 0) {
                 jq('#itemcp_stick>table>tbody>tr:nth-child(1)>td.hasd>div>select').val(1);
-                jq('#expirationstick').val(myTime(0, stick_days));
+                jq('#expirationstick').val(myTime(stick_days));
             }
             jq("#moderateform textarea#reason").text(stick_reason);
         }, second_timeout);
@@ -740,34 +737,30 @@ const jq = jQuery.noConflict();
         //alert("(置顶天数 " + res[0] + ", 颜色 " + res[1] + ", 加粗 " + res[2] + ", 高亮时间 " + res[3] + ")");
         return res;
     }
+    //时间格式化
+    Date.prototype.format = function (format) {
+        let o = {
+            "M+": this.getMonth() + 1, //month
+            "d+": this.getDate(), //day
+            "h+": this.getHours(), //hour
+            "m+": this.getMinutes(), //minute
+            "s+": this.getSeconds(), //second
+            "q+": Math.floor((this.getMonth() + 3) / 3), //quarter
+            "S": this.getMilliseconds() //millisecond
+        };
+        format = (format == "") ? "yyyy-MM-dd hh:mm:ss" : format;
+        if (/(y+)/.test(format))
+            format = format.replace(RegExp.$1, (this.getFullYear() + "").substr(4 - RegExp.$1.length));
+        for (let k in o)
+            if (new RegExp("(" + k + ")").test(format))
+                format = format.replace(RegExp.$1, RegExp.$1.length === 1 ? o[k] : ("00" + o[k]).substr(("" + o[k]).length));
+        return format;
+    }
     //计算时间
-    function myTime(addmonth, addday) {
-        var mydate = new Date();
-        var add_day = addmonth * 30 + addday;
-        var t_year = mydate.getFullYear();
-        var t_month = mydate.getMonth() + 1; //0-11
-        var t_day = mydate.getDate() + add_day; //1-31
-        var t_hour = mydate.getHours(); //0-23
-        var t_min = mydate.getMinutes(); //0-59
-
-        var dayofmonths = [31, 28, 31, 30, 31, 30, 31, 31, 30, 31, 30, 31];
-        dayofmonths[1] = (isLeapYear(t_year)) ? (dayofmonths[1] + 1) : dayofmonths[1];
-
-        while (t_day > dayofmonths[t_month - 1]) {
-            t_day -= dayofmonths[t_month - 1];
-            t_month += 1;
-            if (t_month > 12) {
-                t_month -= 12;
-                t_year += 1;
-                dayofmonths[1] = (isLeapYear(t_year)) ? (dayofmonths[1] + 1) : dayofmonths[1];
-            }
-        }
-        t_year = t_year.toString();
-        t_month = numToString2(t_month);
-        t_day = numToString2(t_day);
-        t_hour = numToString2(t_hour);
-        t_min = numToString2(t_min);
-        return t_year + "-" + t_month + "-" + t_day + " " + t_hour + ":" + t_min;
+    function myTime(addday) {
+        let ret = new Date();
+        ret.setDate(ret.getDate() + addday);
+        return ret.format("yyyy-MM-dd hh:mm");
     }
     //高亮具体信息填写
     function fillHighlightInfo(forum, i_highlight, high_info) {
@@ -787,7 +780,7 @@ const jq = jQuery.noConflict();
                 if (high_info[0] > 0 && (!jq("#moderateform li#itemcp_stick").hasClass('copt'))) {
                     jq("#moderateform li#itemcp_stick table td:first input").click();
                     jq("#moderateform li#itemcp_stick table td:eq(1) select").val(1);
-                    jq("#moderateform li#itemcp_stick table input#expirationstick").val(myTime(0, high_info[0]));
+                    jq("#moderateform li#itemcp_stick table input#expirationstick").val(myTime(high_info[0]));
                 }
                 // 颜色
                 if (high_info[1] >= 0 && high_info[1] <= 8) {
@@ -800,7 +793,7 @@ const jq = jQuery.noConflict();
                 }
                 // 高亮时间
                 if (high_info[3] > 0) {
-                    jq("#moderateform li#itemcp_highlight table input#expirationhighlight").val(myTime(0, high_info[3]));
+                    jq("#moderateform li#itemcp_highlight table input#expirationhighlight").val(myTime(high_info[3]));
                 } else if (high_info[3] == -1) {
                     jq("#moderateform li#itemcp_highlight table input#expirationhighlight").val('');
                 }
@@ -1453,11 +1446,14 @@ const jq = jQuery.noConflict();
                     query_info.text("识别输入为豆瓣链接，查询中......");
                     requestHTML(query_input, function (res) {
                         // 以下豆瓣相关解析修改自 `https://greasyfork.org/zh-CN/scripts/38878-电影信息查询脚本` 对此表示感谢
-                        var title_match = res.responseText.match(/<title>页面不存在<\/title>/)
                         if (/<title>页面不存在<\/title>/.test(res.responseText)) {
                             query_info.html('<b>该链接对应的资源似乎并不存在，你确认没填错</b>');
                         } else {
-                            var page = jq(res.responseText.match(/<body[^>]*?>([\S\s]+)<\/body>/)[1].replace(/<script(\s|>)[\S\s]+?<\/script>/g, ''));
+                            var page = jq(res.responseText
+                                .match(/<body[^>]*?>([\S\s]+)<\/body>/)[1]
+                                .replace(/<script(\s|>)[\S\s]+?<\/script>/g, '')
+                                .replace(/\s+src=/ig, ' data-src=')
+                            );
                             var movie_id = res.finalUrl.match(/\/subject\/(\d+)/)[1];
 
                             var this_title, trans_title;
@@ -1559,36 +1555,23 @@ const jq = jQuery.noConflict();
                             };
                             // IMDb信息（最慢，最先请求）
                             if (imdb_link) {
-                                requestHTML('https://p.media-imdb.com/static-content/documents/v1/title/' + imdb_link.match(/tt\d+/) + '/ratings%3Fjsonp=imdb.rating.run:imdb.api.title.ratings/data.json', function (res) {
-                                    var try_match = res.responseText.match(/imdb.rating.run\((.+)\)/);
-                                    var a = JSON.parse(try_match[1]);
-                                    imdb_average_rating = (parseFloat(a.resource.rating).toFixed(1) + '').replace('NaN', '');
-                                    imdb_votes = a.resource.ratingCount ? a.resource.ratingCount.toLocaleString() : '';
-                                    imdb_rating = imdb_votes ? imdb_average_rating + '/10 from ' + imdb_votes + ' users' : '';
-                                    descriptionGenerator();
-                                }, function (res) {
-                                    query_info.html('<b>查询影片的IMDb信息失败</b>');
-                                });
-
-                                // IMDb Storyline
-                                const TMDB_api_key = atob('OWNmZmQ5MjY4OTUzZDhhYzA1OTYxMWYwMDg2OGNkNmU=');
-                                requestJson('https://api.themoviedb.org/3/find/' + imdb_link.match(/tt\d+/) + '?api_key=' + TMDB_api_key + '&external_source=imdb_id', function (res) {
-                                    let story_line = '';
-                                    if (res.movie_results.length) {
-                                        story_line = res.movie_results[0].overview;
-                                    } else if (res.tv_episode_results.length) {
-                                        story_line = res.tv_episode_results[0].overview;
-                                    } else if (res.person_results.length) {
-                                        story_line = res.person_results[0].overview;
-                                    } else if (res.tv_results.length) {
-                                        story_line = res.tv_results[0].overview;
-                                    } else if (res.tv_season_results.length) {
-                                        story_line = res.tv_season_results[0].overview;
+                                requestHTML('https://www.imdb.com/title/' + imdb_link.match(/tt\d+/), function (res) {
+                                    if (/404 Error - IMDb/.test(res.responseText)) {
+                                        return;
                                     }
+                                    let page = jq(res.responseText
+                                        .match(/<body[^>]*?>([\S\s]+)<\/body>/)[1]
+                                        .replace(/<script(\s|>)[\S\s]+?<\/script>/g, '')
+                                        .replace(/\s+src=/ig, ' data-src=')
+                                    );
+                                    imdb_average_rating = (parseFloat(page.find('span[itemprop="ratingValue"]').text()).toFixed(1) + '').replace('NaN', '');
+                                    imdb_votes = page.find('span[itemprop="ratingCount"]').text().trim();
+                                    imdb_rating = imdb_votes ? imdb_average_rating + '/10 from ' + imdb_votes + ' users' : '';
+                                    story_line = page.find('#titleStoryLine div.inline.canwrap>p>span:first').text().trim();
                                     introduction = story_line ? (introduction + '\n\n' + story_line) : introduction;
                                     descriptionGenerator();
                                 }, function () {
-                                    query_info.html('<b>查询 IMDb Storyline 失败</b>');
+                                    query_info.html('<b>查询影片的IMDb信息失败</b>');
                                 });
                             }
                             // 该影片的评奖信息
@@ -1604,7 +1587,7 @@ const jq = jQuery.noConflict();
                                     .replace(/ +\n/g, '\n')
                                     .trim();
                                 descriptionGenerator();
-                            }, function (res) {
+                            }, function () {
                                 query_info.html('<b>查询影片的获奖情况失败</b>');
                             });
                             //豆瓣评分，简介，海报，导演，编剧，演员，标签
@@ -1623,18 +1606,18 @@ const jq = jQuery.noConflict();
                                 }).join(' | ');
                                 descriptionGenerator();
                                 downloadPoster([poster]);
-                            }, function (res) {
+                            }, function () {
                                 query_info.html('<b>查询影片的豆瓣信息失败</b>');
                             });
                         }
-                    }, function (res) {
+                    }, function () {
                         query_info.html('<b>查询影片的豆瓣信息失败</b>');
                     });
                 } else if (query_input.match(/(bgm\.tv|bangumi\.tv|chii\.in)\/subject/)) {
                     query_info.text("识别输入为Bgm链接，查询中......");
                     // 以下Bgm相关解析修改自 `https://github.com/Rhilip/PT-help/blob/master/docs/js/Bangumi%20-%20Info%20Export.user.js` 对此表示感谢a
-                    const STAFFSTART = 4; // 读取Staff栏的起始位置（假定bgm的顺序为中文名、话数、放送开始、放送星期... ，staff从第四个 导演 起算）；初始值为 4（对于新番比较合适）
-                    const STAFFNUMBER = 9; // 读取Staff栏数目；初始9，可加大，溢出时按最大可能的staff数读取，如需读取全部请设置值为 Number.MAX_VALUE (或一个你觉得可能最大的值 eg.20)
+                    const STAFFSTART = 0; // 读取Staff栏的起始位置（假定bgm的顺序为中文名、话数、放送开始、放送星期... ，staff从第四个 导演 起算）；初始值为 4（对于新番比较合适）
+                    const STAFFNUMBER = 99; // 读取Staff栏数目；初始9，可加大，溢出时按最大可能的staff数读取，如需读取全部请设置值为 Number.MAX_VALUE (或一个你觉得可能最大的值 eg.20)
                     requestHTML(query_input, function (res) {
                         var page = jq(res.responseText.match(/<body[^>]*?>([\S\s]+)<\/body>/)[1].replace(/<script(\s|>)[\S\s]+?<\/script>/g, ''));
                         var img = page.find("div#bangumiInfo>div>div:nth-child(1)>a>img").attr("src").replace(/cover\/[lcmsg]/, "cover/l");
@@ -1667,7 +1650,7 @@ const jq = jQuery.noConflict();
 
                         GM_setClipboard(outtext);
                         query_info.html('<b>已复制到剪切板</b>');
-                    }, function (res) {
+                    }, function () {
                         query_info.html('<b>查询影片的豆瓣信息失败</b>');
                     });
                 } else if (query_input.match(/(store\.steampowered\.com|steamcommunity\.com)/)) {
@@ -1688,7 +1671,7 @@ const jq = jQuery.noConflict();
                         } else {
                             query_info.html('<b>查询Steam信息失败</b>');
                         }
-                    }, function (res) {
+                    }, function () {
                         query_info.html('<b>查询Steam信息失败</b>');
                     });
                 } else {
@@ -1717,7 +1700,7 @@ const jq = jQuery.noConflict();
                         } else {
                             query_info.html('<b>无搜索结果</b>');
                         }
-                    }, function (res) {
+                    }, function () {
                         query_info.html('<b>搜索失败</b>');
                     });
                 };
