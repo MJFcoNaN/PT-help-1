@@ -352,47 +352,32 @@ const jq = jQuery.noConflict();
         }
     }
 
-    //AutoAdd处理部分内容
+    //auto_add 处理部分内容
     function numatostring2(num) {
+        num = parseInt(num);
         return (num < 10) ? ("0" + num) : (num.toString());
     }
 
-    function leapyear(year) {
-        return ((year % 400 === 0) || ((year % 100 !== 0) && (year % 4 === 0)));
-    }
-
-    function tvseasonhandle(str, type) {
-        if (str.match(/\[\d+[Pp]\]/)) {
-            return str;
-        }
-        let aaatv = str.match(/\d+/g);
-        let bbbtv = str.match(/\D+/g);
-        if (aaatv && aaatv.length == 1) {
-            str = numatostring2(parseInt(aaatv[0]) + 1);
-            if (bbbtv) {
-                str = bbbtv[0] + str;
-                if (bbbtv && bbbtv.length > 1) {
-                    str = str + bbbtv[1];
-                }
-            }
-        }
-        if (aaatv && aaatv.length == 2) {
-            if (bbbtv && bbbtv.length >= 2 && bbbtv[1] == "E") {
-                aaatv[1] = numatostring2(parseInt(aaatv[1]) + 1);
+    function tvseasonhandle(title) {
+        title = title.replace(/EP?(\d+)(-E?P?\d+)*/i, function (a, b, c) {
+            if (c) {
+                let start = numatostring2(parseInt(c.match(/\d+/)[0]) + 1);
+                let end = parseInt(start) + (parseInt(c.match(/\d+/)[0]) - parseInt(b));
+                return a.replace(/\d+/, start).replace(/\d+$/, numatostring2(end));
             } else {
-                let temp = parseInt(aaatv[1]) - parseInt(aaatv[0]);
-                aaatv[0] = numatostring2(parseInt(aaatv[1]) + 1);
-                aaatv[1] = numatostring2(parseInt(aaatv[0]) + temp);
+                return a.replace(/\d+/, numatostring2(parseInt(b) + 1));
             }
-            if (bbbtv && bbbtv.length == 1) {
-                str = aaatv[0] + bbbtv[0] + aaatv[1];
-            } else if (bbbtv && bbbtv.length == 2) {
-                str = bbbtv[0] + aaatv[0] + bbbtv[1] + aaatv[1];
-            } else if (bbbtv && bbbtv.length == 3) {
-                str = bbbtv[0] + aaatv[0] + bbbtv[1] + aaatv[1] + bbbtv[2];
+        });
+        title = title.replace(/\[(\d+)(-\d+)*\]/, function (a, b, c) {
+            if (c) {
+                let start = numatostring2(parseInt(c.match(/\d+/)[0]) + 1);
+                let end = parseInt(start) + (parseInt(c.match(/\d+/)[0]) - parseInt(b));
+                return a.replace(/\d+/, start).replace(/\d+\]/, numatostring2(end) + '\]');
+            } else {
+                return a.replace(/\d+/, numatostring2(parseInt(b) + 1));
             }
-        }
-        return str;
+        });
+        return title;
     }
 
     function requestData(url, successHandle, timeoutHandle) {
@@ -854,43 +839,15 @@ const jq = jQuery.noConflict();
                     return;
                 }
                 if (AutoAdd) {
-                    if (forum_id == 48) { //高清剧集
-                        let tv_name = title.match(/[\s\.][ES][P]{0,1}\d{2}[-\w]*\d{0,2}[\s\.]/);
-                        if (tv_name) {
-                            let tv_season = tvseasonhandle(tv_name[0], 48);
-                            title = title.replace(/[\s\.][ES][P]{0,1}\d{2}[-\w]*\d{0,2}[\s\.]/, tv_season);
-                        }
-                    } else if (forum_id == 14) { //电视剧集
-                        let tv_name1 = title.match(/\[[ESP]{0,2}\d{2}[-\w]*\d{0,2}\]/);
-                        if (tv_name1) {
-                            let tv_season1 = tvseasonhandle(tv_name1[0], 14);
-                            title = title.replace(/\[[ESP]{0,2}\d{2}[-\w]*\d{0,2}\]/, tv_season1);
-                        }
-                    } else if (forum_id == 44) { //动漫
-                        let tv_name2 = title.match(/\[[ES]{0,2}\d{2,3}[-E\/]{0,2}\d{0,3}[\s\S]*?\]/);
-                        if (tv_name2) {
-                            let tv_season2 = tvseasonhandle(tv_name2[0], 44);
-                            title = title.replace(/\[[ES]{0,2}\d{2,3}[-E\/]{0,2}\d{0,3}[\s\S]*?\]/, tv_season2);
-                        }
+                    if ([48, 14, 44].indexOf(forum_id) >= 0) { //高清剧集
+                        title = tvseasonhandle(title);
+
                     } else if (forum_id == 16) { //综艺娱乐
                         let fields = title.match(/\[[^\]]*\]/g);
                         if (fields[0].length === 10) {
-                            let dayofmonths = [31, 28, 31, 30, 31, 30, 31, 31, 30, 31, 30, 31];
-                            let year = fields[0].substring(1, 5);
-                            let month = fields[0].substring(5, 7);
-                            let day = fields[0].substring(7, 9);
-                            if (leapyear(parseInt(year))) {
-                                dayofmonths[1] += 1;
-                            }
-                            let monthadd = parseInt((parseInt(day) + 7) / dayofmonths[parseInt(month) - 1]);
-                            day = numatostring2((parseInt(day) + 7) % dayofmonths[parseInt(month) - 1]);
-                            let yearadd = 0;
-                            if ((parseInt(month) + monthadd) > 12) {
-                                yearadd = 1;
-                            }
-                            year = parseInt(year) + yearadd;
-                            month = numatostring2((parseInt(month) + monthadd) % 12);
-                            fields[0] = "[" + year + month + day + "]";
+                            let ret = new Date(`${fields[0].substring(1, 5)}-${fields[0].substring(5, 7)}-${fields[0].substring(7, 9)}`);
+                            ret.setDate(ret.getDate() + 7);
+                            fields[0] = `[${ret.format("yyyyMMdd")}]`;
                         }
                         fields[3] = "[]";
                         title = "";
