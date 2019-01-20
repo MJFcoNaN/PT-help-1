@@ -17,7 +17,7 @@
     var imdb_info_already_ok = false;
     var awards_info_already_ok = false;
     var douban_info_already_ok = false;
-    var foreign_title, trans_title, this_title, year, region, genre, language, playdate, douban_rating, douban_link, episodes, duration, director, writer, cast, tags, awards, introduction = '';
+    var poster, foreign_title, trans_title, this_title, year, region, genre, language, playdate, douban_rating, douban_link, episodes, duration, director, writer, cast, tags, awards, story_line, introduction = '';
     var imdb_link, imdb_rating;
     var descr = '';
 
@@ -62,10 +62,8 @@
                     );
                     let imdb_average_rating = (parseFloat(page.find('span[itemprop="ratingValue"]').text()).toFixed(1) + '').replace('NaN', '');
                     let imdb_votes = page.find('span[itemprop="ratingCount"]').text().trim();
-                    let story_line = page.find('#titleStoryLine div.inline.canwrap>p>span:first').text().trim();
-
+                    story_line = page.find('#titleStoryLine div.inline.canwrap>p>span:first').text().trim();
                     imdb_rating = imdb_votes ? imdb_average_rating + '/10 from ' + imdb_votes + ' users' : '';
-                    introduction = story_line ? (introduction + '\n\n' + story_line) : introduction;
                     imdb_info_already_ok = true;
                     if (isGenInfo) {
                         descriptionGenerator();
@@ -83,7 +81,12 @@
     }
 
     function descriptionGenerator() {
+        let show_poster = $('input#poster').prop('checked');
+        let show_awards = $('input#awards').prop('checked');
         descr = '';
+        if (show_poster) {
+            descr += poster ? `[img]${poster}[/img]\n\n` : "";
+        }
         descr += foreign_title ? ("[b]" + foreign_title + "[/b]\n\n") : "";
         descr += trans_title ? ('◎译　　名　' + trans_title + "\n") : "";
         descr += this_title ? ('◎片　　名　' + this_title + "\n") : "";
@@ -102,8 +105,11 @@
         descr += writer ? ('◎编　　剧　' + writer + "\n") : "";
         descr += cast ? ('◎主　　演　' + cast.replace(/\n/g, '\n' + '　'.repeat(4) + '  　').trim() + "\n") : "";
         descr += tags ? ('\n◎标　　签　' + tags + "\n") : "";
-        descr += introduction ? ('\n◎简　　介\n\n　　' + introduction.replace(/\n/g, '\n' + '　'.repeat(2)) + "\n") : "";
-        descr += awards ? ('\n◎获奖情况\n\n　　' + awards.replace(/\n/g, '\n' + '　'.repeat(2)) + "\n") : "";
+        t_introduction = story_line ? (introduction + '\n\n' + story_line) : introduction;
+        descr += t_introduction ? ('\n◎简　　介\n\n　　' + t_introduction.replace(/\n/g, '\n' + '　'.repeat(2)) + "\n") : "";
+        if (show_awards) {
+            descr += awards ? ('\n◎获奖情况\n\n　　' + awards.replace(/\n/g, '\n' + '　'.repeat(2)) + "\n") : "";
+        }
         $('textarea#out_text').val(descr);
         GM_setClipboard(descr);
         query_info('已复制到剪切板');
@@ -127,7 +133,7 @@
     // 生成信息
     $("div.rating_wrap.clearbox").before('<div><a id="output"><b>Export Info</b></a></div><br>');
     $("a#output").click(function () {
-        $.modal('<div id="out_window"><div id="out_title"><b>DouBan Info Export</b><b style="float:right" class="simplemodal-close">Close</b></div><div id="out_info"></div><div><textarea id="out_text" cols="60" rows="30" class="quick"></textarea></div></div>', {
+        $.modal('<div id="out_window"><div id="out_title"><b>DouBan Info Export</b><span id="poster_awards"><label><input id="poster" type="checkbox">海报</label>&nbsp;&nbsp;<label><input id="awards" type="checkbox" checked>奖项</label></span><b style="float:right" class="simplemodal-close">Close</b></div><div id="out_info"></div><div><textarea id="out_text" cols="60" rows="30" class="quick"></textarea></div></div>', {
             autoPosition: true,
             escClose: true,
             overlayClose: true
@@ -142,6 +148,11 @@
             "padding": "5px 15px",
             "position": "float"
         });
+        $("#poster_awards").css({
+            "font-size": "13px",
+            "padding": "5px 15px",
+            "position": "float"
+        });
         $("#out_info").css({
             "background": "#F5F5DC",
             "padding-left": "15px",
@@ -149,14 +160,16 @@
         $("#out_text").click(function () {
             $(this).select();
         });
-
-        if (imdb_info_already_ok && douban_info_already_ok && awards_info_already_ok && descr) {
-            $('textarea#out_text').val(descr);
-            GM_setClipboard(descr);
-            query_info('已复制到剪切板');
+        $("input#poster").click(function () {
+            descriptionGenerator();
+        });
+        $("input#awards").click(function () {
+            descriptionGenerator();
+        });
+        if (imdb_info_already_ok && douban_info_already_ok && awards_info_already_ok) {
+            descriptionGenerator();
             return;
         }
-
         let fetch = function (anchor) {
             return anchor[0].nextSibling.nodeValue.trim();
         };
@@ -260,7 +273,7 @@
 
                     douban_rating = douban_average_rating + '/10 from ' + douban_votes + ' users';
                     introduction = introduction ? (introduction_t + introduction) : introduction_t;
-                    //poster = json.image.replace(/s(_ratio_poster|pic)/g, 'l$1');
+                    poster = json.image.replace(/s(_ratio_poster|pic)/g, 'l$1');
                     director = json.attrs.director ? json.attrs.director.join(' / ') : '';
                     writer = json.attrs.writer ? json.attrs.writer.join(' / ') : '';
                     cast = json.attrs.cast ? json.attrs.cast.join('\n') : '';
