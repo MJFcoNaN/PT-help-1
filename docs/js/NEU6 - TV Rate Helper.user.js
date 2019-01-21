@@ -15,6 +15,7 @@
 // @include     http://bt.neu6.edu.cn/search*
 // @require     http://bt.neu6.edu.cn/static/js/mobile/jquery-1.8.3.min.js
 // @updateURL   https://github.com/harleybai/PT-help/raw/master/docs/js/NEU6%20-%20TV%20Rate%20Helper.user.js
+// @downloadURL https://github.com/harleybai/PT-help/raw/master/docs/js/NEU6%20-%20TV%20Rate%20Helper.user.js
 // @icon        http://bt.neu6.edu.cn/favicon.ico
 // @version     20190108
 // ==/UserScript==
@@ -501,14 +502,6 @@ const jq = jQuery.noConflict();
         if (tv_forum.indexOf(parseInt(seed_forum)) >= 0) {
             jq('span#subjecthide').after('<span class="pipe">|</span><a id="commonquestions" href="javascript:;">常见问题</a>');
         }
-    }
-    // 数字转2位字符串
-    function numToString2(num) {
-        return (num < 10) ? ("0" + num) : (num.toString());
-    }
-    // 是否是闰年
-    function isLeapYear(year) {
-        return ((year % 400 === 0) || ((year % 100 !== 0) && (year % 4 === 0)));
     }
     // 是否已经高亮过了
     function getAlreadyHighlight() {
@@ -1250,7 +1243,6 @@ const jq = jQuery.noConflict();
             timeoutHandle(response);
         });
     }
-
     // 发种&修改页面
     if (location.href.match(/action=(newthread|edit)/)) {
         jq('span#custominfo').click();
@@ -1261,18 +1253,18 @@ const jq = jQuery.noConflict();
         let title_height = title_zoom + 0.05;
         jq('#subject').attr('style', 'width: ' + d_with + 'px;height: ' + title_height + 'em;font-size: ' + title_zoom + 'em');
         jq("div.specialpost.s_clear input").attr('style', 'width: ' + seed_with + 'px');
-        jq('div#postbox').before('<div class="pbt cl"><div class="ftid"><span width="80">种子信息克隆：</span></div><div class="z"><span><input type="text" style="width:400px;" id="clone_from" class="px" placeholder="要克隆的种子ID、链接" onkeypress="if(event.keyCode==13){clone_btn.click();}"></span><input type="button" id="clone_btn" style="size:100px;" value=" 克   隆 ">&nbsp;&nbsp;&nbsp;&nbsp;<span id="myformat_t">克隆状态：[</span><span id="clone_info">要克隆的种子ID、链接</span><span>]</span></div></div>' +
-            '<div class="pbt cl"><div class="ftid"><span width="80">电影信息查询：</span></div><div class="z"><span class="ftid"><select id="query_typeid"><option value="1">电影</option><option value="2">动漫</option><option value="3">游戏</option></select></span><span><input type="text" style="width:300px;" id="query_input" class="px" placeholder="名称、豆瓣ID/链接、IMDB、Bangumi、Steam" onkeypress="if(event.keyCode==13){query_btn.click();}">' +
-            '</span><input type="button" id="query_btn" style="size:100px;" value=" 查   询 ">&nbsp;&nbsp;&nbsp;&nbsp;<span id="myformat_d">查询状态：[</span><span id="query_info">名称、豆瓣ID/链接、IMDB、Bangumi、Steam</span><span>]</span><span id="d_poster"></span></div></div>' +
+        jq('div#postbox').before('<div class="pbt cl"><div class="ftid"><span width="80">种子信息克隆：</span></div><div class="z"><span><input type="text" style="width:400px;" id="clone_from" class="px" placeholder="请输入种子ID或链接..."></span><input type="button" id="clone_btn" style="size:100px;" value=" 克   隆 ">&nbsp;&nbsp;&nbsp;&nbsp;<b><span id="myformat_t">[克隆状态> </span><span id="clone_info">请输入种子ID或链接...</span><span>]</span></b></div></div>' +
+            '<div class="pbt cl"><div class="ftid"><span width="80">电影信息查询：</span></div><div class="z"><span class="ftid"><select id="query_typeid"><option value="1">电影</option><option value="2">动漫</option><option value="3">游戏</option></select></span><span><input type="text" style="width:300px;" id="query_input" class="px" placeholder="请输入名称、豆瓣、IMDB、Bangumi、Steam...">' +
+            '</span><input type="button" id="query_btn" style="size:100px;" value=" 查   询 ">&nbsp;&nbsp;&nbsp;&nbsp;<b><span id="myformat_d">[查询状态> </span><span id="query_info">请输入名称、豆瓣、IMDB、Bangumi、Steam...</span><span>]</span><span id="d_poster" style="color:green"></span></b></div></div>' +
             '<div id="seedfilename" hidden="true" class="pbt cl"><div class="ftid"><span width="80">种子文件名称：</span></div><div class="z"><input  type="text" style="width:71.5em;" class="px" id="uploadseedname"></div></div>');
         //展开标签栏，预备填写
         jq('#extra_tag_b').addClass('a');
         jq('#extra_tag_c').css('display', 'block');
 
         jq('#myformat_t').click(function () {
-            let t_str = jq('input[name=subject]').val();
-            t_str = t_str.replace(/[\.\s]*([\[\]\/])[\.\s]*/ig, "$1");
-            t_str = t_str.replace(/\s/g, ".");
+            let t_str = jq('input[name=subject]').val()
+                .replace(/[\.\s]*([\[\]\/])[\.\s]*/ig, "$1")
+                .replace(/\s/g, ".");
             if (tv_forum.indexOf(forum_id) >= 0) {
                 t_str = t_str.replace(/(\[\d+)P\//, "$1p/");
                 t_str = t_str.replace(/\/(MP4|MKV|TS|ISO|RMVB|FLV|AVI|VOB|MPEG|WEB-DL|WEB|HDTV)/ig, function ($1) {
@@ -1310,51 +1302,16 @@ const jq = jQuery.noConflict();
         function seedNameCopy() {
             jq("div#seedfilename").show();
             // 去掉路径
-            let tname = jq("div.specialpost.s_clear input").val().replace(/.*\\([^\.\\]+)/g, "$1");
-            tname = tname.replace(/\.(torrent|mkv|mp4|rmvb|ts|avi|iso)/ig, "").replace(/\s/g, ".");
+            let tname = jq("div.specialpost.s_clear input").val().replace(/.*\\/, '').trim();
             let tname_copy = tname;
-            tname = tname.replace(/(\.*\[\S+\]\.*)*/, "").replace(/(^\.*)|(\.*$)/g, ""); // 去掉[发布组],开头与结尾的.
+            tname = tname.replace(/\.torrent/ig, "").replace(/\s/g, ".").replace(/^\.*\[\S+\]\.*/, '');
             if (tname) {
                 jq("input#uploadseedname").val(tname);
                 let t_match = tname.match(/^(\W+)?\.*(.*)$/);
-                let name_en = "";
-                if (t_match && t_match[2]) {
-                    name_en = t_match[2];
-                }
+                let name_en = (t_match && t_match[2]) ? t_match[2].replace(/\.(mkv|mp4|rmvb|ts|avi|iso)/ig, '') : '';
                 if (name_en && ((forum_id == 48 && name_en.match(/Ep?\d+/i)) || forum_id == 13 || forum_id == 45)) {
-                    let t = jq('input[name=subject]').val().replace(/\]\[[^\]]+/, "][" + name_en);
+                    let t = jq('input[name=subject]').val().replace(/\]\[.*?\]/, `][${name_en}]`);
                     jq('input[name=subject]').attr('value', t);
-                }
-                if (forum_id == 14 || forum_id == 73 || forum_id == 77) {
-                    t_match = tname.match(/(WEB|HDTV|Blu)[-a-zA-Z]+\b/i);
-                    let medium = t_match ? t_match[0] : ""; //媒介
-                    t_match = tname.match(/(\d+p|4k|1080i)/i);
-                    let standard = t_match ? t_match[1] : ""; //分辨率
-                    t_match = tname.match(/(\w+)$/);
-                    let processing = t_match ? t_match[1] : ""; //制作组
-                    let t_split = jq('input[name=subject]').val().split('][');
-                    if (t_split.length >= 5) {
-                        t_split[4] = processing ? processing : t_split[4];
-                        t_split[4] = (t_split.length == 6) ? t_split[4] : t_split[4] + "]";
-                        let t2_split = t_split[2].split('/');
-                        if (t2_split.length == 3) {
-                            t2_split[0] = standard ? standard : t2_split[0];
-                            t2_split[1] = medium ? medium : t2_split[1];
-                            t_split[2] = t2_split.join('/');
-                        } else if (t2_split.length == 2) {
-                            if (t2_split[0].match(/\d+p/i)) {
-                                t2_split[0] = standard ? standard : t2_split[0];
-                            } else if (t2_split[0].match(/WEB|HDTV|Blu/i)) {
-                                t2_split[0] = medium ? medium : t2_split[0];
-                            }
-                            t_split[2] = t2_split.join('/');
-                        } else if (t2_split.length == 1) {
-                            let t2_temp = standard ? standard + "/" : "";
-                            t2_temp = medium ? medium + "/" : "";
-                            t_split[2] = t2_temp + t2_split[0];
-                        }
-                    }
-                    jq('input[name=subject]').attr('value', t_split.join(']['));
                 }
             } else {
                 jq("input#uploadseedname").val(tname_copy);
@@ -1414,53 +1371,78 @@ const jq = jQuery.noConflict();
 
         //查询电影信息
         jq('#query_btn').click(function () {
-            var query_input = jq('#query_input').val().trim();
-            var query_info = jq('#query_info');
+            let query_input = jq('#query_input').val().trim();
+            let query_type = jq('select#query_typeid').val();
+            let imdb_info_already_ok = false;
+            let awards_info_already_ok = false;
+            let douban_info_already_ok = false;
+            let bgm_info_already_ok = false;
+            let game_info_already_ok = false;
+            let query_info = function (query_type, info, color) {
+                let _info = '(';
+                if (query_type == 1) {
+                    _info += imdb_info_already_ok ? '<span style="color:green">IMDB</span>' : '<span style="color:red">IMDB</span>';
+                    _info += awards_info_already_ok ? ', <span style="color:green">奖项</span>' : ', <span style="color:red">奖项</span>';
+                    _info += douban_info_already_ok ? ', <span style="color:green">豆瓣</span>)' : ', <span style="color:red">豆瓣</span>)';
+                } else if (query_type == 2) {
+                    _info += bgm_info_already_ok ? '<span style="color:green">BGM</span>)' : '<span style="color:red">BGM</span>)';
+                } else if (query_type == 3) {
+                    _info += game_info_already_ok ? '<span style="color:green">Steam</span>)' : '<span style="color:red">Steam</span>)';
+                } else {
+                    jq('#query_info').html(`<span style="color:${color}">${info}</span>`);
+                    return;
+                }
+                jq('#query_info').html(`<span style="color:${color}">${info}</span>&nbsp;&nbsp;${_info}`);
+            };
             jq('span#d_poster').html('');
+
             if (query_input == '') {
-                query_info.html('<b>请输入搜索内容</b>')
+                query_info(-1, '请输入搜索内容...', 'red');
                 return;
             }
             if (/^\d+$/.test(query_input)) {
-                query_input = (forum_id == 44) ? ('https://bgm.tv/subject/' + query_input) : ('https://movie.douban.com/subject/' + query_input);
+                query_input = (forum_id == 44) ? `https://bgm.tv/subject/${query_input}` : `https://movie.douban.com/subject/${query_input}/`;
             }
-            if (/^tt\d+/.test(query_input)) {
-                query_input = 'http://www.imdb.com/title/' + query_input;
+            if (/^tt\d+$/.test(query_input)) {
+                query_input = `http://www.imdb.com/title/${query_input}`;
             }
             if (/^http/.test(query_input)) {
+                // IMDB链接
                 if (/www\.imdb\.com/.test(query_input)) {
                     requestJson('https://api.douban.com/v2/movie/search?q=' + query_input.match(/tt\d+/)[0], function (json) {
                         if (json.total == 1) {
                             jq('#query_input').val(json.subjects[0].alt);
                             jq('#query_btn').click();
                         } else {
-                            query_info.html('<b>请检查IMDB是否正确</b>');
+                            query_info(-1, '请检查IMDB是否正确...', 'red');
                         }
-                    }, function (res) {
-                        query_info.html('<b>查询IMDB信息失败</b>');
+                    }, function () {
+                        query_info(-1, '查询IMDB信息失败...', 'red');
                     });
-                } else if (/movie\.douban\.com/.test(query_input)) {
-                    var fetch = function (anchor) {
+                }
+                // 豆瓣链接
+                else if (/movie\.douban\.com/.test(query_input)) {
+                    let fetch = function (anchor) {
                         return anchor[0].nextSibling.nodeValue.trim();
                     };
-                    query_info.text("识别输入为豆瓣链接，查询中......");
+                    query_info(-1, '识别输入为豆瓣链接，查询中...', 'green');
                     requestHTML(query_input, function (res) {
                         // 以下豆瓣相关解析修改自 `https://greasyfork.org/zh-CN/scripts/38878-电影信息查询脚本` 对此表示感谢
                         if (/<title>页面不存在<\/title>/.test(res.responseText)) {
-                            query_info.html('<b>该链接对应的资源似乎并不存在，你确认没填错</b>');
+                            query_info(-1, '该链接对应的资源似乎并不存在，你确认没填错...', 'red');
                         } else {
-                            var page = jq(res.responseText
+                            let page = jq(res.responseText
                                 .match(/<body[^>]*?>([\S\s]+)<\/body>/)[1]
                                 .replace(/<script(\s|>)[\S\s]+?<\/script>/g, '')
                                 .replace(/\s+src=/ig, ' data-src=')
                             );
-                            var movie_id = res.finalUrl.match(/\/subject\/(\d+)/)[1];
+                            let movie_id = res.finalUrl.match(/\/subject\/(\d+)/)[1];
 
-                            var this_title, trans_title;
-                            var chinese_title = res.responseText.match(/<title>([\s\S]+)<\/title>/)[1].replace('(豆瓣)', '').trim();
-                            var foreign_title = page.find('#content h1>span[property="v:itemreviewed"]').text().replace(chinese_title, '').trim();
-                            var aka_anchor = page.find('#info span.pl:contains("又名")');
-                            var aka;
+                            let this_title, trans_title;
+                            let chinese_title = res.responseText.match(/<title>([\s\S]+)<\/title>/)[1].replace('(豆瓣)', '').trim();
+                            let foreign_title = page.find('#content h1>span[property="v:itemreviewed"]').text().replace(chinese_title, '').trim();
+                            let aka_anchor = page.find('#info span.pl:contains("又名")');
+                            let aka;
                             if (aka_anchor[0]) {
                                 aka = fetch(aka_anchor).split(' / ').sort(function (a, b) { //首字(母)排序
                                     return a.localeCompare(b);
@@ -1474,61 +1456,60 @@ const jq = jQuery.noConflict();
                                 this_title = chinese_title;
                             }
                             //年代
-                            var year = page.find('#content>h1>span.year').text().slice(1, -1);
+                            let year = page.find('#content>h1>span.year').text().slice(1, -1);
                             //产地
-                            var regions_anchor = page.find('#info span.pl:contains("制片国家/地区")');
-                            var region;
+                            let regions_anchor = page.find('#info span.pl:contains("制片国家/地区")');
+                            let region;
                             if (regions_anchor[0]) {
                                 region = fetch(regions_anchor).split(' / ').join('/');
                             }
                             //类别
-                            var genre = page.find('#info span[property="v:genre"]').map(function () {
+                            let genre = page.find('#info span[property="v:genre"]').map(function () {
                                 return jq(this).text().trim();
                             }).toArray().join('/');
                             //语言
-                            var language_anchor = page.find('#info span.pl:contains("语言")');
-                            var language;
+                            let language_anchor = page.find('#info span.pl:contains("语言")');
+                            let language;
                             if (language_anchor[0]) {
                                 language = fetch(language_anchor).split(' / ').join('/');
                             }
                             //上映日期
-                            var playdate = page.find('#info span[property="v:initialReleaseDate"]').map(function () {
+                            let playdate = page.find('#info span[property="v:initialReleaseDate"]').map(function () {
                                 return jq(this).text().trim();
                             }).toArray().sort(function (a, b) { //按上映日期升序排列
                                 return new Date(a) - new Date(b);
                             }).join('/');
                             //IMDb链接
-                            var imdb_link_anchor = page.find('#info span.pl:contains("IMDb链接")');
-                            var imdb_link;
+                            let imdb_link_anchor = page.find('#info span.pl:contains("IMDb链接")');
+                            let imdb_link;
                             if (imdb_link_anchor[0]) {
                                 imdb_link = imdb_link_anchor.next().attr('href').replace(/(\/)?$/, '/');
                             }
                             //豆瓣链接
-                            var douban_link = 'https://' + res.finalUrl.match(/movie.douban.com\/subject\/\d+\//);
+                            let douban_link = 'https://' + res.finalUrl.match(/movie.douban.com\/subject\/\d+\//);
                             //集数
-                            var episodes_anchor = page.find('#info span.pl:contains("集数")');
-                            var episodes;
+                            let episodes_anchor = page.find('#info span.pl:contains("集数")');
+                            let episodes;
                             if (episodes_anchor[0]) {
                                 episodes = fetch(episodes_anchor);
                             }
                             //片长
-                            var duration_anchor = page.find('#info span.pl:contains("单集片长")');
-                            var duration;
+                            let duration_anchor = page.find('#info span.pl:contains("单集片长")');
+                            let duration;
                             if (duration_anchor[0]) {
                                 duration = fetch(duration_anchor);
                             } else {
                                 duration = page.find('#info span[property="v:runtime"]').text().trim();
                             }
 
-                            var director, writer, cast;
-                            var awards;
-                            var douban_average_rating, douban_votes, douban_rating, introduction = '',
-                                poster;
-                            var imdb_average_rating, imdb_votes, imdb_rating;
-                            var tags;
+                            let director, writer, cast;
+                            let awards;
+                            let douban_average_rating, douban_votes, douban_rating, poster, introduction = '';
+                            let imdb_average_rating, imdb_votes, imdb_rating;
+                            let tags;
 
-                            var descriptionGenerator = function () {
-                                var descr = "";
+                            let descriptionGenerator = function () {
+                                let descr = "";
                                 descr += foreign_title ? ("[b]" + foreign_title + "[/b]\n\n") : "";
                                 descr += trans_title ? ('◎译　　名　' + trans_title + "\n") : "";
                                 descr += this_title ? ('◎片　　名　' + this_title + "\n") : "";
@@ -1551,7 +1532,7 @@ const jq = jQuery.noConflict();
                                 descr += awards ? ('\n◎获奖情况\n\n　　' + awards.replace(/\n/g, '\n' + '　'.repeat(2)) + "\n") : "";
 
                                 GM_setClipboard(descr);
-                                query_info.html('<b>已复制到剪切板</b>');
+                                query_info(1, '已复制到剪切板...', 'green');
                             };
                             // IMDb信息（最慢，最先请求）
                             if (imdb_link) {
@@ -1567,16 +1548,19 @@ const jq = jQuery.noConflict();
                                     imdb_average_rating = (parseFloat(page.find('span[itemprop="ratingValue"]').text()).toFixed(1) + '').replace('NaN', '');
                                     imdb_votes = page.find('span[itemprop="ratingCount"]').text().trim();
                                     imdb_rating = imdb_votes ? imdb_average_rating + '/10 from ' + imdb_votes + ' users' : '';
-                                    story_line = page.find('#titleStoryLine div.inline.canwrap>p>span:first').text().trim();
+                                    let story_line = page.find('#titleStoryLine div.inline.canwrap>p>span:first').text().trim();
                                     introduction = story_line ? (introduction + '\n\n' + story_line) : introduction;
+                                    imdb_info_already_ok = true;
                                     descriptionGenerator();
                                 }, function () {
-                                    query_info.html('<b>查询影片的IMDb信息失败</b>');
+                                    query_info(1, '查询影片的IMDb信息失败...', 'red');
                                 });
+                            } else {
+                                imdb_info_already_ok = true;
                             }
                             // 该影片的评奖信息
                             requestHTML(douban_link + 'awards', function (res) {
-                                var awards_page = jq(res.responseText.match(/<body[^>]*?>([\S\s]+)<\/body>/)[1].replace(/<script(\s|>)[\S\s]+?<\/script>/g, ''));
+                                let awards_page = jq(res.responseText.match(/<body[^>]*?>([\S\s]+)<\/body>/)[1].replace(/<script(\s|>)[\S\s]+?<\/script>/g, ''));
                                 awards = awards_page.find('#content>div>div.article').html()
                                     .replace(/[ \n]/g, '')
                                     .replace(/<\/li><li>/g, '</li> <li>')
@@ -1586,9 +1570,10 @@ const jq = jQuery.noConflict();
                                     .replace(/&nbsp;/g, ' ')
                                     .replace(/ +\n/g, '\n')
                                     .trim();
+                                awards_info_already_ok = true;
                                 descriptionGenerator();
                             }, function () {
-                                query_info.html('<b>查询影片的获奖情况失败</b>');
+                                query_info(1, '查询影片的获奖情况失败...', 'red');
                             });
                             //豆瓣评分，简介，海报，导演，编剧，演员，标签
                             requestJson('https://api.douban.com/v2/movie/' + movie_id, function (json) {
@@ -1605,107 +1590,118 @@ const jq = jQuery.noConflict();
                                     return member.name;
                                 }).join(' | ');
                                 descriptionGenerator();
+                                douban_info_already_ok = true;
                                 downloadPoster([poster]);
                             }, function () {
-                                query_info.html('<b>查询影片的豆瓣信息失败</b>');
+                                query_info(1, '查询影片的豆瓣信息失败...', 'red');
                             });
                         }
                     }, function () {
-                        query_info.html('<b>查询影片的豆瓣信息失败</b>');
+                        query_info(-1, '查询影片的豆瓣信息失败...', 'red');
                     });
-                } else if (query_input.match(/(bgm\.tv|bangumi\.tv|chii\.in)\/subject/)) {
-                    query_info.text("识别输入为Bgm链接，查询中......");
+                }
+                // BGM链接
+                else if (query_input.match(/(bgm\.tv|bangumi\.tv|chii\.in)\/subject/)) {
+                    query_info(-1, "识别输入为Bgm链接，查询中...", 'green');
                     // 以下Bgm相关解析修改自 `https://github.com/Rhilip/PT-help/blob/master/docs/js/Bangumi%20-%20Info%20Export.user.js` 对此表示感谢a
-                    const STAFFSTART = 0; // 读取Staff栏的起始位置（假定bgm的顺序为中文名、话数、放送开始、放送星期... ，staff从第四个 导演 起算）；初始值为 4（对于新番比较合适）
-                    const STAFFNUMBER = 99; // 读取Staff栏数目；初始9，可加大，溢出时按最大可能的staff数读取，如需读取全部请设置值为 Number.MAX_VALUE (或一个你觉得可能最大的值 eg.20)
+                    const STAFFSTART = 4; // 读取Staff栏的起始位置（假定bgm的顺序为中文名、话数、放送开始、放送星期... ，staff从第四个 导演 起算）；初始值为 4（对于新番比较合适）
+                    const STAFFNUMBER = 9; // 读取Staff栏数目；初始9，可加大，溢出时按最大可能的staff数读取，如需读取全部请设置值为 Number.MAX_VALUE (或一个你觉得可能最大的值 eg.20)
                     requestHTML(query_input, function (res) {
-                        var page = jq(res.responseText.match(/<body[^>]*?>([\S\s]+)<\/body>/)[1].replace(/<script(\s|>)[\S\s]+?<\/script>/g, ''));
-                        var img = page.find("div#bangumiInfo>div>div:nth-child(1)>a>img").attr("src").replace(/cover\/[lcmsg]/, "cover/l");
+                        let page = jq(res.responseText.match(/<body[^>]*?>([\S\s]+)<\/body>/)[1].replace(/<script(\s|>)[\S\s]+?<\/script>/g, ''));
+                        let img = page.find("div#bangumiInfo>div>div:nth-child(1)>a>img").attr("src").replace(/cover\/[lcmsg]/, "cover/l");
                         img = img.match(/^http/) ? img : 'http:' + img;
                         downloadPoster([img]);
                         // 主介绍
-                        var story = page.find("div#subject_summary").text(); //Story
-                        var raw_staff = [],
+                        let story = page.find("div#subject_summary").text(); //Story
+                        let raw_staff = [],
                             staff_box = page.find("ul#infobox"); //Staff
-                        for (var staff_number = STAFFSTART; staff_number < Math.min(STAFFNUMBER + STAFFSTART, staff_box.children("li").length); staff_number++) {
+                        for (let staff_number = STAFFSTART; staff_number < Math.min(STAFFNUMBER + STAFFSTART, staff_box.children("li").length); staff_number++) {
                             raw_staff[staff_number - STAFFSTART] = staff_box.children("li").eq(staff_number).text();
                         }
-                        var raw_cast = [],
-                            cast_box = page.find("ul#browserItemList"); //Cast
-                        for (var cast_number = 0; cast_number < cast_box.children("li").length; cast_number++) {
-                            var cast_name = cast_box.children("li").eq(cast_number).find("span.tip").text();
-                            if (!(cast_name.length)) { //如果不存在中文名，则用cv日文名代替
-                                cast_name = cast_box.children("li").eq(cast_number).find("div > strong > a").text().replace(/(^\s*)|(\s*$)/g, ""); //#browserItemList > li > div > strong > a
+                        if (raw_staff.length < STAFFNUMBER - STAFFSTART) {
+                            raw_staff = [];
+                            for (let staff_number = 0; staff_number < staff_box.children("li").length; staff_number++) {
+                                raw_staff[staff_number] = staff_box.children("li").eq(staff_number).text();
                             }
-                            var cv_name = cast_box.children("li").eq(cast_number).find("span.tip_j > a").text();
+                        }
+                        //
+                        let raw_cast = [],
+                            cast_box = page.find("ul#browserItemList"); //Cast
+                        for (let cast_number = 0; cast_number < cast_box.children("li").length; cast_number++) {
+                            let cast_name = cast_box.children("li").eq(cast_number).find("span.tip").text();
+                            if (!(cast_name.length)) { //如果不存在中文名，则用cv日文名代替
+                                cast_name = cast_box.children("li").eq(cast_number).find("div > strong > a").text().trim();
+                            }
+                            let cv_name = cast_box.children("li").eq(cast_number).find("span.tip_j > a").text();
                             raw_cast[cast_number] = cast_name + ' : ' + cv_name;
-                            //console.log(raw_cast[cast_number]);
                         }
 
-                        var outtext = "\n\n" + // img + "\n\n" +
-                            "[b]STORY : [/b]\n" + story + "\n\n" +
+                        let outtext = "\n\n[b]STORY : [/b]\n" + story + "\n\n" +
                             "[b]STAFF : [/b]\n" + raw_staff.join("\n") + "\n\n" +
                             "[b]CAST : [/b]\n" + raw_cast.join("\n") + "\n\n" +
-                            "(来源于 " + res.finalUrl + " )\n";
+                            "(来源于 " + res.finalUrl + " )\n\n";
 
                         GM_setClipboard(outtext);
-                        query_info.html('<b>已复制到剪切板</b>');
+                        bgm_info_already_ok = true;
+                        query_info(2, '已复制到剪切板...', 'green');
                     }, function () {
-                        query_info.html('<b>查询影片的豆瓣信息失败</b>');
+                        query_info(-1, '查询影片的BGM信息失败...', 'red');
                     });
-                } else if (query_input.match(/(store\.steampowered\.com|steamcommunity\.com)/)) {
-                    query_info.text("识别输入为Steam链接，查询中......");
+                }
+                // Steam
+                else if (query_input.match(/(store\.steampowered\.com|steamcommunity\.com)/)) {
+                    query_info(-1, "识别输入为Steam链接，查询中...", 'green');
                     requestJson('https://api.rhilip.info/tool/movieinfo/gen?url=' + query_input, function (json) {
                         if (json.success) {
                             let steam_info = json.format;
                             //https://store.steampowered.com/app/504230
-                            var img_arr = [];
+                            let img_arr = [];
                             steam_info = steam_info.replace(/\[img\][\s\S]*?\[\/img\]/g, function (m) {
                                 let h = m.replace(/\[\/?img\]/g, "");
                                 img_arr.push(h);
-                                return h;
+                                return h.replace(/.*\//, '');
                             });
                             downloadPoster(img_arr);
+                            game_info_already_ok = true;
                             GM_setClipboard(steam_info);
-                            query_info.html('<b>已复制到剪切板</b>');
+                            query_info(3, '已复制到剪切板...', 'green');
                         } else {
-                            query_info.html('<b>查询Steam信息失败</b>');
+                            query_info(-1, '查询Steam信息失败...', 'red');
                         }
                     }, function () {
-                        query_info.html('<b>查询Steam信息失败</b>');
+                        query_info(-1, '查询Steam信息失败...', 'red');
                     });
                 } else {
-                    query_info.html('<b>不支持这种链接(ノ｀Д)ノ</b>');
+                    query_info(-1, '不支持这种链接(ノ｀Д)ノ...', 'red');
                 }
             } else {
-                query_info.text('识别输入内容为文字格式，尝试搜索.......');
-                var Search_From_API = function (url, successHandle) {
+                query_info(-1, '识别输入内容为文字格式，尝试搜索...', 'green');
+                let Search_From_API = function (url, successHandle) {
                     requestHTML(url, function (resj) {
-                        query_info.text("请求成功，请选择对应链接");
-                        var search_html = successHandle(resj);
+                        query_info(-1, "搜索成功，请选择对应链接...", 'green');
+                        let search_html = successHandle(resj);
                         if (search_html) {
-                            var qshtml = '<h3 class="flb"><em id="return_reply">查询结果</em><span><a href="javascript:;" class="flbc" onclick="hideWindow(\'qszs\')" title="\u5173\u95ed">\u5173\u95ed</a></span></h3><div id="hdsettingdialog" style="width:680px;height:320px;">' +
+                            let qshtml = '<h3 class="flb"><em id="return_reply">查询结果</em><span><a href="javascript:;" class="flbc" onclick="hideWindow(\'qszs\')" title="\u5173\u95ed">\u5173\u95ed</a></span></h3><div id="hdsettingdialog" style="width:680px;height:320px;">' +
                                 '<div class="c" style="height:357px;">' +
                                 '<div id="query_res" style="overflow-y:scroll;width:650px; height:300px;">';
                             qshtml += search_html;
                             qshtml += '</div></div></div><style>#query_res span{display:inline-block;width: 55px}</style>';
                             showWindow('qszs', qshtml, 'html');
                             jq("a.res_search_choose").click(function () {
-                                var tag = jq(this);
+                                let tag = jq(this);
                                 jq('#query_input').val(tag.attr("data-url"));
                                 jq('#query_btn').click();
                                 hideWindow('qszs');
                             });
 
                         } else {
-                            query_info.html('<b>无搜索结果</b>');
+                            query_info(-1, '无搜索结果...', 'green');
                         }
                     }, function () {
-                        query_info.html('<b>搜索失败</b>');
+                        query_info(-1, '搜索失败...', 'red');
                     });
                 };
-                let query_typeid = jq('select#query_typeid').val();
-                if (query_typeid == 2) { // Bgm
+                if (query_type == 2) { // Bgm
                     Search_From_API("https://api.bgm.tv/search/subject/" + query_input + "?responseGroup=large&max_results=20&start=0", function (res) {
                         let resj = JSON.parse(res.responseText);
                         let search_html = "";
@@ -1725,18 +1721,19 @@ const jq = jQuery.noConflict();
                             };
                             for (let i_bgm = 0; i_bgm < resj.list.length; i_bgm++) {
                                 let i_item = resj.list[i_bgm];
+                                let name = (i_item.name_cn == i_item.name) ? i_item.name_cn : (i_item.name_cn + " | " + i_item.name);
                                 let bg_color = (i_bgm % 2 == 1) ? " bgcolor=\"#E8E8E8\"" : "";
-                                search_html += "<tr" + bg_color + "><td>" + i_item.air_date + "</td><td>" + tp_dict[i_item.type] + "</td><td>" + i_item.name_cn + " | " + i_item.name + "</td><td align=\"center\"><a href='" + i_item.url + "' target='_blank'>" + i_item.id + "</a></td><td align=\"center\"><a href='javascript:void(0);' class='res_search_choose' data-url='" + i_item.url + "'><b>选择</b></a></td></tr>";
+                                search_html += "<tr" + bg_color + "><td>" + i_item.air_date + "</td><td>" + tp_dict[i_item.type] + "</td><td>" + name.replace(/^\s*\|\s*|\s*\|\s*$/g, '').trim() + "</td><td align=\"center\"><a href='" + i_item.url + "' target='_blank'>" + i_item.id + "</a></td><td align=\"center\"><a href='javascript:void(0);' class='res_search_choose' data-url='" + i_item.url + "'><b>选择</b></a></td></tr>";
                             }
                             search_html += "</table>";
                         }
                         return search_html;
                     });
-                } else if (query_typeid == 3) { //Steam
+                } else if (query_type == 3) { //Steam
                     query_input = query_input.trim().replace(/[\.\s]+/g, '+');
                     Search_From_API('https://store.steampowered.com/search/?term=' + query_input, function (res) {
                         let page = jq(res.responseText.match(/<body[^>]*?>([\S\s]+)<\/body>/)[1].replace(/<script(\s|>)[\S\s]+?<\/script>/g, ''));
-                        var search_html = "";
+                        let search_html = "";
                         if (page.find('a.search_result_row').length) {
                             search_html = '<table id="search_res_table" style="width: 100%" cellspacing="10px"><tr bgcolor="#F3F781">' +
                                 '<th style="width: 20%">日期</th>' +
@@ -1850,28 +1847,28 @@ const jq = jQuery.noConflict();
         }
         //复制种子信息
         jq('#clone_btn').click(function () {
-            var info = jq('#clone_info');
             let copy_link = jq('#clone_from').val().trim();
+            let copy_info = function (info, color) {
+                jq('#clone_info').html(`<span style="color:${color}">${info}</span>`);
+            };
             if (copy_link == '') {
-                info.html('<b>请输入链接</b>')
+                copy_info('请输入种子ID或链接...', 'red');
                 return;
             }
             if (/^\d+$/.test(copy_link) || copy_link.match(/bt\.neu6\.edu\.cn/)) {
                 let seedfrom = (/^\d+$/.test(copy_link)) ? copy_link : copy_link.match(/(thread-|tid=)(\d+)/)[2];
-
-                // 如果输入了有效的编号，开始读取对应的种子页面
-                info.html('<b>正在读取...</b>');
+                copy_info('正在读取...', 'green');
                 jq.get('http://bt.neu6.edu.cn/thread-' + seedfrom + '-1-1.html', function (resp) {
-                    info.html('<b>正在分析...</b>');
+                    copy_info('正在分析...', 'green');
                     let body = resp.match(/<body[^>]*>[\s\S]*<\/body>/gi)[0].replace(/来自群组: <a[\s\S]*?a>/, "");
-                    let page = jq(body); // 构造 jQuery 对象，用于后期处理
+                    let page = jq(body);
                     let title = page.find("span#thread_subject").text();
                     if (!title) {
-                        info.html('<b>失败，可能由于种子不存在或者网络问题</b>');
+                        copy_info('失败，可能由于种子不存在或者网络问题...', 'red');
                         return;
                     }
                     if (auto_add) {
-                        if ([48, 14, 44].indexOf(forum_id) >= 0) { //高清剧集
+                        if ([48, 14, 44].indexOf(forum_id) >= 0) {
                             title = tvseasonhandle(title);
 
                         } else if (forum_id == 16) { //综艺娱乐
@@ -1888,7 +1885,6 @@ const jq = jQuery.noConflict();
                             }
                         }
                     }
-
                     //填写分类
                     let oldtype = page.find('a#newspecial').attr("onclick").match(/fid=(\d+)/)[1];
                     let newtype = location.href.match(/fid=(\d+)/)[1];
@@ -1963,12 +1959,10 @@ const jq = jQuery.noConflict();
                             jq('#typeid>option').val(typeid);
                         }
                     }
-                    //对将要填入的内容部分进行预处理
                     let descr = page.find('td.t_f').first();
                     //如果存在修改信息(本帖最后由 xxxxxx 于 yyyy-MM-dd HH:mm 编辑)，则删除
                     if (descr.find('.pstatus').length) {
                         descr.find('.pstatus').remove();
-                        //删除修改信息与正文之间两个空行
                         descr.find('br').eq(0).remove();
                         descr.find('br').eq(0).remove();
                     }
@@ -1977,13 +1971,10 @@ const jq = jQuery.noConflict();
                         let img = jq(this).find('img:first');
                         //借用file属性信息修正引用过程中出错的src信息
                         img.attr('src', 'http://bt.neu6.edu.cn' + img.attr('file'));
-                        //移除引用过程中原图片无用的img属性
                         img.removeAttr('file id aid zoomfile class inpost onmouseover onclick');
-                        let hideimg = img.parent('ignore_js_op'); //移动img结点
+                        let hideimg = img.parent('ignore_js_op');
                         img.insertAfter(hideimg);
                     });
-                    //代码部分处理
-                    descr.find('div.quote').remove();
                     descr.find('.blockcode').remove();
                     descr.find('blockcode').remove();
                     //移除含有图片或附件的父节点
@@ -2001,10 +1992,10 @@ const jq = jQuery.noConflict();
                     });
                     // 填写信息
                     fillSeedInfo(title, descr.html(), link, tag.join(','));
-                    info.html('<b>克隆种子信息完成</b>');
+                    copy_info('克隆种子信息完成...', 'green');
                 });
             } else {
-                info.html('<b>请输入有效的种子链接</b>');
+                copy_info('请输入有效的种子链接', 'red');
             }
         });
     }
