@@ -96,12 +96,6 @@
             "search_prefix": "https://hdsky.me/torrents.php?search="
         },
         {
-            "name": "Hyperay",
-            "type": "gw",
-            "temple": "NexusPHP",
-            "search_prefix": "https://www.hyperay.org/torrents.php?search="
-        },
-        {
             "name": "HDChina",
             "type": "gw",
             "temple": "HDChina",
@@ -312,9 +306,5 @@
     ],
     "wz": [],
     "bt": [],
-    "disable": [
-        "HIT",
-        "CUGB",
-        "Antsoul"
-    ]
+    "disable": []
 }

@@ -265,8 +265,6 @@ $(document).ready(function () {
 							}
 						} else if ('CMCT' == site && torrent_data_raw.find('.torrentname span>span').length) {
 							free_time = '[' + torrent_data_raw.find('.torrentname span>span').text() + ']';
-						} else if ('Hyperay' == site && torrent_data_raw.find('font>span').length) {
-							free_time = '[' + torrent_data_raw.find('font>span').text() + ']';
 						} else if ('TJUPT' == site) {
 							m = torrent_data_raw.find('table.torrentname').html().match(/\[剩余时间.*?>(.*?)<\/span>/);
 							free_time = m ? ('[' + m[1] + ']') : '';
@@ -766,7 +764,6 @@ $(document).ready(function () {
 		// 公网通用模板解析
 		NexusPHP("HDSKY", "https://hdsky.me/torrents.php?$cat$&incldead=1&search=$key$");
 		NexusPHP("HDArea", "https://www.hdarea.co/torrents.php?$cat$&incldead=1&search=$key$");
-		NexusPHP("Hyperay", "https://www.hyperay.org/torrents.php?search=$key$");
 		NexusPHP("HDHome", "https://hdhome.org/torrents.php?$cat$&incldead=1&search=$key$");
 		NexusPHP("HDHome(Live)", "https://hdhome.org/live.php?search=$key$");
 		NexusPHP("HDTime", "https://hdtime.org/torrents.php?$cat$&incldead=1&search=$key$");
