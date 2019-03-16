@@ -10,8 +10,8 @@
     <meta name="author" content="Rhilip">
     <title>PT Search</title>
     <!-- Bootstrap core CSS -->
-    <link href="https://cdn.bootcss.com/bootstrap/3.3.7/css/bootstrap.min.css" rel="stylesheet">
-    <link href="https://cdn.bootcss.com/bootstrap-table/1.11.1/bootstrap-table.min.css" rel="stylesheet">
+    <link href="static/css/bootstrap.min.css" rel="stylesheet">
+    <link href="static/css/bootstrap-table.min.css" rel="stylesheet">
     <!-- Custom styles for this template -->
     <style type="text/css">
         html {
@@ -86,8 +86,8 @@
             </div>
             <div id="navbar" class="navbar-collapse collapse">
                 <ul class="nav navbar-nav navbar-right">
-                    <li><a href="#" data-toggle="modal" data-target="#SearchSetting"><span class="glyphicon glyphicon-list"></span>&nbsp;&nbsp;Setting</a></li>
-                    <li><a href="#" data-toggle="modal" data-target="#SearchLog"><span class="glyphicon glyphicon-info-sign"></span>&nbsp;&nbsp;Log</a></li>
+                    <li><a href="#" data-toggle="modal" data-target="#SearchSetting">&nbsp;&nbsp;Setting</a></li>
+                    <li><a href="#" data-toggle="modal" data-target="#SearchLog">&nbsp;&nbsp;Log</a></li>
                     <li>&nbsp;&nbsp;</li>
                 </ul>
             </div>
@@ -99,10 +99,10 @@
                 <div id="use-tampermonkey" class="alert alert-danger">
                     Please Install <a href="https://tampermonkey.net/" target="_blank">Tampermonkey</a>, And the correspond userscript - <a href="https://github.com/harleybai/PT-help/raw/master/docs/js/ptsearch.user.js" target="_blank">Pt-search</a> to <strong>USE</strong> this pages.<br> If you make sure that the Tampermonkey and userscript install correctly, Please refresh the page by press `F5`.
                 </div>
-                <div id="hide-without-tampermonkey" style="display: none">
+                <!-- <div id="hide-without-tampermonkey" style="display: none"> -->
+                <div id="hide-without-tampermonkey">
                     <div id="toolbar" class="form-inline">
                         <div class="input-group">
-                            <div class="input-group-addon"><span class="glyphicon glyphicon-cloud"></span></div>
                             <select id="searchcat" class="form-control">
                                 <option value="0">全部</option>
                                 <option value="1">电影</option>
@@ -120,8 +120,7 @@
                         <div class="input-group">
                             <input id="keyword" type="text" class="form-control" placeholder="Search Text">
                         </div>
-                        <button type="button" id="advsearch" class="btn btn-primary">
-                            <span class="glyphicon glyphicon-search"></span>&nbsp;&nbsp;Search
+                        <button type="button" id="advsearch" class="btn btn-primary">&nbsp;&nbsp;Search
                         </button>
                     </div>
                     <div class="table-responsive">
@@ -133,7 +132,7 @@
                         <ol>
                             <li>You must have account when searching in A Private Tracker, and logged in (Check the login status in the new tab).
                             </li>
-                            <li>For more help, Please visit <a href="https://github.com/Rhilip/PT-help/issues/2" target="_blank">Rhilip/PT-help/issue#2]</a>.
+                            <li>For more help, Please visit <a href="https://github.com/Rhilip/PT-help/issues" target="_blank">Rhilip/PT-help/issue#2]</a>.
                             </li>
                         </ol>
                     </div>
@@ -146,8 +145,8 @@
             <!-- Button trigger modal -->
             <div class="navbar-collapse collapse">
                 <ul class="nav navbar-nav navbar-right">
-                    <li><a href="//blog.rhilip.info/archives/712/" target="_blank">About</a></li>
-                    <li><a href="//blog.rhilip.info" target="_blank">Powered By @Rhilip</a></li>
+                    <li><a href="https://blog.rhilip.info/archives/712/" target="_blank">About</a></li>
+                    <li><a href="https://blog.rhilip.info/" target="_blank">Powered By @Rhilip</a></li>
                 </ul>
             </div>
             <!-- Modal -->
@@ -258,9 +257,9 @@
     <!-- Bootstrap core JavaScript
 ================================================== -->
     <!-- Placed at the end of the document so the pages load faster -->
-    <script src="https://cdn.bootcss.com/jquery/1.12.4/jquery.min.js"></script>
-    <script src="https://cdn.bootcss.com/bootstrap/3.3.7/js/bootstrap.min.js"></script>
-    <script src="https://cdn.bootcss.com/bootstrap-table/1.11.1/bootstrap-table.min.js"></script>
+    <script src="static/js/jquery.min.js"></script>
+    <script src="static/js/bootstrap.min.js"></script>
+    <script src="static/js/bootstrap-table.min.js"></script>
     <script>
         /** Script for Main Search Result Table */
         $('#table').bootstrapTable({
@@ -333,21 +332,21 @@
                 searchable: false
             }, {
                 field: 'seeders',
-                title: '<span class="glyphicon glyphicon-arrow-up"></span>',
+                title: '↓',
                 align: 'center',
                 valign: 'middle',
                 sortable: 'true',
                 searchable: false
             }, {
                 field: 'leechers',
-                title: '<span class="glyphicon glyphicon-arrow-down"></span>',
+                title: '↑',
                 align: 'center',
                 valign: 'middle',
                 sortable: 'true',
                 searchable: false
             }, {
                 field: 'completed',
-                title: '<span class="glyphicon glyphicon-ok"></span>',
+                title: '√',
                 align: 'center',
                 valign: 'middle',
                 sortable: 'true',
