@@ -1,5 +1,6 @@
 <!DOCTYPE html>
 <html lang="zh-CN">
+
 <head>
     <meta charset="utf-8">
     <meta http-equiv="X-UA-Compatible" content="IE=edge">
@@ -11,7 +12,7 @@
     <title>Pt Analytics</title>
 
     <!-- Bootstrap core CSS -->
-    <link href="https://cdn.bootcss.com/bootstrap/3.3.7/css/bootstrap.min.css" rel="stylesheet">
+    <link href="static/css/bootstrap.min.css" rel="stylesheet">
 
     <!-- Custom styles for this template -->
     <style>
@@ -40,7 +41,7 @@
         -------------------------------------------------- */
         /* Not required for template or sticky footer method. */
 
-        body > .container {
+        body>.container {
             padding: 60px 15px 0;
         }
 
@@ -48,7 +49,7 @@
             margin: 20px 0;
         }
 
-        .footer > .container {
+        .footer>.container {
             padding-right: 15px;
             padding-left: 15px;
         }
@@ -67,89 +68,89 @@
 
 <body>
 
-<!-- Fixed navbar -->
-<nav class="navbar navbar-default navbar-fixed-top">
-    <div class="container">
-        <div class="navbar-header">
-            <a class="navbar-brand" href="#">Pt Analytics</a>
+    <!-- Fixed navbar -->
+    <nav class="navbar navbar-default navbar-fixed-top">
+        <div class="container">
+            <div class="navbar-header">
+                <a class="navbar-brand" href="#">Pt Analytics</a>
+            </div>
         </div>
-    </div>
-</nav>
+    </nav>
 
-<!-- Begin page content -->
-<div class="container">
-    <h2>Site: </h2>
-    <div id="site_select"></div>
-    <hr/>
-    <h3>Overview</h3>
-    <div id="overview"></div>
-    <hr/>
-    <h3>Total Recorded Data View</h3>
-    <div id="total_line" style="width:100%; height:460px"></div>
-    <hr/>
-    <h3>Yearly Heatmap</h3>
-    <div id="heatmap_yearly"></div>
-    <h3>Time Distribution (Monthly)</h3>
-    <div id="time_distribution" style="width:100%; height:460px"></div>
-</div>
-
-<footer class="footer">
+    <!-- Begin page content -->
     <div class="container">
-        <p class="text-muted text-right">Powered By <a href="https://blog.rhilip.info/" target="_blank">@Rhilip</a> with
-            <a href="ptboard.html">Pt-Board</a> Database.</p>
+        <h2>Site: </h2>
+        <div id="site_select"></div>
+        <hr />
+        <h3>Overview</h3>
+        <div id="overview"></div>
+        <hr />
+        <h3>Total Recorded Data View</h3>
+        <div id="total_line" style="width:100%; height:460px"></div>
+        <hr />
+        <h3>Yearly Heatmap</h3>
+        <div id="heatmap_yearly"></div>
+        <h3>Time Distribution (Monthly)</h3>
+        <div id="time_distribution" style="width:100%; height:460px"></div>
     </div>
-</footer>
+
+    <footer class="footer">
+        <div class="container">
+            <p class="text-muted text-right">Powered By <a href="https://blog.rhilip.info/" target="_blank">@Rhilip</a> with
+                <a href="ptboard.html">Pt-Board</a> Database.</p>
+        </div>
+    </footer>
 
 
-<!-- Bootstrap core JavaScript
+    <!-- Bootstrap core JavaScript
 ================================================== -->
-<!-- Placed at the end of the document so the pages load faster -->
-<script src="https://cdn.bootcss.com/jquery/1.12.4/jquery.min.js"></script>
-<script src="https://cdn.bootcss.com/bootstrap/3.3.7/js/bootstrap.min.js"></script>
-<script src="https://cdn.bootcss.com/echarts/4.0.4/echarts.min.js"></script>
-<script src="https://cdn.bootcss.com/moment.js/2.22.0/moment.min.js"></script>
-<script src="https://cdn.bootcss.com/moment-range/3.1.1/moment-range.min.js"></script>
+    <!-- Placed at the end of the document so the pages load faster -->
+    <script src="static/js/jquery.min.js"></script>
+    <script src="static/js/bootstrap.min.js"></script>
+    <script src="static/js/echarts.min.js"></script>
+    <script src="static/js/moment.min.js"></script>
+    <script src="static/js/moment-range.min.js"></script>
 
-<script>
-    window['moment-range'].extendMoment(moment);
-    const KEY_FROM_LOCAL_STORAGE = 'analytics_data';
+    <script>
+        window['moment-range'].extendMoment(moment);
+        const KEY_FROM_LOCAL_STORAGE = 'analytics_data';
 
-    function it2str(it, str_temp) {
-        let ret = "";
-        it.forEach((x) => {
-            ret += str_temp.replace(/\${}/ig, x);
-        });
-        return ret;
-    }
+        function it2str(it, str_temp) {
+            let ret = "";
+            it.forEach((x) => {
+                ret += str_temp.replace(/\${}/ig, x);
+            });
+            return ret;
+        }
 
-    function daysBetween(start, end) {
-        return Math.round(moment.range(start, end).valueOf() / 8.64e7);
-    }
+        function daysBetween(start, end) {
+            return Math.round(moment.range(start, end).valueOf() / 8.64e7);
+        }
 
-    function leapYear(year) {
-        return !(year % (year % 100 ? 4 : 400));
-    }
+        function leapYear(year) {
+            return !(year % (year % 100 ? 4 : 400));
+        }
 
-    function table_render() {
-        let raw = localStorage.getItem(KEY_FROM_LOCAL_STORAGE);
-        if (!raw) return;
-        let raw_data = (JSON.parse(raw)).data;
+        function table_render() {
+            let raw = localStorage.getItem(KEY_FROM_LOCAL_STORAGE);
+            if (!raw) return;
+            let raw_data = (JSON.parse(raw)).data;
 
-        // Site select and it's Data
-        let site = $("div#site_select input:checked").attr("value") || "BYR";
-        let push_data_dic = raw_data.filter(dic => dic.site === site);
+            // Site select and it's Data
+            let site = $("div#site_select input:checked").attr("value") || "BYR";
+            let push_data_dic = raw_data.filter(dic => dic.site === site);
 
-        // Overview
-        let ov_total = push_data_dic.map(dic => dic.count).reduce((a, b) => a + b);
-        let ov_first_date = push_data_dic[0].date;
-        let ov_last_date = push_data_dic[push_data_dic.length - 1].date;
-        let ov_date_f2l = daysBetween(Date.parse(ov_first_date), Date.parse(ov_last_date));
-        let ov_date_f2n = daysBetween(Date.parse(ov_first_date), Date.now());
-        let ov_max_day_data = push_data_dic.reduce((a, b) => b.count > a.count ? b : a);
-        let year_set = Array.from(new Set(push_data_dic.map(dic => dic.date.slice(0, 4)))).sort();
+            // Overview
+            let ov_total = push_data_dic.map(dic => dic.count).reduce((a, b) => a + b);
+            let ov_first_date = push_data_dic[0].date;
+            let ov_last_date = push_data_dic[push_data_dic.length - 1].date;
+            let ov_date_f2l = daysBetween(Date.parse(ov_first_date), Date.parse(ov_last_date));
+            let ov_date_f2n = daysBetween(Date.parse(ov_first_date), Date.now());
+            let ov_max_day_data = push_data_dic.reduce((a, b) => b.count > a.count ? b : a);
+            let year_set = Array.from(new Set(push_data_dic.map(dic => dic.date.slice(0, 4)))).sort();
 
-        $("div#overview").html(() => {
-            let base = `
+            $("div#overview").html(() => {
+                let base = `
             <dl class="dl-horizontal text-overflow">
               <dt>Site</dt><dd><mark>${site}</mark></dd>
               <dt>Status</dt>
@@ -165,11 +166,11 @@
                   Max torrent publish numbers appears at  <mark>${ov_max_day_data.date}</mark> with <mark>${ov_max_day_data.count}</mark> torrents.<br>
               </dd>`;
 
-            base += `<dt>Yearly Status</dt><dd>`;
-            year_set.forEach((x) => {
-                let yearly_dic = push_data_dic.filter(dic => dic.date.slice(0, 4) === x);  // Get correct year data
-                let yearly_dic_count = yearly_dic.map(dic => dic.count).reduce((a, b) => a + b);
-                base += `<strong>${x}</strong>: Total Online days:  <mark>${yearly_dic.length}
+                base += `<dt>Yearly Status</dt><dd>`;
+                year_set.forEach((x) => {
+                    let yearly_dic = push_data_dic.filter(dic => dic.date.slice(0, 4) === x); // Get correct year data
+                    let yearly_dic_count = yearly_dic.map(dic => dic.count).reduce((a, b) => a + b);
+                    base += `<strong>${x}</strong>: Total Online days:  <mark>${yearly_dic.length}
                          (${(yearly_dic.length / (leapYear(x) ? 366 : 365) * 100).toFixed(2)} %)</mark>,
                          With Recorded Torrents: <mark>${yearly_dic_count}</mark>,
                          Average <mark>${(yearly_dic_count / yearly_dic.length).toFixed(2)}</mark> (Online days),
@@ -177,181 +178,180 @@
                          torrents per day
                          <br>
                 `;
+                });
+                base += '</dd></dl>';
+                return base
             });
-            base += '</dd></dl>';
-            return base
-        });
 
-        // Total Recorded Data View
-        let date_range_gen = moment.range(ov_first_date, ov_last_date);
-        let date_range = Array.from(date_range_gen.by("day")).map(m => m.format('YYYY-MM-DD'));
+            // Total Recorded Data View
+            let date_range_gen = moment.range(ov_first_date, ov_last_date);
+            let date_range = Array.from(date_range_gen.by("day")).map(m => m.format('YYYY-MM-DD'));
 
-        let raw_date = push_data_dic.map(dic => dic.date);
-        let raw_count = push_data_dic.map(dic => dic.count);
+            let raw_date = push_data_dic.map(dic => dic.date);
+            let raw_count = push_data_dic.map(dic => dic.count);
 
-        let TotalLineChart = echarts.init(document.getElementById(`total_line`));
-        TotalLineChart.setOption({
-            tooltip: {
-                trigger: 'axis',
-                position: function (pt) {
-                    return [pt[0], '10%'];
-                }
-            },
-            xAxis: {
-                type: 'category',
-                boundaryGap: false,
-                data: date_range
-            },
-            yAxis: {
-                type: 'value',
-                max: 'dataMax',
-            },
-            dataZoom: {
-                start: 90,
-                end: 100
-            },
-            series: {
-                name: 'Count',
-                type: 'line',
-                smooth: true,
-                itemStyle: {
-                    normal: {
-                        color: 'rgb(255, 70, 131)'
+            let TotalLineChart = echarts.init(document.getElementById(`total_line`));
+            TotalLineChart.setOption({
+                tooltip: {
+                    trigger: 'axis',
+                    position: function (pt) {
+                        return [pt[0], '10%'];
                     }
                 },
-                areaStyle: {
-                    normal: {
-                        color: new echarts.graphic.LinearGradient(0, 0, 0, 1, [{
-                            offset: 0,
-                            color: 'rgb(255, 158, 68)'
-                        }, {
-                            offset: 1,
-                            color: 'rgb(255, 70, 131)'
-                        }])
-                    }
+                xAxis: {
+                    type: 'category',
+                    boundaryGap: false,
+                    data: date_range
                 },
-                data: date_range.map(date => raw_count[raw_date.indexOf(date)] || 0)
-            }
-        });
-
-        // HeatMap
-        $("div#heatmap_yearly").html(it2str(year_set, '<div id="heatmap${}" style="width:100%; height:220px"></div><hr>'));
-
-        year_set.forEach((x) => {
-            let YearlyHeatmapChart = echarts.init(document.getElementById(`heatmap${x}`));
-            let push_data_dic_correct = push_data_dic.filter(dic => dic.date.slice(0, 4) === x);  // Get correct year data
-            YearlyHeatmapChart.setOption({
-                visualMap: {
-                    min: 0,
-                    max: push_data_dic_correct.map(dic => dic.count).reduce((a, b) => Math.max(a, b)),
-                    calculable: true,
-                    orient: 'horizontal',
-                    left: 'center',
-                    top: 'top'
+                yAxis: {
+                    type: 'value',
+                    max: 'dataMax',
                 },
-                calendar: {
-                    range: x
+                dataZoom: {
+                    start: 90,
+                    end: 100
                 },
                 series: {
-                    type: 'heatmap',
-                    coordinateSystem: 'calendar',
-                    data: push_data_dic_correct.map(dic => [dic.date, dic.count])
-                },
-                tooltip: {
-                    position: 'top',
-                    formatter: p => {
-                        let format = echarts.format.formatTime('yyyy-MM-dd', p.data[0]);
-                        return format + ': ' + p.data[1];
-                    }
-                },
-            });
-        });
-
-        // Time DistributionChart
-        let colors = ['#5793f3', '#d14a61'];
-        let month_list = ["01", "02", "03", "04", "05", "06", "07", "08", "09", "10", "11", "12"];
-        let month_data = month_list.map((x) => {
-            let rObj = {};
-            let month_data = push_data_dic.filter(dic => dic.date.slice(5, 7) === x);
-            rObj["month"] = x;
-            rObj["count"] = month_data.map(dic => dic.count).reduce((a, b) => a + b);
-            rObj["average"] = (rObj["count"] / month_data.length).toFixed(2);
-            return rObj;
-        });
-
-        let TimeDistributionChart = echarts.init(document.getElementById(`time_distribution`));
-        TimeDistributionChart.setOption({
-            color: colors,
-            tooltip: {
-                trigger: 'axis',
-                axisPointer: {
-                    type: 'cross'
-                }
-            },
-            legend: {
-                data: ['Count', 'Average']
-            },
-            xAxis: {
-                type: 'category',
-                axisTick: {
-                    alignWithLabel: true
-                },
-                data: month_data.map(x => x.month + "月")
-            },
-            yAxis: [
-                {
-                    type: 'value',
                     name: 'Count',
-                    min: 0,
-                    max: parseInt(Math.max(...month_data.map(x => x.count)) * 1.25),
-                    position: 'left',
-                    axisLine: {
-                        lineStyle: {
-                            color: colors[0]
+                    type: 'line',
+                    smooth: true,
+                    itemStyle: {
+                        normal: {
+                            color: 'rgb(255, 70, 131)'
                         }
                     },
+                    areaStyle: {
+                        normal: {
+                            color: new echarts.graphic.LinearGradient(0, 0, 0, 1, [{
+                                offset: 0,
+                                color: 'rgb(255, 158, 68)'
+                            }, {
+                                offset: 1,
+                                color: 'rgb(255, 70, 131)'
+                            }])
+                        }
+                    },
+                    data: date_range.map(date => raw_count[raw_date.indexOf(date)] || 0)
+                }
+            });
+
+            // HeatMap
+            $("div#heatmap_yearly").html(it2str(year_set, '<div id="heatmap${}" style="width:100%; height:220px"></div><hr>'));
+
+            year_set.forEach((x) => {
+                let YearlyHeatmapChart = echarts.init(document.getElementById(`heatmap${x}`));
+                let push_data_dic_correct = push_data_dic.filter(dic => dic.date.slice(0, 4) === x); // Get correct year data
+                YearlyHeatmapChart.setOption({
+                    visualMap: {
+                        min: 0,
+                        max: push_data_dic_correct.map(dic => dic.count).reduce((a, b) => Math.max(a, b)),
+                        calculable: true,
+                        orient: 'horizontal',
+                        left: 'center',
+                        top: 'top'
+                    },
+                    calendar: {
+                        range: x
+                    },
+                    series: {
+                        type: 'heatmap',
+                        coordinateSystem: 'calendar',
+                        data: push_data_dic_correct.map(dic => [dic.date, dic.count])
+                    },
+                    tooltip: {
+                        position: 'top',
+                        formatter: p => {
+                            let format = echarts.format.formatTime('yyyy-MM-dd', p.data[0]);
+                            return format + ': ' + p.data[1];
+                        }
+                    },
+                });
+            });
+
+            // Time DistributionChart
+            let colors = ['#5793f3', '#d14a61'];
+            let month_list = ["01", "02", "03", "04", "05", "06", "07", "08", "09", "10", "11", "12"];
+            let month_data = month_list.map((x) => {
+                let rObj = {};
+                let month_data = push_data_dic.filter(dic => dic.date.slice(5, 7) === x);
+                rObj["month"] = x;
+                rObj["count"] = month_data.map(dic => dic.count).reduce((a, b) => a + b);
+                rObj["average"] = (rObj["count"] / month_data.length).toFixed(2);
+                return rObj;
+            });
+
+            let TimeDistributionChart = echarts.init(document.getElementById(`time_distribution`));
+            TimeDistributionChart.setOption({
+                color: colors,
+                tooltip: {
+                    trigger: 'axis',
+                    axisPointer: {
+                        type: 'cross'
+                    }
                 },
-                {
-                    type: 'value',
-                    name: 'Average',
-                    min: 0,
-                    max: parseInt(Math.max(...month_data.map(x => x.average)) * 1.25),
-                    position: 'right',
-                    axisLine: {
-                        lineStyle: {
-                            color: colors[1]
+                legend: {
+                    data: ['Count', 'Average']
+                },
+                xAxis: {
+                    type: 'category',
+                    axisTick: {
+                        alignWithLabel: true
+                    },
+                    data: month_data.map(x => x.month + "月")
+                },
+                yAxis: [{
+                        type: 'value',
+                        name: 'Count',
+                        min: 0,
+                        max: parseInt(Math.max(...month_data.map(x => x.count)) * 1.25),
+                        position: 'left',
+                        axisLine: {
+                            lineStyle: {
+                                color: colors[0]
+                            }
+                        },
+                    },
+                    {
+                        type: 'value',
+                        name: 'Average',
+                        min: 0,
+                        max: parseInt(Math.max(...month_data.map(x => x.average)) * 1.25),
+                        position: 'right',
+                        axisLine: {
+                            lineStyle: {
+                                color: colors[1]
+                            }
                         }
                     }
-                }
-            ],
-            series: [
-                {
-                    name: 'Count',
-                    type: 'bar',
-                    data: month_data.map(x => x.count)
-                },
-                {
-                    name: 'Average',
-                    type: 'line',
-                    yAxisIndex: 1,
-                    data: month_data.map(x => x.average)
-                }
-            ]
-        })
-    }
+                ],
+                series: [{
+                        name: 'Count',
+                        type: 'bar',
+                        data: month_data.map(x => x.count)
+                    },
+                    {
+                        name: 'Average',
+                        type: 'line',
+                        yAxisIndex: 1,
+                        data: month_data.map(x => x.average)
+                    }
+                ]
+            })
+        }
 
-    $.getJSON("https://api.rhilip.info/json/ptanalytics.json", null, function (res) {
-        let data = res.data;
+        $.getJSON("https://api.rhilip.info/json/ptanalytics.json", null, function (res) {
+            let data = res.data;
 
-        $("div#site_select").html(it2str(
-            new Set(data.map(x => x.site)),
-            '<label class="radio-inline"><input type="radio" name="site" id="option${}" value="${}">${}</label>'
-        ));
+            $("div#site_select").html(it2str(
+                new Set(data.map(x => x.site)),
+                '<label class="radio-inline"><input type="radio" name="site" id="option${}" value="${}">${}</label>'
+            ));
 
-        localStorage.setItem(KEY_FROM_LOCAL_STORAGE, JSON.stringify(res));
-        $("input").change(() => table_render());
-        $("input[name='site'][value='BYR']").click();
-    });
-</script>
+            localStorage.setItem(KEY_FROM_LOCAL_STORAGE, JSON.stringify(res));
+            $("input").change(() => table_render());
+            $("input[name='site'][value='BYR']").click();
+        });
+    </script>
 </body>
+
 </html>
