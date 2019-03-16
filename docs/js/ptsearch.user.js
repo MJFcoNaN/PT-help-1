@@ -226,16 +226,17 @@ $(document).ready(function () {
 				for (var i = 0; i < tr_list.length; i++) {
 					var torrent_data_raw = tr_list.eq(i);
 					var _tag_name = torrent_data_raw.find("a[href*='hit']").first();
-					/*var _tag_subname = '';
-					if (torrent_data_raw.find('.torrentname td:first').length) {
-						_tag_subname = torrent_data_raw.find('.torrentname tr:first').html().replace(/<a.*?<\/a>|<img.*?<\/img>|<b.*?<\/b>|<span.*?<\/span>/g, '').replace(/<.*?>|&nbsp;/g, '').trim();
-					}*/
 
 					let free = '';
 					let free_time = '';
+					let m;
 					let free_img = torrent_data_raw.find("img[src='pic/trans.gif']:not(.sticky)").filter(function () {
 						return /\d+%|2X|free/i.test($(this).attr('alt'));
 					}).last();
+					if (['TJUPT'].indexOf(site) >= 0) {
+						m = torrent_data_raw.find('table.torrentname').html().match(/>([^>]+?(X|%|费))<\/font>]/);
+						free = m ? m[1].replace('免费', 'FREE') : '';
+					}
 					if (free_img && free_img.attr('alt')) {
 						free = free_img.attr('alt');
 					}
@@ -247,6 +248,7 @@ $(document).ready(function () {
 					} else if ('KeepFrds' == site && torrent_data_raw.find('img.pro_free').length) {
 						free = 'FREE';
 					}
+					//免费剩余时间
 					if (free) {
 						if (['NYPT', 'HD4FANS', 'HDU'].indexOf(site) > -1 && torrent_data_raw.find('.torrentname font>span').length) {
 							free_time = '[' + torrent_data_raw.find('.torrentname font>span').text() + ']';
@@ -265,6 +267,9 @@ $(document).ready(function () {
 							free_time = '[' + torrent_data_raw.find('.torrentname span>span').text() + ']';
 						} else if ('Hyperay' == site && torrent_data_raw.find('font>span').length) {
 							free_time = '[' + torrent_data_raw.find('font>span').text() + ']';
+						} else if ('TJUPT' == site) {
+							m = torrent_data_raw.find('table.torrentname').html().match(/\[剩余时间.*?>(.*?)<\/span>/);
+							free_time = m ? ('[' + m[1] + ']') : '';
 						}
 					}
 					free += free_time;
