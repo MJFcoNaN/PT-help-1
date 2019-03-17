@@ -824,7 +824,7 @@ const jq = jQuery.noConflict();
             let m_am = jq('#e_textarea').html().match(/\[table[\s\S]+?\[\/table\]/);
             if (m_am) {
                 let gong_gao = "[align=center]" + m_am[0] + "[/align]";
-                desc = desc.replace(/^(<br\s*\/*>)*/, '');
+                desc = desc.replace(/(<div\salign="center"><\/div>)/g,'').replace(/^(<br.*?>|\r|\n)*/g,'<br>');
                 jq('#e_iframe').contents().find('body').html(bbcode2html(gong_gao) + desc);
             } else {
                 jq('#e_iframe').contents().find('body').html(desc);
