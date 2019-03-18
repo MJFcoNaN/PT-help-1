@@ -488,14 +488,14 @@ const jq = jQuery.noConflict();
         });
     }
     if (location.href.match(/action=reply&fid=/)) {
-        var seed_forum = location.href.match(/action=reply&fid=(\d+)/)[1];
+        let seed_forum = location.href.match(/action=reply&fid=(\d+)/)[1];
         if (tv_forum.indexOf(parseInt(seed_forum)) >= 0) {
             jq('span#subjecthide').after('<span class="pipe">|</span><a id="commonquestions" href="javascript:;">常见问题</a>');
         }
     }
     // 是否已经高亮过了
     function getAlreadyHighlight() {
-        var res = [false, ""];
+        let res = [false, ""];
         if (jq("div.modact").length && jq("div.modact>a").text().indexOf("高亮") > 0) {
             res[0] = true;
             res[1] = jq("div.modact>a").text();
@@ -504,7 +504,7 @@ const jq = jQuery.noConflict();
     }
     // 是否已经置顶过了
     function getAlreadyStick() {
-        var res = [false, ""];
+        let res = [false, ""];
         if (jq("div.modact").length && jq("div.modact>a").text().indexOf("置顶") > 0) {
             res[0] = true;
             res[1] = jq("div.modact>a").text();
@@ -544,9 +544,9 @@ const jq = jQuery.noConflict();
     }
 
     function myStickSub() {
-        var stick_reason = '感谢分享';
-        var stick_days = 0;
-        var stick_info = getAlreadyStick();
+        let stick_reason = '感谢分享';
+        let stick_days = 0;
+        let stick_info = getAlreadyStick();
         if (stick_info[0]) {
             stick_reason = stick_info[1];
         } else {
@@ -556,10 +556,10 @@ const jq = jQuery.noConflict();
     }
 
     function myHighlightSub() {
-        var i_highlight = getAlreadyHighlight();
-        var typeid = jq("h1.ts a").attr("href").match(/typeid=(\d+)/)[1];
+        let i_highlight = getAlreadyHighlight();
+        let typeid = jq("h1.ts a").attr("href").match(/typeid=(\d+)/)[1];
         // [置顶天数, 颜色, 加粗, 高亮时间(-1:永久)]
-        var high_info = getHighlightInfo(forum_id, typeid, parseInt(getSeedSize(false, "") / 1024), "");
+        let high_info = getHighlightInfo(forum_id, typeid, parseInt(getSeedSize(false, "") / 1024), "");
         if (getAlreadyStick()[0]) {
             high_info[0] = 0;
         }
@@ -567,13 +567,13 @@ const jq = jQuery.noConflict();
     }
     //获取种子大小，返回int(MB)
     function getSeedSize(forum, size_str) {
-        var res = 0;
-        var seed_size, seed_size_unit;
+        let res = 0;
+        let seed_size, seed_size_unit;
         if (!forum) {
-            var size_str_match = jq('div.pcb div.mtw.mbw').text().match(/\d+.*/);
+            let size_str_match = jq('div.pcb div.mtw.mbw').text().match(/\d+.*/);
             size_str = size_str_match ? size_str_match[0] : "";
         }
-        var u_size = size_str.match(/[MGT]B/);
+        let u_size = size_str.match(/[MGT]B/);
         seed_size_unit = u_size ? u_size[0] : 0;
         seed_size = parseFloat(size_str);
 
@@ -588,7 +588,7 @@ const jq = jQuery.noConflict();
     }
     //获取标题中的信息
     function getInfoFromTitle(seed_type, gb_size, title) {
-        var res = [0, 0]; //res[0]:(置顶天数)	res[1]:(1:剧集首集, 2:高清韩剧, 3:高清日剧)
+        let res = [0, 0]; //res[0]:(置顶天数)	res[1]:(1:剧集首集, 2:高清韩剧, 3:高清日剧)
         title = (title) ? title : jq("span#thread_subject").text();
         if (seed_type == 48 || seed_type == 77) { //高清
             if (title.match(/韩/)) {
@@ -610,8 +610,8 @@ const jq = jQuery.noConflict();
             if (seed_type == 14 && title.match(/(\[01)|(EP?01)/i)) {
                 res[1] = 1;
             }
-            if (seed_type == 73 && (gb_size >= 50)) {
-                res[0] = 2;
+            if (seed_type == 73 && (gb_size >= 10)) {
+                res[0] = 3;
             }
         }
         return res;
@@ -620,7 +620,6 @@ const jq = jQuery.noConflict();
     function getHighlightInfo(seed_type, type_id, gb_size, title_info) {
         title_info = (title_info) ? title_info : getInfoFromTitle(seed_type, gb_size, "");
         let res = [title_info[0], -1, 0, 0]; //[置顶天数, 颜色, 加粗, 高亮时间(-1:永久)]
-        let title = jq("span#thread_subject").text();
         if (seed_type == 14 || seed_type == 73) {
             if (seed_type == 14) {
                 res[3] = 1; //电视剧集高亮一天
