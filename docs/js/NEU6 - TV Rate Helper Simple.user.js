@@ -14,8 +14,8 @@
 // @include     http://bt.neu6.edu.cn/thread*
 // @include     http://bt.neu6.edu.cn/search*
 // @require     http://bt.neu6.edu.cn/static/js/mobile/jquery-1.8.3.min.js
-// @updateURL   https://github.com/harleybai/PT-help/raw/master/docs/js/NEU6%20-%20TV%20Rate%20Helper.user.js
-// @downloadURL https://github.com/harleybai/PT-help/raw/master/docs/js/NEU6%20-%20TV%20Rate%20Helper.user.js
+// @updateURL   https://github.com/harleybai/PT-help/raw/master/docs/js/NEU6%20-%20TV%20Rate%20Helper%20Simple.user.js
+// @downloadURL https://github.com/harleybai/PT-help/raw/master/docs/js/NEU6%20-%20TV%20Rate%20Helper%20Simple.user.js
 // @icon        http://bt.neu6.edu.cn/favicon.ico
 // @version     20190108
 // ==/UserScript==
