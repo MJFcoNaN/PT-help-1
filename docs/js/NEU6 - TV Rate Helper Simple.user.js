@@ -1,5 +1,5 @@
 // ==UserScript==
-// @name        NEU6 TV Rate Helper
+// @name        NEU6 Rate Helper
 // @namespace   neu6tvratehelper
 // @description 6V剧版评分强化器
 // @author      xingxing
@@ -170,14 +170,6 @@ const jq = jQuery.noConflict();
             if (tr.find('td:eq(0) img').length) {
                 tr.find('td:eq(0) img').click(function () {
                     window.open("http://bt.neu6.edu.cn/forum.php?mod=post&action=newthread&fid=" + cat + "#clone_" + id);
-                });
-                tr.find('td:eq(1)').click(function () {
-                    jq.get("http://bt.neu6.edu.cn/thread-" + id + "-1-1.html", function (resp) {
-                        let str_link = resp.match(/<p class="attnm">[\s\S]*torrent<\/a>/gi)[0];
-                        let downlink_temp = str_link.match(/<a href="([\s\S]*)" onmouseover/)[1];
-                        let downlink = "http://bt.neu6.edu.cn/" + downlink_temp.replace(/amp[\S]/, "");
-                        window.open(downlink);
-                    });
                 });
             }
         });
@@ -421,7 +413,6 @@ const jq = jQuery.noConflict();
     }
     // 帖子
     if (atDetailPage()) {
-        //
         if (jq('pre').length) {
             let file_info = jq('pre').text().match(/file.*:([\s\S]+)archive/);
             if (title_check && file_info) {
@@ -462,7 +453,7 @@ const jq = jQuery.noConflict();
             }
         }
         if (tv_forum.indexOf(forum_id) >= 0) {
-            jq('div#modmenu span:last').before('<span class="pipe">|</span><a id="isrepeat" href="javascript:;">重复</a><span class="pipe">|</span><a id="commonquestions" href="javascript:;">常见问题</a>');
+            jq('div#modmenu span:last').before('<span class="pipe">|</span><a id="commonquestions" href="javascript:;">常见问题</a>');
         }
 
         jq("div#modmenu>a:eq(2)").removeAttr('onclick');
@@ -687,44 +678,6 @@ const jq = jQuery.noConflict();
             } else if (type_id == 250 || type_id == 181) {
                 res[1] = 4;
             }
-        } else if (seed_type == 45) { //高清电影
-            let topGroup = ["CtrlHD", "CRiSC", "DON", "EbP", "SbR", "VietHD", "RightSiZE", "NTb", "BMF", "D-Z0N3", "decibeL", "HiFi", "NCmt", "ZQ", "de[42]", "FoRM", "HiDt", "HDMaNiAcS"];
-            let popGroup = ["ATHD", " FraMeSToR", "HDAccess", "HDxT", "TayTO", "ESiR", "THORA", "HDClassic", "iLL", "PerfectionHD", "HDWinG", "WiKi", "CHD", "beAst", "R2HD", "HDS", "MTeam", "CMCT", "EPiC", "HDTime", "HDChina", "Tron"];
-            let zeroGroup = ["2HD", "aAf", "aBD", "ALLiANCE", "AMIABLE", "AVCHD", "AVS720", "BAJSKORV", "BestHD", "BiA", "CBGB", "Chakra", "CiNEFiLE", "CROSSBOW", "CTU", "CYBERMEN", "DiCH", "DIMENSION", "FSiHD", "HAiDEAF", "HALCYON", "HANGOVER", "hV", "IMMERSE", "iNFAMOUS", "Japhson", "LCHD", "MELiTE", "METiS", "NGR", "NODLABS", "ORENJi", "OUTDATED", "publicHD", "REFiNED", "REVEiLL", "SiNNERS", "SPARKS", "THUGLiNE", "XPRESS"];
-            if (title.match(/4K/i) && title.match(/Remux/i)) {
-                res = [0, 2, 1, -1];
-            } else if (title.match(/Remux/i)) {
-                res = [0, 5, 0, -1];
-            } else if (title.match(/2160p/i)) {
-                res = [0, 2, 0, -1];
-            } else if (title.match(new RegExp(topGroup.join('|'), "i"))) {
-                res = [0, 7, 0, -1];
-                res[2] = title.match(/1080p/i) ? 1 : 0;
-            } else if (title.match(new RegExp(popGroup.join('|'), "i"))) {
-                res = [0, 8, 0, 7];
-            } else if (title.match(new RegExp(zeroGroup.join('|'), "i"))) {
-                res = [0, 3, 0, 3];
-            } else if (title.match(/原创/)) {
-                res = [0, 3, 0, -1];
-            } else if (title.match(/合集/)) {
-                res = [0, 8, 1, -1];
-            }
-        } else if (seed_type == 13) {
-            if (title.match(/BluRay.*(CMCT|CnSCG)/i) && title.match(/720p/i)) {
-                res = [0, 5, 0, -1];
-            } else if (title.match(/(BluRay|HDTV).*WOFEI/i) || title.match(/HDTV(CMCT|CMCTV|CnSCG)/i)) {
-                res = [0, 5, 0, 15];
-            } else if (title.match(/BDRip.*(iNT-TLF|BDRip-BMDruCHinYaN|MicroHD-mFANs|MNHD-FRDS)/i)) {
-                res = [0, 7, 0, -1];
-            } else if (title.match(/HR-HDTV.*-YYeTs/i)) {
-                res = [0, 4, 0, 15];
-            } else if (title.match(/DVDISO/i)) {
-                res = [0, 3, 1, -1];
-            } else if (title.match(/DVDRip/i)) {
-                res = [0, 8, 0, 7];
-            } else if (title.match(/BluRay.*(beAst|HDS|Mteam)/i) && title.match(/720p/i)) {
-                res = [0, 8, 0, -1];
-            }
         }
         //alert("(置顶天数 " + res[0] + ", 颜色 " + res[1] + ", 加粗 " + res[2] + ", 高亮时间 " + res[3] + ")");
         return res;
@@ -909,77 +862,10 @@ const jq = jQuery.noConflict();
                         clouds = ((clouds + 10) >= 30) ? 30 : (clouds + 10);
                     }
                 }
-            } else if (forum_id == 49) { //高清记录
-                contribution = Math.ceil(seedsize / 20);
-                if (seedsize >= 10) {
-                    clouds = Math.ceil(seedsize / 10) * 10;
-                } else if (seedsize >= 3) {
-                    clouds = 10;
-                }
             } else if (forum_id == 155) { //电视剧集试种区
                 clouds = 10;
                 contribution = 2;
                 ratereason = "补加浮云和贡献奖励，感谢分享";
-            } else if (forum_id == 45) { //高清电影
-                ratereason = "补加浮云和贡献奖励，感谢分享";
-                let topGroup = ["CtrlHD", "CRiSC", "DON", "EbP", "SbR", "VietHD", "RightSiZE", "NTb", "BMF", "D-Z0N3", "decibeL", "HiFi", "NCmt", "ZQ", "de[42]", "FoRM", "HiDt", "HDMaNiAcS"];
-                let popGroup = ["ATHD", " FraMeSToR", "HDAccess", "HDxT", "TayTO", "ESiR", "THORA", "HDClassic", "iLL", "PerfectionHD", "HDWinG", "WiKi", "CHD", "beAst", "R2HD", "HDS", "MTeam", "CMCT", "EPiC", "HDTime", "HDChina", "Tron"];
-                if (title.match(/Remux/i)) { //无损资源
-                    contribution = 2;
-                    clouds = (seedsize >= 40) ? 60 : 40;
-                    clouds = (seedsize >= 30) ? 50 : 40;
-                } else if (title.match(new RegExp(topGroup.join('|'), "i"))) { //TOP组
-                    contribution = (seedsize >= 9.5 || title.match(/1080p|合集/i)) ? 2 : 1;
-                    clouds = 40;
-                } else if (title.match(new RegExp(popGroup.join('|'), "i"))) { //主流组
-                    if (seedsize >= 20) {
-                        contribution = 2;
-                        clouds = 40;
-                    } else if (seedsize >= 9.5) {
-                        contribution = 1;
-                        clouds = 40;
-                    }
-                } else if (title.match(/合集|全集/)) {
-                    if (seedsize >= 100) {
-                        contribution = 5;
-                        clouds = 100;
-                    } else if (seedsize >= 60) {
-                        contribution = 4;
-                        clouds = 80;
-                    } else if (seedsize >= 40) {
-                        contribution = 3;
-                        clouds = 60;
-                    } else if (seedsize >= 20) {
-                        contribution = 2;
-                        clouds = 40;
-                    } else if (seedsize >= 9.5) {
-                        contribution = 1;
-                        clouds = 40;
-                    }
-                } else if (seedsize >= 9.5) {
-                    contribution = 1;
-                    clouds = 40;
-                }
-                contribution = (contribution > 5) ? 5 : contribution;
-                clouds = (clouds > 100) ? 100 : clouds;
-            } else if (forum_id == 13 && title.match(/\d{4}-\d{4}/)) { //电影
-                ratereason = "补加浮云和贡献奖励，感谢分享";
-                if (seedsize >= 30) {
-                    contribution = 5;
-                    clouds = 100;
-                } else if (seedsize >= 20) {
-                    contribution = 4;
-                    clouds = 80;
-                } else if (seedsize >= 15) {
-                    contribution = 3;
-                    clouds = 60;
-                } else if (seedsize >= 5) {
-                    contribution = 2;
-                    clouds = 40;
-                } else {
-                    contribution = 1;
-                    clouds = 20;
-                }
             } else {
                 clouds = 0;
                 contribution = 0;
@@ -1003,91 +889,6 @@ const jq = jQuery.noConflict();
     }
 
     if (atDetailPage()) {
-        //解析文件信息
-        function praseFileInfo(text) {
-            var res = [];
-            var file_info = text.replace(/info.*\n/, "").replace(/directory.*\n/, "");
-            if (file_info.indexOf("files") >= 0) {
-                file_info = file_info.replace(/archive.*/, "").replace(/file.*:{1}\n?/, "");
-                var arr1 = file_info.split("\n");
-                for (var i = 0; i < arr1.length; i++) {
-                    var match = arr1[i].match(/(.*)[\(\[](\d+)[\)\s]/);
-                    if (match && match.length >= 3) {
-                        res.push([match[1].trim(), match[2], false]);
-                    }
-                }
-            } else {
-                file_info = file_info.replace(/archive.*:{1}/, "").replace(/file.*:{1}\n?/, "");
-                var arr2 = file_info.split("\n");
-                res.push([arr2[0].trim(), arr2[1].match(/\d+/)[0], false]);
-            }
-            return res;
-        }
-
-        jq('#isrepeat').click(function () {
-            var pfhtml = '<h3 class="flb"><em id="return_reply">帖子相似度判断</em><span><a href="javascript:;" class="flbc" onclick="hideWindow(\'irdialog\')" title="\u5173\u95ed">\u5173\u95ed</a></span></h3><div style="width:580px;height:380px;">' +
-                '<div class="c" style="height:327px;">' +
-                '<div class="pbt cl"><span><span>帖子链接: </span><input type="text" style="width:310px;" id="is_id" class="px">&nbsp;&nbsp;<button style="width:75px;" id="is_submit">提交</button>&nbsp;&nbsp;&nbsp;&nbsp;<button style="width:75px;" id="is_open">打开</button></span></div>' +
-                '<div id="ir_list" style="overflow-y:scroll;width:550px; height:290px;"></div>' +
-                '</div><div class="o"><button style="width:75px;" id="is_reply">回复</button>&nbsp;&nbsp;&nbsp;&nbsp;<button style="width:75px;" id="irclose">关闭</button></div><style>.c p{white-space:nowrap;text-overflow:ellipsis;overflow:hidden;}</style>';
-            showWindow('irdialog', pfhtml, 'html');
-            jq('#irclose').click(function () {
-                hideWindow('irdialog');
-            });
-            jq('#is_open').click(function () {
-                var link = jq('#is_id').val().trim();
-                var seedfrom = (/^\d+$/.test(link)) ? link : link.match(/(thread-|tid=)(\d+)/)[2];
-                window.open('http://bt.neu6.edu.cn/thread-' + seedfrom + '-1-1.html');
-            });
-            var reason1 = "感谢分享，剧版已有相同版本：\n";
-            var reason2 = "\n\n资源重复，欢迎续种";
-            var title = "";
-            jq('#is_reply').click(function () {
-                var link = jq('#is_id').val().trim();
-                var seedfrom = (/^\d+$/.test(link)) ? link : link.match(/(thread-|tid=)(\d+)/)[2];
-                link = 'http://bt.neu6.edu.cn/thread-' + seedfrom + '-1-1.html';
-                jq("form#fastpostform textarea#fastpostmessage").append(reason1 + title + ": " + link + reason2);
-            });
-            jq('#is_submit').click(function () {
-                var link = jq('#is_id').val().trim();
-                var seedfrom = (/^\d+$/.test(link)) ? link : link.match(/(thread-|tid=)(\d+)/)[2];
-
-                var text1 = jq('ignore_js_op>dl.tattl>dd>pre').text();
-                var thisinfo = praseFileInfo(text1);
-                jq.get('http://bt.neu6.edu.cn/thread-' + seedfrom + '-1-1.html', function (resp) {
-                    var page = jq(resp);
-                    title = page.find("span#thread_subject").text();
-                    var text2 = page.find('ignore_js_op>dl.tattl>dd>pre').text();
-                    var thatinfo = praseFileInfo(text2);
-                    for (var i = 0; i < thisinfo.length; i++) {
-                        var j = 0;
-                        for (j = 0; j < thatinfo.length; j++) {
-                            if (thisinfo[i][1] == thatinfo[j][1]) {
-                                thisinfo[i][2] = true;
-                                break;
-                            }
-                        }
-                        thatinfo.splice(j, 1);
-                    }
-                    var ir_list_html = '<table style="width:540px" border="0">';
-                    var no_match_html = '';
-                    var that_match_html = '<tr><td colspan="3" style="color:green">[另一个帖子未匹配列表如下]</td></tr>';
-                    for (i = 0; i < thisinfo.length; i++) {
-                        if (thisinfo[i][2]) {
-                            ir_list_html += "<tr><td><b style=\"color:red\">√</b></td><td>" + thisinfo[i][1] + "</td><td>" + thisinfo[i][0] + "</td></tr>";
-                        } else {
-                            no_match_html += "<tr><td><b style=\"color:black\">×</b></td><td>" + thisinfo[i][1] + "</td><td>" + thisinfo[i][0] + "</td></tr>";
-                        }
-                    }
-                    for (i = 0; i < thatinfo.length; i++) {
-                        that_match_html += "<tr><td><b style=\"color:black\">×</b></td><td>" + thatinfo[i][1] + "</td><td>" + thatinfo[i][0] + "</td></tr>";
-                    }
-                    ir_list_html += no_match_html + that_match_html + '</table>';
-                    jq('#ir_list').html(ir_list_html);
-                });
-            });
-        });
-
         jq('#commonquestions').click(function () {
             var replay_index = 0;
             var com_qus = [
@@ -1257,6 +1058,7 @@ const jq = jQuery.noConflict();
             timeoutHandle(response);
         });
     }
+
     // 发种&修改页面
     if (location.href.match(/action=(newthread|edit)/)) {
         jq('span#custominfo').click();

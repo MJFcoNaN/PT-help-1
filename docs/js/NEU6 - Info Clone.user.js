@@ -97,9 +97,9 @@ const jq = jQuery.noConflict();
                             "Content-Type": "application/x-www-form-urlencoded"
                         },
                         onload: function (response) {
-                            var doc = (new DOMParser()).parseFromString(response.responseText, 'text/html');
-                            var body = doc.querySelector("body");
-                            var page = jq(body);
+                            let doc = (new DOMParser()).parseFromString(response.responseText, 'text/html');
+                            let body = doc.querySelector("body");
+                            let page = jq(body);
                             if (page.find('input#expirationstick').length) {
                                 let expirationstick = page.find('input#expirationstick').val();
                                 if (expirationstick != "") {
@@ -824,7 +824,7 @@ const jq = jQuery.noConflict();
             let m_am = jq('#e_textarea').html().match(/\[table[\s\S]+?\[\/table\]/);
             if (m_am) {
                 let gong_gao = "[align=center]" + m_am[0] + "[/align]";
-                desc = desc.replace(/(<div\salign="center"><\/div>)/g,'').replace(/^(<br.*?>|\r|\n)*/g,'<br>');
+                desc = desc.replace(/(<div\salign="center"><\/div>)/g, '').replace(/^(<br.*?>|\r|\n)*/g, '<br>');
                 jq('#e_iframe').contents().find('body').html(bbcode2html(gong_gao) + desc);
             } else {
                 jq('#e_iframe').contents().find('body').html(desc);
