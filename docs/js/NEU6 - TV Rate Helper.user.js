@@ -17,7 +17,7 @@
 // @updateURL   https://github.com/harleybai/PT-help/raw/master/docs/js/NEU6%20-%20TV%20Rate%20Helper.user.js
 // @downloadURL https://github.com/harleybai/PT-help/raw/master/docs/js/NEU6%20-%20TV%20Rate%20Helper.user.js
 // @icon        http://bt.neu6.edu.cn/favicon.ico
-// @version     20190108
+// @version     20190318
 // ==/UserScript==
 
 const jq = jQuery.noConflict();
@@ -826,13 +826,13 @@ const jq = jQuery.noConflict();
                     clouds = 200;
                     contribution = 7;
                 } else if (seedsize >= 200) {
-                    clouds = 100 + Math.ceil((seedsize - 200) / 2);
-                    contribution = 5 + Math.ceil((seedsize - 200) / 100);
+                    clouds = 100 + Math.round((seedsize - 200) / 2);
+                    contribution = 5 + Math.round((seedsize - 200) / 100);
                 } else if (seedsize >= 100) {
-                    clouds = Math.ceil(60 + (seedsize - 100) * 40 / 100);
+                    clouds = Math.round(60 + (seedsize - 100) * 40 / 100);
                     contribution = 4;
                 } else if (seedsize >= 60) {
-                    clouds = Math.ceil(10 + seedsize - 60);
+                    clouds = Math.round(10 + seedsize - 60);
                     contribution = 3;
                 } else if (seedsize >= 30) {
                     clouds = 10;
@@ -871,16 +871,16 @@ const jq = jQuery.noConflict();
                     clouds = 100;
                     contribution = 5;
                 } else if (seedsize >= 80) {
-                    clouds = (60 + seedsize - 80).toFixed(0);
+                    clouds = Math.round(60 + seedsize - 80);
                     contribution = 4;
                 } else if (seedsize >= 40) {
-                    clouds = (40 + (seedsize - 40) * 20 / 40).toFixed(0);
+                    clouds = Math.round(40 + (seedsize - 40) * 20 / 40);
                     contribution = 3;
                 } else if (seedsize >= 20) {
-                    clouds = (20 + seedsize - 20).toFixed(0);
+                    clouds = Math.round(seedsize);
                     contribution = 2;
                 } else if (seedsize >= 10) {
-                    clouds = (10 + seedsize - 10).toFixed(0);
+                    clouds = Math.round(seedsize);
                     contribution = 1;
                 }
             } else if (forum_id == 14) { //电视剧集
@@ -910,9 +910,9 @@ const jq = jQuery.noConflict();
                     }
                 }
             } else if (forum_id == 49) { //高清记录
-                contribution = Math.ceil(seedsize / 20);
+                contribution = Math.round(seedsize / 20);
                 if (seedsize >= 10) {
-                    clouds = Math.ceil(seedsize / 10) * 10;
+                    clouds = Math.round(seedsize / 10) * 10;
                 } else if (seedsize >= 3) {
                     clouds = 10;
                 }
