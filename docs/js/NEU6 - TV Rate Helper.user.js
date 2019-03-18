@@ -1171,13 +1171,13 @@ const jq = jQuery.noConflict();
             });
         });
 
-        chechPictureExternalLink();
+        checkPictureExternalLink();
 
-        function chechPictureExternalLink() {
+        function checkPictureExternalLink() {
             let img_arr = [];
             jq('td.t_f:first img').each(function () {
                 let img = jq(this);
-                if (!img.attr('src').match(/(^\/data\/attachment\/)|(bt\.neu6\.edu\.cn)/)) {
+                if (!img.attr('src').match(/(^\/data\/attachment\/)|(bt\.neu6\.edu\.cn)|(^static\/)/)) {
                     img_arr.push(img.attr('src'));
                 }
             });
