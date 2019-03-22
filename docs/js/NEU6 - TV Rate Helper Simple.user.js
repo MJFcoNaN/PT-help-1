@@ -17,7 +17,7 @@
 // @updateURL   https://github.com/harleybai/PT-help/raw/master/docs/js/NEU6%20-%20TV%20Rate%20Helper%20Simple.user.js
 // @downloadURL https://github.com/harleybai/PT-help/raw/master/docs/js/NEU6%20-%20TV%20Rate%20Helper%20Simple.user.js
 // @icon        http://bt.neu6.edu.cn/favicon.ico
-// @version     20190318
+// @version     20190322
 // ==/UserScript==
 
 const jq = jQuery.noConflict();
@@ -181,7 +181,7 @@ const jq = jQuery.noConflict();
         jq('#pfsettings').click(function () {
             var pfhtml = '<h3 class="flb"><em id="return_reply">脚本设置</em><span><a target="_blank" href="http://bt.neu6.edu.cn/thread-1612462-1-1.html">帮助</a><a href="javascript:;" class="flbc" onclick="hideWindow(\'pfst\')" title="关闭">关闭</a></span></h3><div style="width:580px;height:310px;"><div class="c" style="height:257px;">' +
                 '<hr><table><caption>评分设置</caption><tr><td colspan="3"><label><input type="checkbox" id="setnewstyle" checked>使用新样式</label>&nbsp;&nbsp;&nbsp;&nbsp;<label><input type="checkbox" id="setnotify">通知作者(超版以上可用)</label></td></tr><tr><td><p><b>设置理由</b></p><textarea id="setreason"></textarea></td><td><p><b>设置浮云评分</b></p><textarea id="setoption2"></textarea></td><td><p><b>设置贡献评分</b></p><textarea id="setoption5"></textarea></td></tr>' +
-                '</table><hr><table><caption>脚本设置</caption><tr><td colspan="4"><label><input type="checkbox" id="auto_add" checked>自动增加集数</label>&nbsp;&nbsp;&nbsp;&nbsp;<label><input type="checkbox" id="title_check">标题快捷检查</label>&nbsp;&nbsp;&nbsp;&nbsp;<label><input type="checkbox" id="search_enhance" checked>开启搜索加强</label>&nbsp;&nbsp;&nbsp;&nbsp;<label><input type="checkbox" id="seedsize_human" checked>种子信息加强</label></tr><tr><td><p><b>标题框缩放</b></p><input type="number" id="title_zoom" min="1" max="2" value="1.2" step="0.05"></td><td><p><b>处理延时(秒)</b></p><input type="number" id="second_timeout" min="300" max="1000" value="400" step="10"></td><td><p><b>剧版版主(活跃)</b></p><textarea id="add_rate_user">j552k,baishuangxing,kun2phg</textarea></td><td><p><b>常用链接</b></p><textarea id="common_links"></textarea></td></tr></table><hr>' +
+                '</table><hr><table><caption>脚本设置</caption><tr><td colspan="4"><label><input type="checkbox" id="auto_add" checked>自动增加集数</label>&nbsp;&nbsp;&nbsp;&nbsp;<label><input type="checkbox" id="title_check">标题快捷检查</label>&nbsp;&nbsp;&nbsp;&nbsp;<label><input type="checkbox" id="search_enhance" checked>开启搜索加强</label>&nbsp;&nbsp;&nbsp;&nbsp;<label><input type="checkbox" id="seedsize_human" checked>种子信息加强</label></tr><tr><td><p><b>标题框缩放</b></p><input type="number" id="title_zoom" min="1" max="2" value="1.2" step="0.05"></td><td><p><b>处理延时(秒)</b></p><input type="number" id="second_timeout" min="300" max="1000" value="400" step="10"></td><td><p><b>剧版版主(活跃)</b></p><textarea id="add_rate_user">j552k,baishuangxing,kun2phg</textarea></td><td><p><b>常用链接</b></p><textarea id="common_links"></textarea></td></tr></table><hr><span id="clear_stick_time">点击清除配置</span>' +
                 '</div><div class="o"><button id="submitset">保存设置</button>&nbsp;<button id="submitdelete">清空设置</button></div></div><style>.c textarea{resize:both} .c table td{width:100px}</style>';
             showWindow('pfst', pfhtml, 'html');
             jq('#setnewstyle').prop('checked', GM_getValue('setnewstyle'));
@@ -203,6 +203,15 @@ const jq = jQuery.noConflict();
                 jq('#add_rate_user').val(GM_getValue('add_rate_user'));
             }
             jq('#common_links').val(tencode(GM_getValue('common_links')));
+
+            jq('#clear_stick_time').text(`点击清除配置 77-[${GM_getValue('stick_77_pre')}-${GM_getValue('stick_77_last')}], 73-[${GM_getValue('stick_73_pre')}-${GM_getValue('stick_73_last')}]`);
+            jq('#clear_stick_time').click(function () {
+                GM_deleteValue('stick_77_pre', '');
+                GM_deleteValue('stick_77_last', '');
+                GM_deleteValue('stick_73_pre', '');
+                GM_deleteValue('stick_73_last', '');
+                jq('#clear_stick_time').text('点击清除配置');
+            });
             jq('#submitset').click(function () {
                 GM_setValue('setnewstyle', jq('#setnewstyle').prop('checked'));
                 GM_setValue('setnotify', jq('#setnotify').prop('checked'));
@@ -249,6 +258,10 @@ const jq = jQuery.noConflict();
 
         function tencode(input) {
             return input ? (JSON.parse(input).join('\n')) : '';
+        }
+
+        function gm_getValue(key, ret = '') {
+            return GM_getValue(key) ? GM_getValue(key) : ret;
         }
     }
     // 修改评分按钮click事件
@@ -409,6 +422,87 @@ const jq = jQuery.noConflict();
         });
         jq("a#forum_move").click(function () {
             myMoveTo(true, move_to, "感谢分享");
+        });
+
+        // 低信号置顶
+        if ([77, 73].indexOf(forum_id) >= 0) {
+            jq("ul#thread_types>li:last").after('<li><a id="low_signal_stick" href="javascript:void(0)">置顶<span id="stick_ls" class="xg1 num">LS</span></a></li>');
+        }
+        jq('#low_signal_stick').click(function () {
+            let stick_size = GM_getValue('stick_size') ? GM_getValue('stick_size') : 15;
+            let now_stick_size = jq("tbody[id^='stickthread_']").filter(function () {
+                let tbody = jq(this);
+                let size_index = tbody.find('tr>td:eq(1)>img').length ? 2 : 3;
+                return parseFloat(tbody.find('tr>td:eq(' + size_index + ')').text()) > 0;
+            }).length;
+            if (now_stick_size >= stick_size) {
+                console.log(`current stick num is ${now_stick_size} >= ${stick_size} ...`);
+                return;
+            }
+            // get last stick time config
+            let stick_pre_time = '';
+            let stick_last_time = '';
+            if (forum_id == 77) {
+                stick_pre_time = GM_getValue('stick_77_pre') ? GM_getValue('stick_77_pre') : '';
+                stick_last_time = GM_getValue('stick_77_last') ? GM_getValue('stick_77_last') : '';
+            } else if (forum_id == 73) {
+                stick_pre_time = GM_getValue('stick_73_pre') ? GM_getValue('stick_73_pre') : '';
+                stick_last_time = GM_getValue('stick_73_last') ? GM_getValue('stick_73_last') : '';
+            }
+            console.log(`本次低信号置顶排除时间段[${stick_pre_time} - ${stick_last_time}]`);
+            // start select
+            let is_first = true;
+            let t_stick_pre_time = '';
+            let t_stick_last_time = '';
+            let stick_num = 0;
+            let stick_arr = [];
+            jq("tbody[id^='normalthread_']").each(function () {
+                let tbody = jq(this);
+                let seed_time = tbody.find('span:last').text().trim();
+                // update stick_pre_time
+                if (is_first) {
+                    if (stick_pre_time == '' || new Date(seed_time) > new Date(stick_pre_time)) {
+                        t_stick_pre_time = seed_time;
+                    }
+                    is_first = false;
+                }
+                // only one singal
+                if (tbody.find("tr>td>img[src$='signal_1.png']").length) {
+                    if (stick_pre_time == '' || new Date(seed_time) > new Date(stick_pre_time)) {
+                        tbody.find('input').click();
+                        stick_num++;
+                        stick_arr.push(`http://bt.neu6.edu.cn/thread-${tbody.attr('id').match(/(\d+)/)[1]}-1-1.html`);
+                    } else if (stick_last_time == '' || new Date(seed_time) < new Date(stick_last_time)) {
+                        tbody.find('input').click();
+                        stick_num++;
+                        stick_arr.push(`http://bt.neu6.edu.cn/thread-${tbody.attr('id').match(/(\d+)/)[1]}-1-1.html`);
+                    }
+                }
+                // update stick_pre_time
+                t_stick_last_time = seed_time;
+                if (stick_num >= (stick_size - now_stick_size)) {
+                    return false;
+                }
+            });
+            if (stick_num > 0) {
+                let submit = confirm(`[${stick_pre_time} - ${stick_last_time}]\n本页置顶以下种子:\n${stick_arr.join('\n')}`);
+                if (submit) {
+                    myStick(true, 1, '当前保种人数较少,限时置顶1天,FREE...');
+
+                    if (forum_id == 77) {
+                        if (t_stick_pre_time)
+                            GM_setValue('stick_77_pre', t_stick_pre_time);
+                        GM_setValue('stick_77_last', t_stick_last_time);
+                    } else if (forum_id == 73) {
+                        if (t_stick_pre_time)
+                            GM_setValue('stick_73_pre', t_stick_pre_time);
+                        GM_setValue('stick_73_last', t_stick_last_time);
+                    }
+                }
+            }
+            if (stick_num < (stick_size - now_stick_size)) {
+                jq('span#stick_ls').text(`还差${stick_size - now_stick_size-stick_num}个种子,请打开下一页...`);
+            }
         });
     }
     // 帖子
