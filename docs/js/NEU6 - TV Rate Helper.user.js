@@ -17,7 +17,7 @@
 // @updateURL   https://github.com/harleybai/PT-help/raw/master/docs/js/NEU6%20-%20TV%20Rate%20Helper.user.js
 // @downloadURL https://github.com/harleybai/PT-help/raw/master/docs/js/NEU6%20-%20TV%20Rate%20Helper.user.js
 // @icon        http://bt.neu6.edu.cn/favicon.ico
-// @version     20190318
+// @version     20190325
 // ==/UserScript==
 
 const jq = jQuery.noConflict();
@@ -686,6 +686,8 @@ const jq = jQuery.noConflict();
                 }
             } else if (type_id == 250 || type_id == 181) {
                 res[1] = 4;
+            } else if (type_id == 251 || type_id == 182) {
+                res[1] = 0;
             }
         } else if (seed_type == 45) { //高清电影
             let topGroup = ["CtrlHD", "CRiSC", "DON", "EbP", "SbR", "VietHD", "RightSiZE", "NTb", "BMF", "D-Z0N3", "decibeL", "HiFi", "NCmt", "ZQ", "de[42]", "FoRM", "HiDt", "HDMaNiAcS"];
@@ -829,10 +831,10 @@ const jq = jQuery.noConflict();
                     clouds = 100 + Math.round((seedsize - 200) / 2);
                     contribution = 5 + Math.round((seedsize - 200) / 100);
                 } else if (seedsize >= 100) {
-                    clouds = Math.round(60 + (seedsize - 100) * 40 / 100);
+                    clouds = Math.round((seedsize - 100) * 40 / 100) + 60;
                     contribution = 4;
                 } else if (seedsize >= 60) {
-                    clouds = Math.round(10 + seedsize - 60);
+                    clouds = Math.round(seedsize) - 50;
                     contribution = 3;
                 } else if (seedsize >= 30) {
                     clouds = 10;
@@ -871,10 +873,10 @@ const jq = jQuery.noConflict();
                     clouds = 100;
                     contribution = 5;
                 } else if (seedsize >= 80) {
-                    clouds = Math.round(60 + seedsize - 80);
+                    clouds = Math.round(seedsize) - 20;
                     contribution = 4;
                 } else if (seedsize >= 40) {
-                    clouds = Math.round(40 + (seedsize - 40) * 20 / 40);
+                    clouds = Math.round((seedsize - 40) * 20 / 40) + 40;
                     contribution = 3;
                 } else if (seedsize >= 20) {
                     clouds = Math.round(seedsize);

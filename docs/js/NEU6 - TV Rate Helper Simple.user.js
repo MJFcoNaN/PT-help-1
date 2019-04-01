@@ -17,7 +17,7 @@
 // @updateURL   https://github.com/harleybai/PT-help/raw/master/docs/js/NEU6%20-%20TV%20Rate%20Helper%20Simple.user.js
 // @downloadURL https://github.com/harleybai/PT-help/raw/master/docs/js/NEU6%20-%20TV%20Rate%20Helper%20Simple.user.js
 // @icon        http://bt.neu6.edu.cn/favicon.ico
-// @version     20190322
+// @version     20190325
 // ==/UserScript==
 
 const jq = jQuery.noConflict();
@@ -430,11 +430,17 @@ const jq = jQuery.noConflict();
         }
         jq('#low_signal_stick').click(function () {
             let stick_size = GM_getValue('stick_size') ? GM_getValue('stick_size') : 15;
-            let now_stick_size = jq("tbody[id^='stickthread_']").filter(function () {
-                let tbody = jq(this);
-                let size_index = tbody.find('tr>td:eq(1)>img').length ? 2 : 3;
-                return parseFloat(tbody.find('tr>td:eq(' + size_index + ')').text()) > 0;
-            }).length;
+            let now_stick_size = 0;
+            if (location.href.match(/#sticksize_(\d+)/)) {
+                now_stick_size = location.href.match(/#sticksize_(\d+)/)[1];
+                history.pushState("", document.title, location.href.replace(/#sticksize_\d+/, ""));
+            } else {
+                now_stick_size = jq("tbody[id^='stickthread_']").filter(function () {
+                    let tbody = jq(this);
+                    let size_index = tbody.find('tr>td:eq(1)>img').length ? 2 : 3;
+                    return parseFloat(tbody.find('tr>td:eq(' + size_index + ')').text()) > 0;
+                }).length;
+            }
             if (now_stick_size >= stick_size) {
                 console.log(`current stick num is ${now_stick_size} >= ${stick_size} ...`);
                 return;
@@ -449,7 +455,14 @@ const jq = jQuery.noConflict();
                 stick_pre_time = GM_getValue('stick_73_pre') ? GM_getValue('stick_73_pre') : '';
                 stick_last_time = GM_getValue('stick_73_last') ? GM_getValue('stick_73_last') : '';
             }
-            console.log(`本次低信号置顶排除时间段[${stick_pre_time} - ${stick_last_time}]`);
+            let pre_last = prompt("本次低信号置顶排除以下时间段", `${stick_pre_time}, ${stick_last_time}`);
+            let pre_last_split = pre_last.split(',');
+            if (pre_last == null || pre_last_split.length != 2) {
+                console.log(`本次低信号置顶排除以下时间段输入错误...`);
+                return;
+            }
+            stick_pre_time = pre_last_split[0].trim();
+            stick_last_time = pre_last_split[1].trim();
             // start select
             let is_first = true;
             let t_stick_pre_time = '';
@@ -476,32 +489,37 @@ const jq = jQuery.noConflict();
                         tbody.find('input').click();
                         stick_num++;
                         stick_arr.push(`http://bt.neu6.edu.cn/thread-${tbody.attr('id').match(/(\d+)/)[1]}-1-1.html`);
+                        // update stick_pre_time
+                        t_stick_last_time = seed_time;
                     }
                 }
-                // update stick_pre_time
-                t_stick_last_time = seed_time;
                 if (stick_num >= (stick_size - now_stick_size)) {
                     return false;
                 }
             });
             if (stick_num > 0) {
-                let submit = confirm(`[${stick_pre_time} - ${stick_last_time}]\n本页置顶以下种子:\n${stick_arr.join('\n')}`);
+                let submit = confirm(`[${stick_pre_time} - ${stick_last_time}]\n本页置顶[${stick_num}]个种子:\n${stick_arr.join('\n')}`);
                 if (submit) {
                     myStick(true, 1, '当前保种人数较少,限时置顶1天,FREE...');
 
                     if (forum_id == 77) {
                         if (t_stick_pre_time)
                             GM_setValue('stick_77_pre', t_stick_pre_time);
-                        GM_setValue('stick_77_last', t_stick_last_time);
+                        if (t_stick_last_time)
+                            GM_setValue('stick_77_last', t_stick_last_time);
                     } else if (forum_id == 73) {
                         if (t_stick_pre_time)
                             GM_setValue('stick_73_pre', t_stick_pre_time);
-                        GM_setValue('stick_73_last', t_stick_last_time);
+                        if (t_stick_last_time)
+                            GM_setValue('stick_73_last', t_stick_last_time);
                     }
                 }
             }
             if (stick_num < (stick_size - now_stick_size)) {
-                jq('span#stick_ls').text(`还差${stick_size - now_stick_size-stick_num}个种子,请打开下一页...`);
+                let next_page = parseInt(location.href.match(/forum-\d+-(\d+)/)[1]) + 1;
+                let next_url = `http://bt.neu6.edu.cn/forum-73-${next_page}.html#sticksize_${stick_num+now_stick_size}`;
+                jq("ul#thread_types>li:last").after(`<li><a id="low_signal_stick" href="${next_url}">打开下一页</a></li>`);
+                console.log(`还差${stick_size - now_stick_size-stick_num}个种子,请打开下一页...`);
             }
         });
     }
@@ -770,6 +788,8 @@ const jq = jQuery.noConflict();
                 }
             } else if (type_id == 250 || type_id == 181) {
                 res[1] = 4;
+            } else if (type_id == 251 || type_id == 182) {
+                res[1] = 0;
             }
         }
         //alert("(置顶天数 " + res[0] + ", 颜色 " + res[1] + ", 加粗 " + res[2] + ", 高亮时间 " + res[3] + ")");
@@ -875,10 +895,10 @@ const jq = jQuery.noConflict();
                     clouds = 100 + Math.round((seedsize - 200) / 2);
                     contribution = 5 + Math.round((seedsize - 200) / 100);
                 } else if (seedsize >= 100) {
-                    clouds = Math.round(60 + (seedsize - 100) * 40 / 100);
+                    clouds = Math.round((seedsize - 100) * 40 / 100) + 60;
                     contribution = 4;
                 } else if (seedsize >= 60) {
-                    clouds = Math.round(10 + seedsize - 60);
+                    clouds = Math.round(seedsize) - 50;
                     contribution = 3;
                 } else if (seedsize >= 30) {
                     clouds = 10;
@@ -917,10 +937,10 @@ const jq = jQuery.noConflict();
                     clouds = 100;
                     contribution = 5;
                 } else if (seedsize >= 80) {
-                    clouds = Math.round(60 + seedsize - 80);
+                    clouds = Math.round(seedsize) - 20;
                     contribution = 4;
                 } else if (seedsize >= 40) {
-                    clouds = Math.round(40 + (seedsize - 40) * 20 / 40);
+                    clouds = Math.round((seedsize - 40) * 20 / 40) + 40;
                     contribution = 3;
                 } else if (seedsize >= 20) {
                     clouds = Math.round(seedsize);
