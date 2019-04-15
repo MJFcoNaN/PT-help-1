@@ -15,7 +15,7 @@
 // https://cdn.bootcss.com/jquery/1.8.3/jquery.min.js
 // http://bt.neu6.edu.cn/static/js/mobile/jquery-1.8.3.min.js
 
-const secondTimeout = 200;
+const secondTimeout = 500;
 const moveToReason = "[合集已出,单集回收 or 断种回收]感谢分享";
 
 // 脚本预处理阶段
@@ -51,7 +51,8 @@ const jq = jQuery.noConflict();
 			'<option value="WEB">WEB</option>' +
 			'<option value="WEB-HR">WEB-HR</option>' +
 			'<option value="WEBRip">WEBRip</option>' +
-			'</select>&nbsp;&nbsp;&nbsp;&nbsp;<span>Index：</span><input type="text" style="width:10em;" id="select_index" class="px"><input type="button" id="select_by_index" style="size:100px;" value=" OK "></div></h2><br/><h2 class="pbm ptm"><div class="z"><span>输入正则表达式或时间：<input type="text" style="width:15em;" id="title_reg" class="px" placeholder="RegExp" onkeypress="if(event.keyCode==13){select_btn.click();}"><input type="button" id="select_btn" style="size:100px;" value=" 提交 ">&nbsp;|&nbsp;<input type="button" id="seletc_all_btn" style="size:100px;" value=" 全选 ">&nbsp;|&nbsp;<input type="button" id="seletc_other_btn" style="size:100px;" value=" 反选 ">&nbsp;|&nbsp;<input type="button" id="no_seed_btn" style="size:100px;" value="选择断种">&nbsp;|&nbsp;<input type="button" id="seletc_none_btn" style="size:100px;" value="取消选择">&nbsp;|&nbsp;<input type="button" id="move_btn" style="size:100px;" value=" 移动 ">&nbsp;|&nbsp;<input type="button" id="del_btn" style="size:100px;" value=" 删除 ">&nbsp;|&nbsp;<input type="button" id="type_btn" style="size:100px;" value=" 分类 "></span></div></h2><br/>');
+			'</select>&nbsp;&nbsp;&nbsp;&nbsp;<span>Title：</span><input type="text" style="width:10em;" id="reg_title" class="px">&nbsp;&nbsp;&nbsp;&nbsp;<span>Index：</span><input type="text" style="width:10em;" id="select_index" class="px"><input type="button" id="select_by_index" style="size:80px;" value=" OK ">' +
+			'</div></h2><br/><h2 class="pbm ptm"><div class="z"><span>输入正则表达式或时间：<input type="text" style="width:15em;" id="title_reg" class="px" placeholder="RegExp" onkeypress="if(event.keyCode==13){select_btn.click();}"><input type="button" id="select_btn" style="size:100px;" value=" 提交 ">&nbsp;|&nbsp;<input type="button" id="seletc_all_btn" style="size:100px;" value=" 全选 ">&nbsp;|&nbsp;<input type="button" id="seletc_other_btn" style="size:100px;" value=" 反选 ">&nbsp;|&nbsp;<input type="button" id="no_seed_btn" style="size:100px;" value="选择断种">&nbsp;|&nbsp;<input type="button" id="seletc_none_btn" style="size:100px;" value="取消选择">&nbsp;|&nbsp;<input type="button" id="move_btn" style="size:100px;" value=" 移动 ">&nbsp;|&nbsp;<input type="button" id="del_btn" style="size:100px;" value=" 删除 ">&nbsp;|&nbsp;<input type="button" id="type_btn" style="size:100px;" value=" 分类 "></span></div></h2><br/>');
 	}
 
 	// 全选
@@ -151,6 +152,14 @@ const jq = jQuery.noConflict();
 				}
 			});
 		}
+	});
+	jq('#reg_title').change(function () {
+		let title = jq('#reg_title').val().trim();
+		let reg_str = '';
+		reg_str += title.match(/\[(S\d+)\]/i) ? title.match(/\[(S\d+)\]/i)[1] : '';
+		reg_str += title.match(/\[(\d+[pk])/i) ? ('.*' + title.match(/\[(\d+[pk])/i)[1]) : '';
+		reg_str += title.match(/\/([\w-]+)\//i) ? ('.*' + title.match(/\/([\w-]+)\//i)[1]) : '';
+		jq('input#title_reg').val(reg_str);
 	});
 	jq('#move_btn').click(function () {
 		tmodthreads(2, 'move');

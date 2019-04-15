@@ -17,7 +17,7 @@
 // @updateURL   https://github.com/harleybai/PT-help/raw/master/docs/js/NEU6%20-%20TV%20Rate%20Helper.user.js
 // @downloadURL https://github.com/harleybai/PT-help/raw/master/docs/js/NEU6%20-%20TV%20Rate%20Helper.user.js
 // @icon        http://bt.neu6.edu.cn/favicon.ico
-// @version     20190325
+// @version     20190410
 // ==/UserScript==
 
 const jq = jQuery.noConflict();
@@ -1833,7 +1833,7 @@ const jq = jQuery.noConflict();
             let m_am = jq('#e_textarea').html().match(/\[table[\s\S]+?\[\/table\]/);
             if (m_am) {
                 let gong_gao = "[align=center]" + m_am[0] + "[/align]";
-                desc = desc.replace(/(<div\salign="center"><\/div>)/g, '').replace(/^(<br.*?>|\r|\n)*/g, '<br>');
+                desc = desc.replace(/<div\salign="center"><\/div>|<div\salign="center">.*?—+.*?<\/div>/g, '').replace(/^(<br.*?>|\r|\n)*/g, '<br>');
                 jq('#e_iframe').contents().find('body').html(bbcode2html(gong_gao) + desc);
             } else {
                 jq('#e_iframe').contents().find('body').html(desc);

@@ -14,7 +14,7 @@
 // @downloadURL  https://github.com/harleybai/PT-help/raw/master/docs/js/NEU6%20-%20Info%20Clone.user.js
 // @icon         http://bt.neu6.edu.cn/favicon.ico
 // @supportURL   http://bt.neu6.edu.cn/thread-1555682-1-1.html
-// @version      20190111
+// @version      20190410
 // ==/UserScript==
 
 // ~~~~~~~~~~~~~~~~~~~~~~~~可配置选项~~~~~~~~~~~~~~~~~~~~~~~~
@@ -824,7 +824,7 @@ const jq = jQuery.noConflict();
             let m_am = jq('#e_textarea').html().match(/\[table[\s\S]+?\[\/table\]/);
             if (m_am) {
                 let gong_gao = "[align=center]" + m_am[0] + "[/align]";
-                desc = desc.replace(/(<div\salign="center"><\/div>)/g, '').replace(/^(<br.*?>|\r|\n)*/g, '<br>');
+                desc = desc.replace(/<div\salign="center"><\/div>|<div\salign="center">.*?—+.*?<\/div>/g, '').replace(/^(<br.*?>|\r|\n)*/g, '<br>');
                 jq('#e_iframe').contents().find('body').html(bbcode2html(gong_gao) + desc);
             } else {
                 jq('#e_iframe').contents().find('body').html(desc);

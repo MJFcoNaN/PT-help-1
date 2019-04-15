@@ -14,10 +14,11 @@
 // @include     http://bt.neu6.edu.cn/thread*
 // @include     http://bt.neu6.edu.cn/search*
 // @require     http://bt.neu6.edu.cn/static/js/mobile/jquery-1.8.3.min.js
+// @require      https://raw.githubusercontent.com/cnwhy/GBK.js/master/dist/gbk.js
 // @updateURL   https://github.com/harleybai/PT-help/raw/master/docs/js/NEU6%20-%20TV%20Rate%20Helper%20Simple.user.js
 // @downloadURL https://github.com/harleybai/PT-help/raw/master/docs/js/NEU6%20-%20TV%20Rate%20Helper%20Simple.user.js
 // @icon        http://bt.neu6.edu.cn/favicon.ico
-// @version     20190325
+// @version     20190410
 // ==/UserScript==
 
 const jq = jQuery.noConflict();
@@ -88,6 +89,26 @@ const jq = jQuery.noConflict();
             return "http://bt.neu6.edu.cn/thread-" + seed_id + "-1-1.html";
         }
         return 0;
+    }
+
+    //时间格式化
+    Date.prototype.format = function (format) {
+        let o = {
+            "M+": this.getMonth() + 1, //month
+            "d+": this.getDate(), //day
+            "h+": this.getHours(), //hour
+            "m+": this.getMinutes(), //minute
+            "s+": this.getSeconds(), //second
+            "q+": Math.floor((this.getMonth() + 3) / 3), //quarter
+            "S": this.getMilliseconds() //millisecond
+        };
+        format = (format == "") ? "yyyy-MM-dd hh:mm:ss" : format;
+        if (/(y+)/.test(format))
+            format = format.replace(RegExp.$1, (this.getFullYear() + "").substr(4 - RegExp.$1.length));
+        for (let k in o)
+            if (new RegExp("(" + k + ")").test(format))
+                format = format.replace(RegExp.$1, RegExp.$1.length === 1 ? o[k] : ("00" + o[k]).substr(("" + o[k]).length));
+        return format;
     }
 
     // 各板块列表
@@ -428,8 +449,52 @@ const jq = jQuery.noConflict();
         if ([77, 73].indexOf(forum_id) >= 0) {
             jq("ul#thread_types>li:last").after('<li><a id="low_signal_stick" href="javascript:void(0)">置顶<span id="stick_ls" class="xg1 num">LS</span></a></li>');
         }
+
+        function publishGroupMessage(form_link, group_link, message) {
+            GM_xmlhttpRequest({
+                method: "GET",
+                url: form_link,
+                onload: function (response) {
+                    let doc = (new DOMParser()).parseFromString(response.responseText, 'text/html');
+                    let page = jq(doc.querySelector("body"));
+                    let form_hash = page.find('input[name="formhash"]').val();
+                    // publish Message
+                    GM_xmlhttpRequest({
+                        method: "POST",
+                        url: group_link,
+                        data: "formhash=" + form_hash + "&topmuid=0&message=" + GBK.URI.encodeURI(message),
+                        headers: {
+                            "Content-Type": "application/x-www-form-urlencoded"
+                        },
+                        onload: function (response) {
+                            console.log(response.statusText);
+                        }
+                    });
+                }
+            });
+        }
         jq('#low_signal_stick').click(function () {
-            let stick_size = GM_getValue('stick_size') ? GM_getValue('stick_size') : 15;
+            // get last stick time config
+            let stick_pre_time = '';
+            let stick_last_time = '';
+            let stick_size = 0;
+            if (forum_id == 77) {
+                stick_pre_time = GM_getValue('stick_77_pre') ? GM_getValue('stick_77_pre') : '';
+                stick_last_time = GM_getValue('stick_77_last') ? GM_getValue('stick_77_last') : '';
+            } else if (forum_id == 73) {
+                stick_pre_time = GM_getValue('stick_73_pre') ? GM_getValue('stick_73_pre') : '';
+                stick_last_time = GM_getValue('stick_73_last') ? GM_getValue('stick_73_last') : '';
+            }
+            let pre_last = prompt("本次低信号置顶排除以下时间段", `${stick_pre_time}, ${stick_last_time}, 15`);
+            let pre_last_split = pre_last.split(',');
+            if (pre_last == null || pre_last_split.length != 3) {
+                console.log(`本次低信号置顶排除时间段输入错误...`);
+                return;
+            }
+            stick_pre_time = pre_last_split[0].trim();
+            stick_last_time = pre_last_split[1].trim();
+            stick_size = parseInt(pre_last_split[2].trim());
+            // 
             let now_stick_size = 0;
             if (location.href.match(/#sticksize_(\d+)/)) {
                 now_stick_size = location.href.match(/#sticksize_(\d+)/)[1];
@@ -445,24 +510,6 @@ const jq = jQuery.noConflict();
                 console.log(`current stick num is ${now_stick_size} >= ${stick_size} ...`);
                 return;
             }
-            // get last stick time config
-            let stick_pre_time = '';
-            let stick_last_time = '';
-            if (forum_id == 77) {
-                stick_pre_time = GM_getValue('stick_77_pre') ? GM_getValue('stick_77_pre') : '';
-                stick_last_time = GM_getValue('stick_77_last') ? GM_getValue('stick_77_last') : '';
-            } else if (forum_id == 73) {
-                stick_pre_time = GM_getValue('stick_73_pre') ? GM_getValue('stick_73_pre') : '';
-                stick_last_time = GM_getValue('stick_73_last') ? GM_getValue('stick_73_last') : '';
-            }
-            let pre_last = prompt("本次低信号置顶排除以下时间段", `${stick_pre_time}, ${stick_last_time}`);
-            let pre_last_split = pre_last.split(',');
-            if (pre_last == null || pre_last_split.length != 2) {
-                console.log(`本次低信号置顶排除以下时间段输入错误...`);
-                return;
-            }
-            stick_pre_time = pre_last_split[0].trim();
-            stick_last_time = pre_last_split[1].trim();
             // start select
             let is_first = true;
             let t_stick_pre_time = '';
@@ -513,11 +560,20 @@ const jq = jQuery.noConflict();
                         if (t_stick_last_time)
                             GM_setValue('stick_73_last', t_stick_last_time);
                     }
+
+                    let from_link = 'http://bt.neu6.edu.cn/home.php?mod=space&do=pm&subop=view&plid=372295&type=1&daterange=1#last';
+                    let group_link = 'http://bt.neu6.edu.cn/home.php?mod=spacecp&ac=pm&op=send&pmid=1449467&daterange=1&handlekey=pmsend&pmsubmit=yes';
+                    let forum = {
+                        '73': '完结剧集',
+                        '77': '高清剧合集'
+                    };
+                    let message = new Date().format("yyyy-MM-dd hh:mm:ss") + `: ${forum[forum_id]}低信号已置顶以下时间段\n[code]t_stick_pre_time, t_stick_last_time, stick_size[/code]`;
+                    publishGroupMessage(from_link, group_link, message);
                 }
             }
             if (stick_num < (stick_size - now_stick_size)) {
                 let next_page = parseInt(location.href.match(/forum-\d+-(\d+)/)[1]) + 1;
-                let next_url = `http://bt.neu6.edu.cn/forum-73-${next_page}.html#sticksize_${stick_num+now_stick_size}`;
+                let next_url = `http://bt.neu6.edu.cn/forum-73-${next_page}.html#sticksize_${(stick_num+now_stick_size)}`;
                 jq("ul#thread_types>li:last").after(`<li><a id="low_signal_stick" href="${next_url}">打开下一页</a></li>`);
                 console.log(`还差${stick_size - now_stick_size-stick_num}个种子,请打开下一页...`);
             }
@@ -589,6 +645,7 @@ const jq = jQuery.noConflict();
             seed_p.find('a:first').before('<a href="javascript:;" id="' + commonlink + '" onmouseover="showMenu(this.id)" class="showmenu">常用链接</a>');
             // 添加常用链接
             let commonlink_string = '<ul id="' + commonlink + '_menu" class="p_pop mgcmn" style="display: none;"><li><a style="background: url(http://bt.neu6.edu.cn/data/attachment/forum/201609/29/084832wh4p2z362amsf4mv.png) no-repeat 4px 50%;" target="_blank" href="' + link_reply + '">回复本帖高级</a></li>';
+            // jq(this).find('a.fastre').after(`<a class="fastre" href="${link_reply}" target="_self">回复[高级模式]</a>`);
             for (let key in common_links) {
                 let s = common_links[key].split(':http');
                 if (s.length == 2) {
@@ -794,25 +851,6 @@ const jq = jQuery.noConflict();
         }
         //alert("(置顶天数 " + res[0] + ", 颜色 " + res[1] + ", 加粗 " + res[2] + ", 高亮时间 " + res[3] + ")");
         return res;
-    }
-    //时间格式化
-    Date.prototype.format = function (format) {
-        let o = {
-            "M+": this.getMonth() + 1, //month
-            "d+": this.getDate(), //day
-            "h+": this.getHours(), //hour
-            "m+": this.getMinutes(), //minute
-            "s+": this.getSeconds(), //second
-            "q+": Math.floor((this.getMonth() + 3) / 3), //quarter
-            "S": this.getMilliseconds() //millisecond
-        };
-        format = (format == "") ? "yyyy-MM-dd hh:mm:ss" : format;
-        if (/(y+)/.test(format))
-            format = format.replace(RegExp.$1, (this.getFullYear() + "").substr(4 - RegExp.$1.length));
-        for (let k in o)
-            if (new RegExp("(" + k + ")").test(format))
-                format = format.replace(RegExp.$1, RegExp.$1.length === 1 ? o[k] : ("00" + o[k]).substr(("" + o[k]).length));
-        return format;
     }
     //计算时间
     function myTime(addday) {
@@ -1746,7 +1784,7 @@ const jq = jQuery.noConflict();
             let m_am = jq('#e_textarea').html().match(/\[table[\s\S]+?\[\/table\]/);
             if (m_am) {
                 let gong_gao = "[align=center]" + m_am[0] + "[/align]";
-                desc = desc.replace(/(<div\salign="center"><\/div>)/g, '').replace(/^(<br.*?>|\r|\n)*/g, '<br>');
+                desc = desc.replace(/<div\salign="center"><\/div>|<div\salign="center">.*?—+.*?<\/div>/g, '').replace(/^(<br.*?>|\r|\n)*/g, '<br>');
                 jq('#e_iframe').contents().find('body').html(bbcode2html(gong_gao) + desc);
             } else {
                 jq('#e_iframe').contents().find('body').html(desc);
