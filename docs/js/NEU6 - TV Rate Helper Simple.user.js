@@ -18,7 +18,7 @@
 // @updateURL   https://github.com/harleybai/PT-help/raw/master/docs/js/NEU6%20-%20TV%20Rate%20Helper%20Simple.user.js
 // @downloadURL https://github.com/harleybai/PT-help/raw/master/docs/js/NEU6%20-%20TV%20Rate%20Helper%20Simple.user.js
 // @icon        http://bt.neu6.edu.cn/favicon.ico
-// @version     20190410
+// @version     20190414
 // ==/UserScript==
 
 const jq = jQuery.noConflict();
@@ -510,10 +510,17 @@ const jq = jQuery.noConflict();
                 console.log(`current stick num is ${now_stick_size} >= ${stick_size} ...`);
                 return;
             }
+            if (forum_id == 77) {
+                GM_setValue('stick_77_pre', stick_pre_time);
+                GM_setValue('stick_77_last', stick_last_time);
+            } else if (forum_id == 73) {
+                GM_setValue('stick_73_pre', stick_pre_time);
+                GM_setValue('stick_73_last', stick_last_time);
+            }
             // start select
             let is_first = true;
-            let t_stick_pre_time = '';
-            let t_stick_last_time = '';
+            let t_stick_pre_time = stick_pre_time;
+            let t_stick_last_time = stick_last_time;
             let stick_num = 0;
             let stick_arr = [];
             jq("tbody[id^='normalthread_']").each(function () {
@@ -567,7 +574,7 @@ const jq = jQuery.noConflict();
                         '73': '完结剧集',
                         '77': '高清剧合集'
                     };
-                    let message = new Date().format("yyyy-MM-dd hh:mm:ss") + `: ${forum[forum_id]}低信号已置顶以下时间段\n[code]t_stick_pre_time, t_stick_last_time, stick_size[/code]`;
+                    let message = new Date().format("yyyy-MM-dd hh:mm:ss") + `: ${forum[forum_id]}低信号已置顶以下时间段\n[code]${t_stick_pre_time}, ${t_stick_last_time}, ${stick_size}[/code]`;
                     publishGroupMessage(from_link, group_link, message);
                 }
             }
