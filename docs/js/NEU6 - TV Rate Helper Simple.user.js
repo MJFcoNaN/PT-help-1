@@ -18,7 +18,7 @@
 // @updateURL   https://github.com/harleybai/PT-help/raw/master/docs/js/NEU6%20-%20TV%20Rate%20Helper%20Simple.user.js
 // @downloadURL https://github.com/harleybai/PT-help/raw/master/docs/js/NEU6%20-%20TV%20Rate%20Helper%20Simple.user.js
 // @icon        http://bt.neu6.edu.cn/favicon.ico
-// @version     20190414
+// @version     20190514
 // ==/UserScript==
 
 const jq = jQuery.noConflict();
@@ -1482,6 +1482,45 @@ const jq = jQuery.noConflict();
                             let imdb_average_rating, imdb_votes, imdb_rating;
                             let tags;
 
+                            //豆瓣API疑似下线
+                            douban_info_already_ok = true;
+                            douban_average_rating = page.find('strong.ll.rating_num').length > 0 ? page.find('strong.ll.rating_num').text() : 0;
+                            douban_votes = page.find('a.rating_people').length > 0 ? page.find('a.rating_people>span:first').text() : '0';
+                            if (douban_votes.length > 3) {
+                                douban_votes = douban_votes.split('').reverse().join('').replace(/(\d{3})/g, '$1,').split('').reverse().join('').replace(/^,/, '');
+                            }
+                            douban_rating = douban_average_rating + '/10 from ' + douban_votes + ' users';
+                            if (page.find('div#mainpic img').length > 0) {
+                                poster = page.find('div#mainpic img:first').attr('data-src').replace(/s(_ratio_poster|pic)/g, 'l$1').replace(/\.webp$/i, '.jpg');
+                                downloadPoster([poster]);
+                            }
+                            introduction = page.find('[property="v:summary"]').length > 0 ? page.find('[property="v:summary"]').text().trim() : '暂无相关剧情介绍';
+                            let director_another = page.find('span>span:contains("导演")').parent('span');
+                            let writer_another = page.find('span>span:contains("编剧")').parent('span');
+                            let cast_another = page.find('span.actor');
+                            if (director_another.length > 0) {
+                                director = director_another.find('a[href^="/celebrity"]').map(function () {
+                                    return jq(this).text()
+                                }).get().join(' / ');
+                            }
+                            if (writer_another.length > 0) {
+                                writer = writer_another.find('a[href^="/celebrity"]').map(function () {
+                                    return jq(this).text()
+                                }).get().join(' / ');
+                            }
+                            if (cast_another.length > 0) {
+                                cast = cast_another.find('a[href^="/celebrity"]').map(function () {
+                                    return jq(this).text()
+                                }).get().join('\n');
+                            }
+                            let tag_another = page.find('div.tags-body > a[href^="/tag"]');
+                            if (tag_another.length > 0) {
+                                tags = tag_another.map(function () {
+                                    return jq(this).text()
+                                }).get().join(' | ');
+                            }
+
+
                             let descriptionGenerator = function () {
                                 let descr = "";
                                 descr += foreign_title ? ("[b]" + foreign_title + "[/b]\n\n") : "";
@@ -1550,6 +1589,7 @@ const jq = jQuery.noConflict();
                                 query_info(1, '查询影片的获奖情况失败...', 'red');
                             });
                             //豆瓣评分，简介，海报，导演，编剧，演员，标签
+                            /*
                             requestJson('https://api.douban.com/v2/movie/' + movie_id, function (json) {
                                 douban_average_rating = json.rating.average || 0;
                                 douban_votes = json.rating.numRaters.toLocaleString() || 0;
@@ -1569,6 +1609,7 @@ const jq = jQuery.noConflict();
                             }, function () {
                                 query_info(1, '查询影片的豆瓣信息失败...', 'red');
                             });
+                            */
                         }
                     }, function () {
                         query_info(-1, '查询影片的豆瓣信息失败...', 'red');
