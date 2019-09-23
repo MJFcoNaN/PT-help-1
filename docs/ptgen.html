@@ -149,6 +149,16 @@
             document.body.appendChild(srpt);
         }
 
+        const doubanEntApiKeys = [
+            "0dad551ec0f84ed02907ff5c42e8ec70",
+            "02646d3fb69a52ff072d47bf23cef8fd",
+            "07c78782db00a121175696889101e363"
+        ];
+
+        function getDoubanEntApiKey() { // 随机获取一个key
+            return doubanEntApiKeys[Math.floor(Math.random() * doubanEntApiKeys.length)];
+        }
+
         $(function () {
             let query_btn = $("#query_btn");
             let gen_help = $("#gen_help");
@@ -175,6 +185,50 @@
                     alert("空字符，请检查输入");
                 } else if (/^http/.test(input_value)) {
                     query_btn.disable();
+
+                    let param = {
+                        url: input_value
+                    };
+                    if (input_value.match(/imdb/) && $('#force_douban').prop('checked')) {
+                        let sid = input_value.match(/tt\d+/)[0];
+                        param = {
+                            site: 'douban',
+                            sid: sid
+                        }
+                    }
+                    $.getJSON("https://api.druexoy.top/infogen", param).success(function (data) {
+                        out_textarea.val(data["success"] === false ? data["error"] : data["format"]);
+                        if (data["imdb_id"]) {
+                            const TMDB_api_key = atob('OWNmZmQ5MjY4OTUzZDhhYzA1OTYxMWYwMDg2OGNkNmU=');
+                            jsonp(`https://api.themoviedb.org/3/find/${data["imdb_id"]}`, {
+                                api_key: TMDB_api_key,
+                                external_source: "imdb_id"
+                            }, function (res) {
+                                let story_line = '';
+                                if (res.movie_results.length) {
+                                    story_line = res.movie_results[0].overview;
+                                } else if (res.tv_episode_results.length) {
+                                    story_line = res.tv_episode_results[0].overview;
+                                } else if (res.person_results.length) {
+                                    story_line = res.person_results[0].overview;
+                                } else if (res.tv_results.length) {
+                                    story_line = res.tv_results[0].overview;
+                                } else if (res.tv_season_results.length) {
+                                    story_line = res.tv_season_results[0].overview;
+                                }
+                                if (story_line) {
+                                    story_line = ' '.repeat(4) + story_line;
+                                    out_textarea.val(out_textarea.val() + `\n${story_line}\n`);
+                                }
+                            });
+                        }
+                    }).fail(function (jqXHR) {
+                        alert(jqXHR.status === 429 ? 'Met Rate Limit, Retry later~' : "Error occured!");
+                    }).complete(function () {
+                        query_btn.enable();
+                    });
+
+                    /*
                     $.getJSON("https://api.rhilip.info/tool/movieinfo/gen", {
                         url: input_value
                     }).success(function (data) {
@@ -211,11 +265,13 @@
                     }).complete(function () {
                         query_btn.enable();
                     });
+                    */
                 } else { // Search from Douban
                     gen_help.show();
                     gen_out.hide();
                     jsonp("https://api.douban.com/v2/movie/search", {
-                        q: input_value
+                        q: input_value,
+                        apikey: getDoubanEntApiKey()
                     }, function (resj) {
                         if (resj.total == 1) {
                             input_btn.val(resj.subjects[0].alt);
