@@ -30,7 +30,7 @@ const jq = jQuery.noConflict();
     var title_zoom, add_rate_user, second_timeout, common_links;
     getConfig();
     const tv_forum = [155, 48, 77, 14, 73];
-    const ani_forum = [44, 52, 148, 293, 165, 125];
+    const ani_forum = [44, 52, 148, 293, 165, 125, 69];
     const forum_id = getForumId();
     const current_user = getCurrentUser();
     const current_url = getCurrentUrl();
@@ -344,7 +344,7 @@ const jq = jQuery.noConflict();
                         rewards_info[1] = (rewards_info[1] > 100) ? 100 : rewards_info[1];
                         rewards_info[2] = (rewards_info[2] > 5) ? 5 : rewards_info[2];
                         alert("大包\n请@其他人补上浮云：" + addcoulds + "，贡献：" + addcontribution + "\n\n已将上述消息复制到快速回复框中...");
-                        let msg = "大包，" + current_url + "\n请补上浮云：" + addcoulds + "，贡献：" + addcontribution + ",";
+                        let msg = "大包，" + current_url + "\n请补加浮云：" + addcoulds + "，贡献：" + addcontribution + ",";
                         for (let name in add_rate_user) {
                             if (add_rate_user[name] != current_user) {
                                 msg += " @" + add_rate_user[name] + " ";
@@ -378,12 +378,12 @@ const jq = jQuery.noConflict();
             move_to = 62;
         } else if (forum_id == 155) {
             move_to = 14;
-        //                 动漫主版               精品               试种               其他                字幕                讨论
-        } else if (forum_id == 44 || forum_id == 52 || forum_id == 148 || forum_id == 293 || forum_id == 165 || forum_id == 125) {
+        //                 动漫主版               精品               试种               其他                字幕                讨论             回收站
+        } else if (forum_id == 44 || forum_id == 52 || forum_id == 148 || forum_id == 293 || forum_id == 165 || forum_id == 125 || forum_id == 69) {
             move_to = 69;
         }
 
-        if ([44, 52, 148, 293, 165, 125].indexOf(forum_id) >= 0) {
+        if ([44, 52, 148, 293, 165, 125, 69].indexOf(forum_id) >= 0) {
             jq("ul#thread_types>li:last").after('<li><a id="my_select" href="javascript:void(0)">选择<span class="xg1 num">0</span></a></li><li><a id="my_move" href="javascript:void(0)">移动<span class="xg1 num">0</span></a></li>');
         }
         /*
@@ -508,7 +508,7 @@ const jq = jQuery.noConflict();
             stick_pre_time = pre_last_split[0].trim();
             stick_last_time = pre_last_split[1].trim();
             stick_size = parseInt(pre_last_split[2].trim());
-            // 
+            //
             let now_stick_size = 0;
             if (location.href.match(/#sticksize_(\d+)/)) {
                 now_stick_size = location.href.match(/#sticksize_(\d+)/)[1];
@@ -804,10 +804,11 @@ const jq = jQuery.noConflict();
                 res[0] = 3;
             }
         } else if (seed_type == 44 ) { //动漫主版
-            if (seed_type == 14 && title.match(/(\[01)|(EP?01)/i)) {
-                res[1] = 1;
+            if (title.match(/BDRIP/i) && (gb_size >= 10)) {
+                res[0] = 2;//置顶天数
+                res[1] = 3;
             }
-            if (seed_type == 44 && (gb_size >= 10)) {
+            if (title.match(/(-*END)|(-*FIN)/i) && (gb_size >= 1)) {
                 res[0] = 1;//置顶天数
             }
         }
@@ -1051,24 +1052,29 @@ const jq = jQuery.noConflict();
                 clouds = 10;
                 contribution = 2;
                 ratereason = "补加浮云和贡献奖励，感谢分享";
-            } else if (forum_id == 44) { //动漫
-                contribution = Math.floor(seedsize / 10);
+            } else if (forum_id == 44 || forum_id == 52 || forum_id == 69) { //动漫  精品区  回收站
                 ratereason = "补加浮云和贡献奖励，感谢分享";
-                if (seedsize >= 50) {
-                    contribution = 5;
-                    clouds = 100;
-                } else if (seedsize < 1) {
+                if (seedsize < 1) {
                     contribution = 0;
                     clouds = 5;
                 } else {
-                    contribution = Math.floor(seedsize / 10);
-                    clouds = Math.round(seedsize /2) * 10;
+                    if ((title.match(/BDMV/i)) || (title.match(/ISO/i))) {
+                        contribution = Math.floor(seedsize / 20);
+                        clouds = Math.round(seedsize/5)*5;
+                    } else {
+                        contribution = Math.floor(seedsize / 10);
+                        clouds = Math.round(seedsize /2) * 10;
+                    }
+                }
+                if (!(title.match(/BDRIP/i))) {
+                    contribution = Math.min(contribution, 5);
+                    clouds = Math.min(clouds, 100);
                 }
             } else {
                 clouds = 0;
                 contribution = 0;
             }
-            
+
         } else {
             let setrateinfo = {
                 "38": [10, 0, "送上鲜花"],
