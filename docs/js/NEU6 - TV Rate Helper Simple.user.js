@@ -29,6 +29,7 @@ const jq = jQuery.noConflict();
     var title_zoom, add_rate_user, second_timeout, common_links;
     getConfig();
     const tv_forum = [155, 48, 77, 14, 73];
+    const ani_forum = [44, 52, 148, 293, 165, 125];
     const forum_id = getForumId();
     const current_user = getCurrentUser();
     const current_url = getCurrentUrl();
@@ -376,6 +377,17 @@ const jq = jQuery.noConflict();
             move_to = 62;
         } else if (forum_id == 155) {
             move_to = 14;
+        //                 动漫主版               精品               试种               其他                字幕                讨论
+        } else if (forum_id == 44 || forum_id == 52 || forum_id == 148 || forum_id == 293 || forum_id == 165 || forum_id == 125) {
+            move_to = 69;
+        }
+
+        if ([44, 52, 148, 293, 165, 125].indexOf(forum_id) >= 0) {
+            jq("ul#thread_types>li:last").after('<li><a id="my_select" href="javascript:void(0)">选择<span class="xg1 num">0</span></a></li><li><a id="my_move" href="javascript:void(0)">移动<span class="xg1 num">0</span></a></li>');
+        }
+        /*
+        if ([44, 52, 148, 293, 165, 125].indexOf(forum_id) >= 0 && jq('table#threadlisttableid tr:first input').length) {
+            jq("tbody#separatorline:not(.emptb) th").html('<a id="forum_highlight" href="javascript:void(0)">高亮</a>&nbsp;&nbsp;&nbsp;<a id="forum_stick" href="javascript:void(0)">置顶</a>&nbsp;&nbsp;&nbsp;<a id="forum_move" href="javascript:void(0)">移动</a>');
         }
         if ([48, 14].indexOf(forum_id) >= 0) {
             jq("ul#thread_types>li:last").after('<li><a id="my_select" href="javascript:void(0)">选择<span class="xg1 num">0</span></a></li><li><a id="my_move" href="javascript:void(0)">移动<span class="xg1 num">0</span></a></li>');
@@ -383,6 +395,7 @@ const jq = jQuery.noConflict();
         if ([155, 48, 77, 14, 73, 45, 13].indexOf(forum_id) >= 0 && jq('table#threadlisttableid tr:first input').length) {
             jq("tbody#separatorline:not(.emptb) th").html('<a id="forum_highlight" href="javascript:void(0)">高亮</a>&nbsp;&nbsp;&nbsp;<a id="forum_stick" href="javascript:void(0)">置顶</a>&nbsp;&nbsp;&nbsp;<a id="forum_move" href="javascript:void(0)">移动</a>');
         }
+        */
         jq("#my_select").click(function () {
             var time_today = new Date();
             var select_count = 0;
@@ -446,9 +459,9 @@ const jq = jQuery.noConflict();
         });
 
         // 低信号置顶
-        if ([77, 73].indexOf(forum_id) >= 0) {
-            jq("ul#thread_types>li:last").after('<li><a id="low_signal_stick" href="javascript:void(0)">置顶<span id="stick_ls" class="xg1 num">LS</span></a></li>');
-        }
+        //if ([77, 73].indexOf(forum_id) >= 0) {
+        //    jq("ul#thread_types>li:last").after('<li><a id="low_signal_stick" href="javascript:void(0)">置顶<span id="stick_ls" class="xg1 num">LS</span></a></li>');
+        //}
 
         function publishGroupMessage(form_link, group_link, message) {
             GM_xmlhttpRequest({
@@ -627,7 +640,7 @@ const jq = jQuery.noConflict();
                 jq('ignore_js_op>dl.tattl>dd>pre').text(utorrentinfo);
             }
         }
-        if (tv_forum.indexOf(forum_id) >= 0) {
+        if (tv_forum.indexOf(forum_id) >= 0 || ani_forum.indexOf(forum_id) >= 0) {
             jq('div#modmenu span:last').before('<span class="pipe">|</span><a id="commonquestions" href="javascript:;">常见问题</a>');
         }
 
@@ -665,7 +678,7 @@ const jq = jQuery.noConflict();
     }
     if (location.href.match(/action=reply&fid=/)) {
         let seed_forum = location.href.match(/action=reply&fid=(\d+)/)[1];
-        if (tv_forum.indexOf(parseInt(seed_forum)) >= 0) {
+        if (tv_forum.indexOf(parseInt(seed_forum)) >= 0 || ani_forum.indexOf(parseInt(seed_forum)) >= 0) {
             jq('span#subjecthide').after('<span class="pipe">|</span><a id="commonquestions" href="javascript:;">常见问题</a>');
         }
     }
@@ -789,6 +802,13 @@ const jq = jQuery.noConflict();
             if (seed_type == 73 && (gb_size >= 10)) {
                 res[0] = 3;
             }
+        } else if (seed_type == 44 ) { //动漫主版
+            if (seed_type == 14 && title.match(/(\[01)|(EP?01)/i)) {
+                res[1] = 1;
+            }
+            if (seed_type == 44 && (gb_size >= 10)) {
+                res[0] = 1;//置顶天数
+            }
         }
         return res;
     }
@@ -854,6 +874,12 @@ const jq = jQuery.noConflict();
                 res[1] = 4;
             } else if (type_id == 251 || type_id == 182) {
                 res[1] = 0;
+            }
+        } else if (seed_type == 44) {
+            if (gb_size > 10) {
+                res[1]=6;// bdrip blue
+                res[2] = 1; //加粗
+                res[3]=-1; // highlight forever
             }
         }
         //alert("(置顶天数 " + res[0] + ", 颜色 " + res[1] + ", 加粗 " + res[2] + ", 高亮时间 " + res[3] + ")");
@@ -1024,10 +1050,24 @@ const jq = jQuery.noConflict();
                 clouds = 10;
                 contribution = 2;
                 ratereason = "补加浮云和贡献奖励，感谢分享";
+            } else if (forum_id == 44) { //动漫
+                contribution = Math.floor(seedsize / 10);
+                ratereason = "补加浮云和贡献奖励，感谢分享";
+                if (seedsize >= 50) {
+                    contribution = 5;
+                    clouds = 100;
+                } else if (seedsize < 1) {
+                    contribution = 0;
+                    clouds = 5;
+                } else {
+                    contribution = Math.floor(seedsize / 10);
+                    clouds = Math.round(seedsize /2) * 10;
+                }
             } else {
                 clouds = 0;
                 contribution = 0;
             }
+            
         } else {
             let setrateinfo = {
                 "38": [10, 0, "送上鲜花"],
