@@ -1074,6 +1074,10 @@ const jq = jQuery.noConflict();
                         //DVDRip/HDTVRip/Web-DL 1G = 3 浮云 + 1/5 贡献
                         clouds = Math.round(seedsize *3/5) * 5;
                         contribution = Math.floor(seedsize / 5);
+                    } else {
+                        // 其他体积较大的情况（>1G）1G = 2 浮云 + 1/20 贡献
+                        clouds = Math.round(seedsize *2/5) * 5;
+                        contribution = Math.floor(seedsize / 20);
                     }
                 }
                 // limit bonus
