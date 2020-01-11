@@ -1059,14 +1059,28 @@ const jq = jQuery.noConflict();
                     clouds = 5;
                 } else {
                     if ((title.match(/BDMV/i)) || (title.match(/ISO/i))) {
-                        contribution = Math.floor(seedsize / 20);
+                        //原盘 1G = 1 浮云 + 1/20 贡献
                         clouds = Math.round(seedsize/5)*5;
-                    } else {
+                        contribution = Math.floor(seedsize / 20);
+                    } else if (title.match(/BDRIP/i)){
+                        //BDRip 1G = 3 浮云 + 1/10 贡献
+                        clouds = Math.round(seedsize *3/5) * 5;
                         contribution = Math.floor(seedsize / 10);
-                        clouds = Math.round(seedsize /2) * 10;
+                    } else if ((title.match(/RIP/i) || title.match(/WEB/i)) && (!title.match(/BDRIP/i))){
+                        //DVDRip/HDTVRip/Web-DL 1G = 3 浮云 + 1/20 贡献
+                        clouds = Math.round(seedsize *3/5) * 5;
+                        contribution = Math.floor(seedsize / 20);
+                    } else if (title.match(/EAC/i) || title.match(/HI-RES/i)){
+                        //DVDRip/HDTVRip/Web-DL 1G = 3 浮云 + 1/5 贡献
+                        clouds = Math.round(seedsize *3/5) * 5;
+                        contribution = Math.floor(seedsize / 5);
                     }
                 }
-                if (!(title.match(/BDRIP/i))) {
+                // limit bonus
+                if (title.match(/BDRIP/i)) {
+                    contribution = Math.min(contribution, 10);
+                    clouds = Math.min(clouds, 200);
+                } else {
                     contribution = Math.min(contribution, 5);
                     clouds = Math.min(clouds, 100);
                 }
