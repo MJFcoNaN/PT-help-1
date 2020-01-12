@@ -808,19 +808,19 @@ const jq = jQuery.noConflict();
             if (title.match(/BDMV/i) || title.match(/ISO/i) ) {
                 res[0] = 0;//置顶天数
                 res[1] = 4;
-            else if (title.match(/BDRIP/i)) {
+            } else if (title.match(/BDRIP/i)) {
                 res[0] = 2;//置顶天数
                 res[1] = 5;
-            else if (title.match(/DVDRIP/i)) {
+            } else if (title.match(/DVDRIP/i)) {
                 res[0] = 1;//置顶天数
                 res[1] = 6;
-            else if ((title.match(/RIP/i) || title.match(/WEB/i)) && !title.match(/BDRIP/i)  && !title.match(/DVDRIP/i)) {
+            } else if ((title.match(/RIP/i) || title.match(/WEB/i)) && !title.match(/BDRIP/i)  && !title.match(/DVDRIP/i)) {
                 res[0] = 0;//置顶天数
                 res[1] = 7;
-            else if (title.match(/EAC/i)) {
+            } else if (title.match(/EAC/i)) {
                 res[0] = 1;//置顶天数
                 res[1] = 8;
-            else if (title.match(/(-*END)|(-*FIN)/i) && (gb_size >= 1)) {
+            } else if (title.match(/(-*END)|(-*FIN)/i) && (gb_size >= 1)) {
                 res[0] = 1;//置顶天数
                 res[1] = 9;
             }
