@@ -779,6 +779,7 @@ const jq = jQuery.noConflict();
     //获取标题中的信息
     function getInfoFromTitle(seed_type, gb_size, title) {
         let res = [0, 0]; //res[0]:(置顶天数)	res[1]:(1:剧集首集, 2:高清韩剧, 3:高清日剧)
+        //                               动漫: res[1]:(4:BDMV/ISO, 5:BDRip, 6:DVDRip, 7:HDTVRip/Web-DL, 8:无损音乐合集, 9:普通合集)
         title = (title) ? title : jq("span#thread_subject").text();
         if (seed_type == 48 || seed_type == 77) { //高清
             if (title.match(/韩/)) {
@@ -804,12 +805,24 @@ const jq = jQuery.noConflict();
                 res[0] = 3;
             }
         } else if (seed_type == 44 ) { //动漫主版
-            if (title.match(/BDRIP/i) && (gb_size >= 10)) {
+            if (title.match(/BDMV/i) || title.match(/ISO/i) ) {
+                res[0] = 0;//置顶天数
+                res[1] = 4;
+            else if (title.match(/BDRIP/i)) {
                 res[0] = 2;//置顶天数
-                res[1] = 3;
-            }
-            if (title.match(/(-*END)|(-*FIN)/i) && (gb_size >= 1)) {
+                res[1] = 5;
+            else if (title.match(/DVDRIP/i)) {
                 res[0] = 1;//置顶天数
+                res[1] = 6;
+            else if ((title.match(/RIP/i) || title.match(/WEB/i)) && !title.match(/BDRIP/i)  && !title.match(/DVDRIP/i)) {
+                res[0] = 0;//置顶天数
+                res[1] = 7;
+            else if (title.match(/EAC/i)) {
+                res[0] = 1;//置顶天数
+                res[1] = 8;
+            else if (title.match(/(-*END)|(-*FIN)/i) && (gb_size >= 1)) {
+                res[0] = 1;//置顶天数
+                res[1] = 9;
             }
         }
         return res;
@@ -877,11 +890,27 @@ const jq = jQuery.noConflict();
             } else if (type_id == 251 || type_id == 182) {
                 res[1] = 0;
             }
-        } else if (seed_type == 44) {
-            if (gb_size > 10) {
-                res[1]=6;// bdrip blue
-                res[2] = 1; //加粗
-                res[3]=-1; // highlight forever
+        } else if (seed_type == 44) { //动漫
+            if (type_id == 223 || type_id == 224) {
+                //        完结动画          剧场OVA 
+                
+                res[2]=1; //默认全部加粗
+                res[3]=-1; // 默认highlight forever
+                if (title_info[1] == 4) { //BDMV
+                    res[1] = 1; // red
+                } else if (title_info[1] == 5) { //BDRIP
+                    res[1] = 6; //blue
+                } else if (title_info[1] == 6) { //DVDRIP
+                    res[1] = 4; //green
+                } else if (title_info[1] == 7) { //HDTVRIP/WEB
+                    res[1] = 3; //brown
+                } else if (title_info[1] == 8) { //EAC
+                    res[1] = 7; //pupple
+                } else if (title_info[1] == 9) { //合集
+                    res[1] = 3; // brown, same as HDTVRIP/WEB
+                    res[2]=0; //不加粗
+                    res[3] = 7; // highlight 7days
+                }
             }
         }
         //alert("(置顶天数 " + res[0] + ", 颜色 " + res[1] + ", 加粗 " + res[2] + ", 高亮时间 " + res[3] + ")");
