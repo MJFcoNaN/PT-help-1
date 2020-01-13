@@ -10,6 +10,7 @@
 // @downloadURL  https://github.com/harleybai/PT-help/raw/master/docs/js/NEU6%20-%20Recycle%20Tool.user.js
 // @icon         http://bt.neu6.edu.cn/favicon.ico
 // @version      20190301
+// @modifier     MJFcoNaN, 20200113, add anime
 // ==/UserScript==
 
 // https://cdn.bootcss.com/jquery/1.8.3/jquery.min.js
@@ -170,6 +171,8 @@ const jq = jQuery.noConflict();
 				moveto = 58;
 			} else if (current == 14 || current == 73) {
 				moveto = 62;
+                        } else if (current == 44 || current == 52) {//动漫主版  精品区
+                                moveto = 69;
 			}
 			if (moveto) {
 				jq("#moderateform select#moveto").val(moveto);
