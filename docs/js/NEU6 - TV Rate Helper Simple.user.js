@@ -386,7 +386,7 @@ const jq = jQuery.noConflict();
         if ([44, 52, 148, 293, 165, 125, 69].indexOf(forum_id) >= 0) {
             jq("ul#thread_types>li:last").after('<li><a id="my_select" href="javascript:void(0)">选择<span class="xg1 num">0</span></a></li><li><a id="my_move" href="javascript:void(0)">移动<span class="xg1 num">0</span></a></li>');
         }
-        //
+        /*
         if ([44, 52, 148, 293, 165, 125].indexOf(forum_id) >= 0 && jq('table#threadlisttableid tr:first input').length) {
             jq("tbody#separatorline:not(.emptb) th").html('<a id="forum_highlight" href="javascript:void(0)">高亮</a>&nbsp;&nbsp;&nbsp;<a id="forum_stick" href="javascript:void(0)">置顶</a>&nbsp;&nbsp;&nbsp;<a id="forum_move" href="javascript:void(0)">移动</a>');
         }
@@ -396,7 +396,7 @@ const jq = jQuery.noConflict();
         if ([155, 48, 77, 14, 73, 45, 13].indexOf(forum_id) >= 0 && jq('table#threadlisttableid tr:first input').length) {
             jq("tbody#separatorline:not(.emptb) th").html('<a id="forum_highlight" href="javascript:void(0)">高亮</a>&nbsp;&nbsp;&nbsp;<a id="forum_stick" href="javascript:void(0)">置顶</a>&nbsp;&nbsp;&nbsp;<a id="forum_move" href="javascript:void(0)">移动</a>');
         }
-        //
+        */
         jq("#my_select").click(function () {
             var time_today = new Date();
             var select_count = 0;
@@ -460,9 +460,9 @@ const jq = jQuery.noConflict();
         });
 
         // 低信号置顶
-        if ([77, 73].indexOf(forum_id) >= 0) {
-            jq("ul#thread_types>li:last").after('<li><a id="low_signal_stick" href="javascript:void(0)">置顶<span id="stick_ls" class="xg1 num">LS</span></a></li>');
-        }
+        //if ([77, 73].indexOf(forum_id) >= 0) {
+        //    jq("ul#thread_types>li:last").after('<li><a id="low_signal_stick" href="javascript:void(0)">置顶<span id="stick_ls" class="xg1 num">LS</span></a></li>');
+        //}
 
         function publishGroupMessage(form_link, group_link, message) {
             GM_xmlhttpRequest({
@@ -779,7 +779,6 @@ const jq = jQuery.noConflict();
     //获取标题中的信息
     function getInfoFromTitle(seed_type, gb_size, title) {
         let res = [0, 0]; //res[0]:(置顶天数)	res[1]:(1:剧集首集, 2:高清韩剧, 3:高清日剧)
-        //                               动漫: res[1]:(4:BDMV/ISO, 5:BDRip, 6:DVDRip, 7:HDTVRip/Web-DL, 8:无损音乐合集, 9:普通合集)
         title = (title) ? title : jq("span#thread_subject").text();
         if (seed_type == 48 || seed_type == 77) { //高清
             if (title.match(/韩/)) {
@@ -805,24 +804,12 @@ const jq = jQuery.noConflict();
                 res[0] = 3;
             }
         } else if (seed_type == 44 ) { //动漫主版
-            if (title.match(/BDMV/i) || title.match(/ISO/i) ) {
-                res[0] = 0;//置顶天数
-                res[1] = 4;
-            } else if (title.match(/BDRIP/i)) {
+            if (title.match(/BDRIP/i) && (gb_size >= 10)) {
                 res[0] = 2;//置顶天数
-                res[1] = 5;
-            } else if (title.match(/DVDRIP/i)) {
+                res[1] = 3;
+            }
+            if (title.match(/(-*END)|(-*FIN)/i) && (gb_size >= 1)) {
                 res[0] = 1;//置顶天数
-                res[1] = 6;
-            } else if ((title.match(/RIP/i) || title.match(/WEB/i)) && !title.match(/BDRIP/i)  && !title.match(/DVDRIP/i)) {
-                res[0] = 0;//置顶天数
-                res[1] = 7;
-            } else if (title.match(/EAC/i)) {
-                res[0] = 1;//置顶天数
-                res[1] = 8;
-            } else if (title.match(/(-*END)|(-*FIN)/i) && (gb_size >= 1)) {
-                res[0] = 1;//置顶天数
-                res[1] = 9;
             }
         }
         return res;
@@ -890,27 +877,11 @@ const jq = jQuery.noConflict();
             } else if (type_id == 251 || type_id == 182) {
                 res[1] = 0;
             }
-        } else if (seed_type == 44) { //动漫
-            if (type_id == 223 || type_id == 224) {
-                //        完结动画          剧场OVA 
-                
-                res[2]=1; //默认全部加粗
-                res[3]=-1; // 默认highlight forever
-                if (title_info[1] == 4) { //BDMV
-                    res[1] = 1; // red
-                } else if (title_info[1] == 5) { //BDRIP
-                    res[1] = 6; //blue
-                } else if (title_info[1] == 6) { //DVDRIP
-                    res[1] = 4; //green
-                } else if (title_info[1] == 7) { //HDTVRIP/WEB
-                    res[1] = 3; //brown
-                } else if (title_info[1] == 8) { //EAC
-                    res[1] = 7; //pupple
-                } else if (title_info[1] == 9) { //合集
-                    res[1] = 3; // brown, same as HDTVRIP/WEB
-                    res[2]=0; //不加粗
-                    res[3] = 7; // highlight 7days
-                }
+        } else if (seed_type == 44) {
+            if (gb_size > 10) {
+                res[1]=6;// bdrip blue
+                res[2] = 1; //加粗
+                res[3]=-1; // highlight forever
             }
         }
         //alert("(置顶天数 " + res[0] + ", 颜色 " + res[1] + ", 加粗 " + res[2] + ", 高亮时间 " + res[3] + ")");
@@ -1086,33 +1057,37 @@ const jq = jQuery.noConflict();
                 if (seedsize < 1) {
                     contribution = 0;
                     clouds = 5;
+
                 } else {
                     if ((title.match(/BDMV/i)) || (title.match(/ISO/i))) {
                         //原盘 1G = 1 浮云 + 1/20 贡献
-                        clouds = Math.floor(seedsize/10)*10;
+                        clouds = Math.round(seedsize/5)*5;
                         contribution = Math.floor(seedsize / 20);
                     } else if (title.match(/BDRIP/i)){
                         //BDRip 1G = 3 浮云 + 1/10 贡献
-                        clouds = Math.floor(seedsize *3/10) * 10;
+                        clouds = Math.round(seedsize *3/5) * 5;
                         contribution = Math.floor(seedsize / 10);
                     } else if ((title.match(/RIP/i) || title.match(/WEB/i)) && (!title.match(/BDRIP/i))){
                         //DVDRip/HDTVRip/Web-DL 1G = 3 浮云 + 1/20 贡献
-                        clouds = Math.floor(seedsize *3/10) * 10;
+                        clouds = Math.round(seedsize *3/5) * 5;
                         contribution = Math.floor(seedsize / 20);
                     } else if (title.match(/EAC/i) || title.match(/HI-RES/i)){
                         //DVDRip/HDTVRip/Web-DL 1G = 3 浮云 + 1/5 贡献
-                        clouds = Math.floor(seedsize *3/10) * 10;
+                        clouds = Math.round(seedsize *3/5) * 5;
                         contribution = Math.floor(seedsize / 5);
                     } else {
-                        // 其他体积较大的情况（>1G）1G = 1 浮云 + 1/20 贡献
-                        clouds = Math.floor(seedsize *1/10) * 10;
+                        // 其他体积较大的情况（>1G）1G = 2 浮云 + 1/20 贡献
+                        clouds = Math.round(seedsize *2/5) * 5;
                         contribution = Math.floor(seedsize / 20);
                     }
                 }
+                if (Math.abs(contribution)<0.1){
+                    ratereason = "送鲜花";
+                }
                 // limit bonus
                 if (title.match(/BDRIP/i)) {
-                    contribution = Math.min(contribution, 5);
-                    clouds = Math.min(clouds, 100);
+                    contribution = Math.min(contribution, 10);
+                    clouds = Math.min(clouds, 200);
                 } else {
                     contribution = Math.min(contribution, 5);
                     clouds = Math.min(clouds, 100);
@@ -1144,8 +1119,7 @@ const jq = jQuery.noConflict();
         jq('#commonquestions').click(function () {
             var replay_index = 0;
             var com_qus = [
-                "请按照这个格式修改标题：[中文名][罗马音或英文名][日文名][集数][片源-格式][字幕组或压制组][其他(分辨率等)]",
-                //"请按照这个格式修改标题：[中文名/外文名][季度集数][分辨率/录制片源/文件格式][语言/字幕][发布组名称或文件来源][其他说明]",
+                "请按照这个格式修改标题：[中文名/外文名][季度集数][分辨率/录制片源/文件格式][语言/字幕][发布组名称或文件来源][其他说明]",
                 "请按照这个格式修改标题：[简体中文名称][0day英文全名][语言/字幕情况][其他说明]",
                 "发帖时不要删掉上方的剧版公告，请补上",
                 "图片请上传到本地，请不要使用外链图片",
@@ -2051,20 +2025,7 @@ const jq = jQuery.noConflict();
                                     "98": "其他",
                                     "99": "版务公告",
                                     "100": "移动视频"
-                                },
-                                "44": { //动漫
-                                    "221": "其他资源",
-                                    "222": "连载动画",
-                                    "223": "完结动画",
-                                    "224": "剧场OVA",
-                                    "225": "国产原创",
-                                    "226": "音乐声优",
-                                    "227": "漫画画集",
-                                    "228": "版务公告",
-                                    "229": "游戏相关",
-                                    "230": "欧美港台"
                                 }
-                                
                             };
                             let matched = false;
                             for (let k in type_id_name[newtype]) {
