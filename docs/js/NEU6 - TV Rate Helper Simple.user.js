@@ -19,7 +19,7 @@
 // @downloadURL https://github.com/harleybai/PT-help/raw/master/docs/js/NEU6%20-%20TV%20Rate%20Helper%20Simple.user.js
 // @icon        http://bt.neu6.edu.cn/favicon.ico
 // @version     20190514
-// @modifier    MJFcoNaN, 20200110, add anime
+// @modifier    MJFcoNaN, 20200110, add anime; 
 // ==/UserScript==
 
 const jq = jQuery.noConflict();
